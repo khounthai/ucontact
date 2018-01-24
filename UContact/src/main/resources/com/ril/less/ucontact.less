@@ -2,64 +2,47 @@
 //@screen-medium: 992px;
 
 body {
-
-    .navbar-default {
-        
-        .navbar-nav li {
-            
-            margin-left: 5px;
-            
-        }
-        
-        .navbar-brand{
-            font-size: 3em;
-            margin-top: 5%;
-            color: #74cfae;
-        }
+  	background-color: #f2f2f2;
+  	color: #555;
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+    -webkit-overflow-scrolling: touch;
+    
+    a:hover {
+    	color: #8deac8;
     }
     
-    .modal .modal-content {
-        
-        padding: 3%;
-        
-        
-        .btn {
-            
-            text-align: right;
-            
+	.navbar-default {
+		background: #ffffff;
+		border: none;
+		
+		.navbar-container {
+			margin-bottom: 10px;
+			margin-top: 10px;
+		}
+	
+    	.navbar-nav li {
+            margin-right: 5px;
         }
         
-    }
-    
-    .btn-custom {
-            
-        background: #74cfae;
-        font-size: 0.9em;
-        color: white;
-    }
-    
-    .right-btn{
+        .navbar-nav li.active a {
+        	background: #74cfae;
+        	color: #ffffff;
+        }
         
-        position : relative;
-        height: 50px;
+        .navbar-nav li.active a:hover {
+        	background: #8deac8;
+        	color: #ffffff;
+        }
         
-        .btn-custom {
-            
-            padding: 5px !important;
-            position: absolute;
-            right: 0;
-
+        a.navbar-brand {
+        	color: #74cfae;
+        	font-weight: bold;
+            font-size: 2.5em;
+        }
+        
+        a.navbar-brand:hover {
+       		color: #8deac8;
         }
     }
-    div#hello{
-        
-        h1{
-            text-shadow: 0 2px rgba(92, 92, 92, 0.56);
-        }
-        h2{
-            color:white;
-            text-shadow: 2px 2px rgba(92, 92, 92, 0.56);
-        }
-    }
-    
 }

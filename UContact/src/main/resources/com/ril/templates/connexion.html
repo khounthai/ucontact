@@ -1,8 +1,8 @@
 <div class="container" th:fragment="content">
 	<br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
-	<form:form action="connexionForm" modelAttribute="user">
-		Adresse email : <form:email path="login" /><br />
-		Mot de passe : <form:password path="password" /><br />
+	<form action="#" method="post" th:object="${user}" th:action="@{/connexion-form}">
+		Adresse email : <input type="email" th:field="*{login}" /><br />
+		Mot de passe : <input type="password" th:field="*{password}" /><br />
 		<input type="submit" value="Submit" />
-	</form:form>
+	</form>
 </div>
