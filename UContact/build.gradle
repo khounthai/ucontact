@@ -33,4 +33,9 @@ dependencies {
 	compile("org.springframework.boot:spring-boot-starter-data-jpa")
 	compile("com.h2database:h2")
 	testCompile("junit:junit")
+
+    // Use MySQL Connector-J
+	compile 'mysql:mysql-connector-java'
+	
+	compile("org.springframework.boot:spring-boot-starter-security")
 }
