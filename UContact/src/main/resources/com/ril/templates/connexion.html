@@ -1,0 +1,8 @@
+<div class="container" th:fragment="content">
+	<br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
+	<form:form action="connexionForm" modelAttribute="user">
+		Adresse email : <form:email path="login" /><br />
+		Mot de passe : <form:password path="password" /><br />
+		<input type="submit" value="Submit" />
+	</form:form>
+</div>

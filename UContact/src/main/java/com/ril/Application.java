@@ -41,7 +41,7 @@ public class Application {
 			if (user!=null)
 				log.info(user.toString());
 				else
-					log.info("user1 non trouvé");
+					log.info("user1 non trouvï¿½");
 					
 			log.info("");
 		};
