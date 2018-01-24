@@ -1,3 +1,46 @@
+<<<<<<< HEAD
+buildscript {
+	repositories {
+		mavenCentral()
+	}
+	dependencies {
+		classpath("org.springframework.boot:spring-boot-gradle-plugin:1.5.9.RELEASE")
+	}
+}
+
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'idea'
+apply plugin: 'org.springframework.boot'
+
+jar {
+	baseName = rootProject.name
+}
+repositories {
+	mavenCentral()
+}
+
+allprojects {
+	group = 'com.ril'
+	version = '0.1.0'
+}
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+dependencies {
+	compile("org.springframework.boot:spring-boot-starter-thymeleaf")
+	compile("org.springframework.boot:spring-boot-devtools")
+	compile("org.springframework.boot:spring-boot-starter-data-jpa")
+	compile("com.h2database:h2")
+	compile 'javax.mail:mail:1.4.7' //bibliotheque javamail
+	testCompile("junit:junit")
+
+    // Use MySQL Connector-J
+	compile 'mysql:mysql-connector-java'
+	
+	//compile("org.springframework.boot:spring-boot-starter-security")
+=======
 buildscript {
 	repositories {
 		mavenCentral()
@@ -36,4 +79,5 @@ dependencies {
 
     // Use MySQL Connector-J
 	compile 'mysql:mysql-connector-java'
+>>>>>>> branch 'master' of https://github.com/khounthai/ucontact.git
 }

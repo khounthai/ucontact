@@ -1,0 +1,23 @@
+<div class="container" th:fragment="content">
+
+		<br /><br />
+		
+		<h2>Formulaire de contact support</h2><br /><br /><br />
+
+		<form method="post" action="#" th:action="@{/SendMail}" th:object="${mail}">
+          
+          <Select th:field="*{categorie}" placeholder="Catégorie">
+          	<option th:each="cat : ${categories}"
+          			th:value="${cat.toString()}"
+          			th:text="${cat.toString()}" />
+          </Select><br /><br />
+          
+          <input type="text" th:field="*{subject}" placeholder="Sujet" /><br /><br />
+         
+          <textarea type="textarea" th:field="*{messageText}" placeholder="Veuillez préciser votre demande" ></textarea><br /><br />
+          
+          <input type="submit" value="Envoyer" />
+          
+        </form>
+        
+</div>
