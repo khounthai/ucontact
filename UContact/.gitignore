@@ -1,2 +1,5 @@
 /gradle.properties
-/application.properties
+
+/build
+/.gradle
+/bin
