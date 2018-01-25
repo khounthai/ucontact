@@ -1,12 +1,16 @@
 package com.ril.controller;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.Optional;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.swing.plaf.synth.SynthSeparatorUI;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -15,12 +19,17 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.SessionAttribute;
+import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.bind.support.SessionStatus;
+import org.springframework.web.servlet.ModelAndView;
 
 import com.ril.SendEmail;
 import com.ril.entity.Categories;
+import com.ril.entity.Contact;
 import com.ril.entity.Mail;
 import com.ril.entity.User;
+import com.ril.model.ContactDao;
 import com.ril.model.UserDao;
 
 @Controller
@@ -28,6 +37,11 @@ public class ContactController {
 	
 	@Autowired
 	UserDao repository;
+	
+	@Autowired
+	ContactDao contact_repository;
+
+	
 
     @RequestMapping("/")
     public String greeting(@RequestParam(value="name", required=false, defaultValue="World") String name, Model model) {
@@ -50,19 +64,30 @@ public class ContactController {
     }
     
     @RequestMapping("/connexion-form")
-    public String connexionForm(@ModelAttribute("user") User user, HttpSession session, SessionStatus session_status) {
+    public void connexionForm(@ModelAttribute("user") User user, HttpSession session, SessionStatus session_status, HttpServletResponse response) throws IOException {
     	
     	User u = repository.findByLoginAndPassword(user.getLogin(), user.getPassword());
     	
     	if (u == null) {
     		session_status.setComplete();
     		
-    		return "connexion";
+    		response.sendRedirect("/connexion");
     	} else {
-    		session.setAttribute("iduser", user.getIduser());
+    		session.setAttribute("id_user",u.getIduser());
     		
-    		return "contacts";
+    		response.sendRedirect("/contact");
     	}
+    }
+    
+    
+    @RequestMapping("/contact")
+    public String affichageContacts(HttpSession session ,Model model) {
+    	
+    			ArrayList<Contact> c = contact_repository.findByiduser((Long)session.getAttribute("id_user"));
+    			model.addAttribute("liste", c);
+    
+    		return "contacts";
+    	
     }
 
     @PostMapping("/contactez-nous-form")
