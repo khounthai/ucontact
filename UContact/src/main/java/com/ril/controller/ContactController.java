@@ -59,7 +59,7 @@ public class ContactController {
     		
     		return "connexion";
     	} else {
-    		session.setAttribute("is_user", user.getId_user());
+    		session.setAttribute("iduser", user.getIduser());
     		
     		return "contacts";
     	}

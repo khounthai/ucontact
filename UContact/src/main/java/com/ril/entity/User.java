@@ -12,7 +12,7 @@ public class User {
 	
 	@Id
     @GeneratedValue(strategy=GenerationType.AUTO)
-	private Long id_user;
+	private Long iduser;
 	private String login;
 	private String password;
 	private String role;
@@ -25,12 +25,12 @@ public class User {
 		this.role=role;
 	}
 
-	public Long getId_user() {
-		return id_user;
+	public Long getIduser() {
+		return iduser;
 	}
 
-	public void setId_user(Long id_user) {
-		this.id_user = id_user;
+	public void setIduser(Long id_user) {
+		this.iduser = iduser;
 	}
 
 	public String getLogin() {
@@ -59,6 +59,6 @@ public class User {
 
 	@Override
 	public String toString() {
-		return "User [id_user=" + id_user + ", login=" + login + ", password=" + password + ", role=" + role + "]";
+		return "User [iduser=" + iduser + ", login=" + login + ", password=" + password + ", role=" + role + "]";
 	}
 }

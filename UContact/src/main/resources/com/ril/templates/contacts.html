@@ -1,3 +1,24 @@
 <div class="container" th:fragment="content">
-	Votre liste de contacts :
+
+	<br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
+	Votre liste de contacts : <br /><br /><br />
+	
+	<table >
+		<tr>
+			<td>Id contact</td>
+			<td>Date creation</td>
+			<td>Favoris</td>
+			<td>Id user</td>
+		</tr>
+		<th:block th:each="c :${liste}">
+			<tr>
+				<td th:text="${c.idcontact}"></td>
+				<td th:text="${c.dt_creation}"></td>
+				<td th:text="${c.favoris}"></td>
+				<td th:text="${c.iduser}"></td>
+			</tr>
+		</th:block>
+	</table>
+	
+	
 </div>
