@@ -8,8 +8,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.support.SessionStatus;
 
@@ -61,32 +63,30 @@ public class ContactController {
     	}
     }
 
-    @PostMapping("/SendMail")
-    public String SendMail(@ModelAttribute("mail") Mail mail) {
+    @PostMapping("/contactez-nous-form")
+    public String contactezNousForm(@ModelAttribute("mail") Mail mail) {
     	
     	SendEmail envoimail = new SendEmail(mail);
     	mail.setHost("smtp.gmail.com");
     	mail.setUser("quentinpetit52@gmail.com");
     	mail.setPass("qlmp1602");
-    	mail.setTo("khounthai.houang@viacesi.fr");
+    	mail.setTo("quentin.petit@yahoo.fr");
     	mail.setFrom("Support");
     	mail.setSubject(mail.getCategorie()+" - "+mail.getSubject());
     	
     	boolean bok = envoimail.send();
-    	if(bok) {
-    		
-    		return "messageenvoye";
-    	}
-    	else return "SendMail";
+    	if(bok) return "messageenvoye";
+    	return "contactez-nous/erreur";
    
     	
    }
     
-    @RequestMapping("/contacteznousform")
-    public String contacteznousform(Model model) {
+    @RequestMapping("/contactez-nous")
+    public String contactezNous(Model model) {
     	
     	model.addAttribute("mail", new Mail());
     	model.addAttribute("categories", EnumSet.allOf(Categories.class));
-        return "contacteznousform";
+        return "contactez-nous";
+        
     }
 }
