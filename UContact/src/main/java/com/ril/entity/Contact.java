@@ -14,23 +14,22 @@ public class Contact {
 	
 	@Id
     @GeneratedValue(strategy=GenerationType.AUTO)
-	private Long idcontact;
-	private Date dt_creation;
+	private long idcontact;
+	private Date dtcreation;
 	private Boolean favoris;
 	private Long iduser;
 	
 	public Contact() {}
 
-	public Contact(Long idcontact, Date dt_creation, Boolean favoris, Long iduser) {
+	public Contact(long idcontact, Date dtcreation, Boolean favoris, Long iduser) {
 		this.idcontact = idcontact;
-		this.dt_creation = dt_creation;
+		this.dtcreation = dtcreation;
 		this.favoris = favoris;
 		this.iduser = iduser;
 	}
 
-	
 
-	public Long getIdcontact() {
+	public long getIdcontact() {
 		return idcontact;
 	}
 
@@ -46,12 +45,12 @@ public class Contact {
 		this.iduser = iduser;
 	}
 
-	public Date getDt_creation() {
-		return dt_creation;
+	public Date getdtcreation() {
+		return dtcreation;
 	}
 
-	public void setDt_creation(Date dt_creation) {
-		this.dt_creation = dt_creation;
+	public void setdtcreation(Date dtcreation) {
+		this.dtcreation = dtcreation;
 	}
 
 	public Boolean getFavoris() {
@@ -64,13 +63,8 @@ public class Contact {
 
 	@Override
 	public String toString() {
-		return "Contact [idcontact=" + idcontact + ", dt_creation=" + dt_creation + ", favoris=" + favoris + ", iduser="
+		return "Contact [idcontact=" + idcontact + ", dtcreation=" + dtcreation + ", favoris=" + favoris + ", iduser="
 				+ iduser + "]";
 	}
-
-	
-
-	
-	
 
 }

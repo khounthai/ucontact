@@ -34,91 +34,99 @@ import com.ril.model.UserDao;
 
 @Controller
 public class ContactController {
-	
+
 	@Autowired
 	UserDao repository;
-	
+
 	@Autowired
 	ContactDao contact_repository;
 
-	
+	@RequestMapping("/")
+	public String greeting(@RequestParam(value = "name", required = false, defaultValue = "World") String name,
+			Model model) {
+		model.addAttribute("name", name);
+		return "index";
+	}
 
-    @RequestMapping("/")
-    public String greeting(@RequestParam(value="name", required=false, defaultValue="World") String name, Model model) {
-        model.addAttribute("name", name);
-        return "index";
-    }
-    
-    @RequestMapping("/test")
-    public String test() {
-        return "test";
-    }
-    
-    @RequestMapping("/connexion")
-    public String connexion(Model theModel) { 	
-    	
-    	User user = new User();
-    	theModel.addAttribute("user", user);
-    	
-    	return "connexion";
-    }
-    
-    @RequestMapping("/connexion-form")
-    public void connexionForm(@ModelAttribute("user") User user, HttpSession session, SessionStatus session_status, HttpServletResponse response) throws IOException {
-    	
-    	User u = repository.findByLoginAndPassword(user.getLogin(), user.getPassword());
-    	
-    	if (u == null) {
-    		session_status.setComplete();
-    		
-    		response.sendRedirect("/connexion");
-    	} else {
-    		session.setAttribute("id_user",u.getIduser());
-    		
-    		response.sendRedirect("/contact");
-    	}
-    }
-    
-    
-    @RequestMapping("/contact")
-    public String affichageContacts(HttpSession session ,Model model) {
-    	
-    			ArrayList<Contact> c = contact_repository.findByiduser((Long)session.getAttribute("id_user"));
-    			model.addAttribute("liste", c);
-    
-    		return "contacts";
-    	
-    }
+	@RequestMapping("/test")
+	public String test() {
+		return "test";
+	}
 
-    @PostMapping("/contactez-nous-form")
-    public String contactezNousForm(@ModelAttribute("mail") Mail mail) {
-    	
-    	SendEmail envoimail = new SendEmail(mail);
-    	mail.setHost("smtp.gmail.com");
-    	mail.setUser("quentinpetit52@gmail.com");
-    	mail.setPass("qlmp1602");
-    	mail.setTo("quentin.petit@yahoo.fr");
-    	mail.setFrom("Support");
-    	mail.setSubject(mail.getCategorie()+" - "+mail.getSubject());
-    	
-    	boolean bok = envoimail.send();
-    	if(bok) return "contactez-nous/succes";
-    	return "contactez-nous/erreur";
-   
-    	
-   }
-    
-    @RequestMapping(value={"/contactez-nous","/contactez-nous/{retour}"}, method=RequestMethod.GET)
-    public String contactezNous(Model model, @PathVariable("retour") Optional<String> retour, @ModelAttribute("mail") Mail mail) {
-    	
-    	model.addAttribute("mail", new Mail());
-    	model.addAttribute("categories", EnumSet.allOf(Categories.class));
-    	if (retour.isPresent()) {
-    		model.addAttribute("retour", retour.get());
-    	} else {
-    		model.addAttribute("retour", null);
-    	}
+	@RequestMapping("/connexion")
+	public String connexion(Model theModel) {
 
-        return "contactez-nous";
-    }
+		User user = new User();
+		theModel.addAttribute("user", user);
+
+		return "connexion";
+	}
+
+	@RequestMapping("/connexion-form")
+	public void connexionForm(@ModelAttribute("user") User user, HttpSession session, SessionStatus session_status,
+			HttpServletResponse response) throws IOException {
+
+		User u = repository.findByLoginAndPassword(user.getLogin(), user.getPassword());
+
+		if (u == null) {
+			session_status.setComplete();
+
+			response.sendRedirect("/connexion");
+		} else {
+			session.setAttribute("id_user", u.getIduser());
+			System.out.println("liste template: " + u.getTemplates().size());
+
+			response.sendRedirect("/contact");
+		}
+	}
+
+	@RequestMapping("/contact")
+	public String affichageContacts(HttpSession session, Model model) {
+
+		ArrayList<Contact> c = contact_repository.findByiduser((Long) session.getAttribute("id_user"));
+		model.addAttribute("liste", c);
+		
+		long iduser=(Long) session.getAttribute("id_user");
+		User u = repository.findByIduser(iduser);
+
+		if (u != null) {
+			model.addAttribute("templates",u.getTemplates());
+		}
+
+		return "contacts";
+
+	}
+
+	@PostMapping("/contactez-nous-form")
+	public String contactezNousForm(@ModelAttribute("mail") Mail mail) {
+
+		SendEmail envoimail = new SendEmail(mail);
+		mail.setHost("smtp.gmail.com");
+		mail.setUser("quentinpetit52@gmail.com");
+		mail.setPass("qlmp1602");
+		mail.setTo("quentin.petit@yahoo.fr");
+		mail.setFrom("Support");
+		mail.setSubject(mail.getCategorie() + " - " + mail.getSubject());
+
+		boolean bok = envoimail.send();
+		if (bok)
+			return "contactez-nous/succes";
+		return "contactez-nous/erreur";
+
+	}
+
+	@RequestMapping(value = { "/contactez-nous", "/contactez-nous/{retour}" }, method = RequestMethod.GET)
+	public String contactezNous(Model model, @PathVariable("retour") Optional<String> retour,
+			@ModelAttribute("mail") Mail mail) {
+
+		model.addAttribute("mail", new Mail());
+		model.addAttribute("categories", EnumSet.allOf(Categories.class));
+		if (retour.isPresent()) {
+			model.addAttribute("retour", retour.get());
+		} else {
+			model.addAttribute("retour", null);
+		}
+
+		return "contactez-nous";
+	}
 }

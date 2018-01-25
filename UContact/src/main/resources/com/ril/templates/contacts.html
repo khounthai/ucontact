@@ -3,6 +3,15 @@
 	<br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
 	Votre liste de contacts : <br /><br /><br />
 	
+	<br/>
+	<p>Modèle de fiche</p>
+	
+	<select >
+        <option th:each="t : ${templates}"
+                th:value="${t.idtemplate}"
+                th:text="${t.libelle}"/>
+    </select>
+    
 	<table >
 		<tr>
 			<td>Id contact</td>
@@ -13,7 +22,7 @@
 		<th:block th:each="c :${liste}">
 			<tr>
 				<td th:text="${c.idcontact}"></td>
-				<td th:text="${c.dt_creation}"></td>
+				
 				<td th:text="${c.favoris}"></td>
 				<td th:text="${c.iduser}"></td>
 			</tr>
