@@ -1,8 +1,10 @@
 package com.ril.controller;
 
 import java.util.EnumSet;
+import java.util.Optional;
 
 import javax.servlet.http.HttpSession;
+import javax.swing.plaf.synth.SynthSeparatorUI;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -75,18 +77,23 @@ public class ContactController {
     	mail.setSubject(mail.getCategorie()+" - "+mail.getSubject());
     	
     	boolean bok = envoimail.send();
-    	if(bok) return "messageenvoye";
+    	if(bok) return "contactez-nous/succes";
     	return "contactez-nous/erreur";
    
     	
    }
     
-    @RequestMapping("/contactez-nous")
-    public String contactezNous(Model model) {
+    @RequestMapping(value={"/contactez-nous","/contactez-nous/{retour}"}, method=RequestMethod.GET)
+    public String contactezNous(Model model, @PathVariable("retour") Optional<String> retour, @ModelAttribute("mail") Mail mail) {
     	
     	model.addAttribute("mail", new Mail());
     	model.addAttribute("categories", EnumSet.allOf(Categories.class));
+    	if (retour.isPresent()) {
+    		model.addAttribute("retour", retour.get());
+    	} else {
+    		model.addAttribute("retour", null);
+    	}
+
         return "contactez-nous";
-        
     }
 }

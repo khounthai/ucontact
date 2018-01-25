@@ -23,7 +23,7 @@
 </head>
 <body>
 	<!-- Fixed navbar -->
-    <nav class="navbar navbar-default navbar-fixed-top">
+    <nav class="navbar navbar-default">
     	<div class="container navbar-container">
 			<div class="navbar-header">
             	<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
@@ -40,8 +40,8 @@
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             	<ul class="nav navbar-nav navbar-right">
                 	<!-- <li class="active"><a class="nav-button" href="#contact">Contact</a></li>-->
-                   	<li class="active"><a th:href="@{/connexion}" title="S'enregistrer">S'enregistrer</a></li>
-                  	<li class="active"><a th:href="@{/inscription}" title="Se connecter">Se connecter</a></li>
+                   	<li class="active"><a th:href="@{/connexion}" title="Se connecter">Se connecter</a></li>
+                  	<li class="active"><a th:href="@{/inscription}" title="S'enregistrer">S'enregistrer</a></li>
               	</ul>
 			</div>
 		</div>    
@@ -51,9 +51,9 @@
     	Content
 	</div>
 	
-	<script th:src="@{js/jquery.min.js}"></script>
-	<script th:src="@{js/bootstrap.js}"></script>
-	<script th:src="@{js/less.min.js}"></script>
+	<script th:src="@{/js/jquery.min.js}"></script>
+	<script th:src="@{/js/bootstrap.js}"></script>
+	<script th:src="@{/js/less.min.js}"></script>
 	
 	
 </body>
