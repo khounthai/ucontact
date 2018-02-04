@@ -1,33 +1,41 @@
 <div class="container" th:fragment="content">
 
-	<br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
-	Votre liste de contacts : <br /><br /><br />
-	
-	<br/>
+	<br /> <br /> <br /> <br /> <br />
+
+	<h2>Liste des contacts :</h2>
+
+	<br /> <br />
+
 	<p>Modèle de fiche</p>
+
+
+	<form action="#" method="post" th:action="@{/fiche-contact-form}" th:object="${templates}">
 	
-	<select >
-        <option th:each="t : ${templates}"
-                th:value="${t.idtemplate}"
-                th:text="${t.libelle}"/>
-    </select>
-    
-	<table >
-		<tr>
-			<td>Id contact</td>
-			<td>Date creation</td>
-			<td>Favoris</td>
-			<td>Id user</td>
-		</tr>
-		<th:block th:each="c :${liste}">
+		<ul>
+			<li th:each="t: ${templates}">
+			<input type="radio" checked="${t.isCheck}"/>
+			<label th:text="${t.libelle}" th:field="*{t.idtemplate}"></label></li>
+		</ul>
+
+		<table>
 			<tr>
-				<td th:text="${c.idcontact}"></td>
-				
-				<td th:text="${c.favoris}"></td>
-				<td th:text="${c.iduser}"></td>
+				<td>Id contact</td>
+				<td>Date creation</td>
+				<td>Favoris</td>
+				<td>Id user</td>
 			</tr>
-		</th:block>
-	</table>
-	
-	
+			<th:block th:each="c :${liste}">
+				<tr>
+					<td th:text="${c.idcontact}"></td>
+
+					<td th:text="${c.favoris}"></td>
+					<td th:text="${c.iduser}"></td>
+				</tr>
+			</th:block>
+		</table>
+
+		<br/><br/>
+		
+		<input type="submit" value="Nouveau contact"/>
+	</form>
 </div>

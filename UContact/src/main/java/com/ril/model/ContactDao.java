@@ -7,6 +7,6 @@ import com.ril.entity.Contact;
 
 public interface ContactDao extends CrudRepository<Contact, Long> {
 	
-	public ArrayList<Contact> findByiduser (Long iduser);
+	public ArrayList<Contact> findByiduser (long iduser);
 
 }

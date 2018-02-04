@@ -1,19 +1,15 @@
 package com.ril.entity;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
+import java.time.LocalDate;
+import java.util.Date;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
 import javax.persistence.Table;
-import javax.persistence.JoinColumn;
+
+import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
 @Table(name = "user")
@@ -24,24 +20,32 @@ public class User {
 	private long iduser;
 	private String login;
 	private String password;
+	@DateTimeFormat(pattern = "dd/MM/yyyy")	
+	private Date dtcreation;
 	private String role;
 
 	public User() {
 	}
 
-	public User(String login, String password, String role) {
+
+	public User(long iduser, String login, String password, Date dtcreation, String role) {
+		super();
+		this.iduser = iduser;
 		this.login = login;
 		this.password = password;
+		this.dtcreation = dtcreation;
 		this.role = role;
 	}
 
-	public Long getIduser() {
+
+	public long getIduser() {
 		return iduser;
 	}
 
-	public void setIduser(Long id_user) {
+	public void setIduser(long iduser) {
 		this.iduser = iduser;
 	}
+
 
 	public String getLogin() {
 		return login;
@@ -66,22 +70,20 @@ public class User {
 	public void setRole(String role) {
 		this.role = role;
 	}
-
-	@ManyToMany(cascade = { CascadeType.ALL })
-	@JoinTable(name = "lienusertemplate", joinColumns = { @JoinColumn(name = "iduser") }, inverseJoinColumns = {
-			@JoinColumn(name = "idtemplate") })
-	private Set<Template> templates = new HashSet<Template>();
-
-	public Set<Template> getTemplates() {
-		return templates;
+	
+	 public Date getDtcreation() {
+		return dtcreation;
 	}
 
-	public void setTemplates(Set<Template> templates) {
-		this.templates = templates;
+	public void setDtcreation(Date dtcreation) {
+		this.dtcreation = dtcreation;
 	}
+
 
 	@Override
 	public String toString() {
-		return "User [iduser=" + iduser + ", login=" + login + ", password=" + password + ", role=" + role + "]";
+		return "User [iduser=" + iduser + ", login=" + login + ", password=" + password + ", role=" + role
+				+ ", dtcreation=" + dtcreation  + "]";
 	}
+
 }

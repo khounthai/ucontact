@@ -1,0 +1,26 @@
+<div class="container" th:fragment="content">
+
+	<br /> <br /> <br /> <br /> <br />
+
+	<h2>Fiche d'un contact</h2>
+
+	<br /> <br />
+
+	<form action="#" method="post" th:action="@{/fiche-contact-form}">	
+		<table>
+		
+			<th:block th:each="c :${champs}">
+				<tr>
+					<td th:text="${c.libelle}"></td>
+					<td th:field="*{donnee}"><input type="text" th:field="*{donnee.valeur}"/></td>															
+				</tr>
+			</th:block>
+		</table>
+	
+	<br/><br/>
+	
+		<input type="submit" value="Enregistrer"/>
+	</form>
+
+
+</div>

@@ -4,9 +4,7 @@ import org.springframework.stereotype.Component;
 
 public class Mail {
 	
-	public Mail() {
-		
-	}
+	public Mail() {}
 	
 	private String host;
 	private String user;
@@ -16,9 +14,7 @@ public class Mail {
 	private String subject;
 	private String messageText;
 	private String categorie;
-	
-	
-
+		
 	public String getCategorie() {
 		return categorie;
 	}

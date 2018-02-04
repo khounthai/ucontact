@@ -8,6 +8,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 @Entity
 @Table(name="contact")
 public class Contact {
@@ -15,33 +17,33 @@ public class Contact {
 	@Id
     @GeneratedValue(strategy=GenerationType.AUTO)
 	private long idcontact;
+	@DateTimeFormat(pattern = "dd/MM/yyyy")	
 	private Date dtcreation;
 	private Boolean favoris;
-	private Long iduser;
+	private long iduser;
 	
 	public Contact() {}
 
-	public Contact(long idcontact, Date dtcreation, Boolean favoris, Long iduser) {
+	public Contact(long idcontact, Date dtcreation, Boolean favoris, long iduser) {
 		this.idcontact = idcontact;
 		this.dtcreation = dtcreation;
 		this.favoris = favoris;
 		this.iduser = iduser;
 	}
 
-
 	public long getIdcontact() {
 		return idcontact;
 	}
 
-	public void setIdcontact(Long idcontact) {
+	public void setIdcontact(long idcontact) {
 		this.idcontact = idcontact;
 	}
 
-	public Long getIduser() {
+	public long getIduser() {
 		return iduser;
 	}
 
-	public void setIduser(Long iduser) {
+	public void setIduser(long iduser) {
 		this.iduser = iduser;
 	}
 
