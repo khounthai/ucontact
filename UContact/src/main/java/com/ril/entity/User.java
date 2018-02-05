@@ -1,10 +1,12 @@
 package com.ril.entity;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 @Entity
 @Table(name="user")
@@ -12,10 +14,14 @@ public class User {
 	
 	@Id
     @GeneratedValue(strategy=GenerationType.AUTO)
-	private Long iduser;
+	private Long id_user;
 	private String login;
 	private String password;
+	
+	@Column(columnDefinition="BINARY(32) NOT NULL", nullable=true)
+	private byte[] encrypted_key;
 	private String role;
+	@Transient private boolean remember;
 	
 	public User() {}
 	
@@ -25,13 +31,6 @@ public class User {
 		this.role=role;
 	}
 
-	public Long getIduser() {
-		return iduser;
-	}
-
-	public void setIduser(Long id_user) {
-		this.iduser = iduser;
-	}
 
 	public String getLogin() {
 		return login;
@@ -56,9 +55,30 @@ public class User {
 	public void setRole(String role) {
 		this.role = role;
 	}
+	
+	public boolean getRemember() {
+		return remember;
+	}
+	
+	public void setRemember(boolean remember) {
+		this.remember = remember;
+	}
+
+	
+	public byte[] getEncrypted_key() {
+		return encrypted_key;
+	}
+
+	public void setEncrypted_key(byte[] encrypted_key) {
+		this.encrypted_key = encrypted_key;
+	}
+
+	public Long getId_user() {
+		return id_user;
+	}
 
 	@Override
 	public String toString() {
-		return "User [iduser=" + iduser + ", login=" + login + ", password=" + password + ", role=" + role + "]";
+		return "User [iduser=" + id_user + ", login=" + login + ", password=" + password + ", role=" + role + "]";
 	}
 }

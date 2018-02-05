@@ -3,6 +3,7 @@
 	<form action="#" method="post" th:object="${user}" th:action="@{/connexion-form}">
 		Adresse email : <input type="email" th:field="*{login}" /><br />
 		Mot de passe : <input type="password" th:field="*{password}" /><br />
+		Se souvenir de moi : <input type="checkbox" th:field="*{remember}" />
 		<input type="submit" value="Submit" />
 	</form>
 </div>

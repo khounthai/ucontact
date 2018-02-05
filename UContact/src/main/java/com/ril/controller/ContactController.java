@@ -1,10 +1,15 @@
 package com.ril.controller;
 
 import java.io.IOException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.EnumSet;
 import java.util.Optional;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.swing.plaf.synth.SynthSeparatorUI;
@@ -36,7 +41,7 @@ import com.ril.model.UserDao;
 public class ContactController {
 	
 	@Autowired
-	UserDao repository;
+	UserDao user_repository;
 	
 	@Autowired
 	ContactDao contact_repository;
@@ -66,28 +71,45 @@ public class ContactController {
     @RequestMapping("/connexion-form")
     public void connexionForm(@ModelAttribute("user") User user, HttpSession session, SessionStatus session_status, HttpServletResponse response) throws IOException {
     	
-    	User u = repository.findByLoginAndPassword(user.getLogin(), user.getPassword());
+    	User u = user_repository.findByLoginAndPassword(user.getLogin(), user.getPassword());
     	
     	if (u == null) {
     		session_status.setComplete();
     		
     		response.sendRedirect("/connexion");
     	} else {
-    		session.setAttribute("id_user",u.getIduser());
+    		session.setAttribute("id_user", u.getId_user());
     		
-    		response.sendRedirect("/contact");
+    		if(user.getRemember()) {
+    			response.addCookie(new Cookie("id_user", ""+u.getId_user()));
+    			
+    			byte[] key = new byte[32];
+    			try {
+					SecureRandom.getInstanceStrong().nextBytes(key);
+					response.addCookie(new Cookie("key", Base64.getEncoder().encodeToString(key)));
+	    			
+	    			MessageDigest digest = MessageDigest.getInstance("SHA-256");
+	    			byte[] encodedHash = digest.digest(key);
+	    			u.setEncrypted_key(encodedHash);
+	    			
+	    			user_repository.save(u);    			
+	    			
+				} catch (NoSuchAlgorithmException e) {
+					e.printStackTrace();
+				}    			    			
+    		}
+    		
+    		response.sendRedirect("/contacts");
     	}
     }
     
-    
-    @RequestMapping("/contact")
-    public String affichageContacts(HttpSession session ,Model model) {
+    @RequestMapping("/contacts")
+    public String affichageContacts(HttpSession session, Model model) {
     	
-    			ArrayList<Contact> c = contact_repository.findByiduser((Long)session.getAttribute("id_user"));
-    			model.addAttribute("liste", c);
+    	ArrayList<Contact> c = contact_repository.findByiduser((Long)session.getAttribute("id_user"));
+    	model.addAttribute("liste", c);
     
-    		return "contacts";
-    	
+    	return "contacts";
     }
 
     @PostMapping("/contactez-nous-form")
@@ -104,8 +126,6 @@ public class ContactController {
     	boolean bok = envoimail.send();
     	if(bok) return "contactez-nous/succes";
     	return "contactez-nous/erreur";
-   
-    	
    }
     
     @RequestMapping(value={"/contactez-nous","/contactez-nous/{retour}"}, method=RequestMethod.GET)
