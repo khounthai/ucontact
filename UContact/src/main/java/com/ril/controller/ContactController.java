@@ -141,4 +141,39 @@ public class ContactController {
 
         return "contactez-nous";
     }
+    
+    @RequestMapping("/inscription")
+    public String inscription(Model model, User user) {
+    	
+    	return "inscription";
+    	
+    		
+    }
+    
+    @PostMapping("/inscription-form")
+    public void inscriptionForm(@ModelAttribute("user") User user, Model model ,HttpSession session, HttpServletResponse response) throws IOException {
+    	
+    	String password1 = user.getPassword();
+    	String password2 = user.getConfirm_password();
+    			
+    	if (password1.equals(password2)) {
+    	
+    		User u = user_repository.save(user);
+        	
+        	if (u == null) {
+        		
+        		response.sendRedirect("/");
+        	} else {
+        		   		
+        		response.sendRedirect("/test");
+        	}
+    		
+    	} else {    		
+    		
+    		response.sendRedirect("/inscription");
+    	}
+    	
+    }
+    
+    
 }

@@ -18,10 +18,13 @@ public class User {
 	private String login;
 	private String password;
 	
-	@Column(columnDefinition="BINARY(32) NOT NULL", nullable=true)
+	@Column(columnDefinition="BINARY(32)", nullable=true)
 	private byte[] encrypted_key;
 	private String role;
-	@Transient private boolean remember;
+	@Transient 
+	private boolean remember;
+	@Transient
+	private String confirm_password;
 	
 	public User() {}
 	
@@ -31,6 +34,9 @@ public class User {
 		this.role=role;
 	}
 
+	public Long getId_user() {
+		return id_user;
+	}
 
 	public String getLogin() {
 		return login;
@@ -72,9 +78,13 @@ public class User {
 	public void setEncrypted_key(byte[] encrypted_key) {
 		this.encrypted_key = encrypted_key;
 	}
+	
+	public String getConfirm_password() {
+		return confirm_password;
+	}
 
-	public Long getId_user() {
-		return id_user;
+	public void setConfirm_password(String confirm_password) {
+		this.confirm_password = confirm_password;
 	}
 
 	@Override
