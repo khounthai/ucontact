@@ -29,19 +29,21 @@ public class User {
 	@Column(nullable=false)
 	private Boolean validaccount = false; 
 	
-	@Column(columnDefinition="BINARY(32)", nullable=true)
-	private byte[] encryptedkey;
-	private String role;
-	@Transient 
-	private boolean remember;
-	
 	@Transient
 	private String password;
 	
+
 	@Transient
 	private String confirmpassword;
 	
 	private static final byte[] salt = Base64.getDecoder().decode("wA1AIEqxQeWY+FgwfUTtBqHmVdrC69Op"); 
+
+	@Column(columnDefinition="BINARY(32)", nullable=true)
+	private byte[] encryptedkey;
+	private String role;
+	@Transient
+	private boolean remember;
+
 	
 	public User() {}
 	
@@ -114,6 +116,7 @@ public class User {
 
 	public void setEncryptedkey(byte[] encryptedkey) {
 		this.encryptedkey = encryptedkey;
+
 	}
 	
 	public String getConfirmpassword() {
@@ -138,10 +141,13 @@ public class User {
 
 	public void setValidaccount(Boolean validaccount) {
 		this.validaccount = validaccount;
+
 	}
 
 	@Override
 	public String toString() {
-		return "User [iduser=" + iduser + ", login=" + login + ", role=" + role + "]";
+		
+		return "User [iduser=" + iduser + ", login=" + login + ", password=" + password + ", role=" + role + "]";
+
 	}
 }
