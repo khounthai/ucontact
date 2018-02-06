@@ -184,7 +184,7 @@ public class ContactController {
         		}
         		
         		user.setValidationkey(validationkey);
-	    	
+        		
 	    		// Ajout en base de l'utilisateur
 	    		User u = user_repository.save(user);       	
 	        	

@@ -19,7 +19,7 @@ public class User {
 	private String password;
 	private String validationkey; //clé de validation de compte
 	@Column(nullable=false)
-	private Boolean validaccount; 
+	private Boolean validaccount = false; 
 	
 	@Column(columnDefinition="BINARY(32)", nullable=true)
 	private byte[] encryptedkey;
