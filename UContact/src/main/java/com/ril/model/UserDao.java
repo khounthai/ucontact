@@ -6,7 +6,7 @@ import com.ril.entity.User;
 
 public interface UserDao extends CrudRepository<User,Long> {
 	
-	public User findByLoginAndPassword(String login,String password);
+	public User findByLoginAndHashedPassword(String login,byte[] hashedPassword);
 	public User findByLogin(String login);
 	public User findByIduserAndValidationkey(Long iduser, String validationkey);
 	

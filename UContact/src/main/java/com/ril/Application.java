@@ -32,18 +32,5 @@ public class Application {
     
     private static final Logger log = LoggerFactory.getLogger(Application.class);
     
-	@Bean
-	public CommandLineRunner demo(UserDao repository) {
-		return (args) -> {
-			log.info("user found with findByLoginAndPassword('user1'):");
-			log.info("--------------------------------------------");
-			User user=repository.findByLoginAndPassword("user1", "aa1122");
-			if (user!=null)
-				log.info(user.toString());
-				else
-					log.info("user1 non trouvé");
-					
-			log.info("");
-		};
-	}
+
 }

@@ -10,6 +10,8 @@ import java.util.EnumSet;
 import java.util.Optional;
 import java.util.Random;
 
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.PBEKeySpec;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -48,6 +50,7 @@ public class ContactController {
 	ContactDao contact_repository;
 
 	
+	
 
     @RequestMapping("/")
     public String greeting(@RequestParam(value="name", required=false, defaultValue="World") String name, Model model) {
@@ -82,7 +85,7 @@ public class ContactController {
     @RequestMapping("/connexion-form")
     public void connexionForm(@ModelAttribute("user") User user, HttpSession session, SessionStatus session_status, HttpServletResponse response) throws IOException {
     	
-    	User u = user_repository.findByLoginAndPassword(user.getLogin(), user.getPassword());
+    	User u = user_repository.findByLoginAndHashedPassword(user.getLogin(), user.getHashedPassword());
     	
     	if (u == null) {
     		session_status.setComplete();
@@ -164,6 +167,8 @@ public class ContactController {
     	
     	String password1 = user.getPassword();
     	String password2 = user.getConfirmpassword();
+    	
+    	
     	String useracomparer = user.getLogin();
     	
     	User userref = user_repository.findByLogin(user.getLogin());
@@ -174,6 +179,9 @@ public class ContactController {
     	} else {
     			
 	    	if (password1.equals(password2)) {
+	    		
+	    		//Chiffrement du mot de passe
+	    		
 	    		
 	    		Random rand = new Random();
         		String validationkey="";
@@ -236,4 +244,9 @@ public class ContactController {
     		return "/connexion";
     	}   
     }
+
+    
+    
+    
+    
 }
