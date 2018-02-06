@@ -60,12 +60,20 @@ public class ContactController {
     }
     
     @RequestMapping("/connexion")
-    public String connexion(Model theModel) { 	
+    public String connexion(Model Model) { 	
     	
-    	User user = new User();
-    	theModel.addAttribute("user", user);
+    	User u = new User();
+    	Model.addAttribute("user", u);
     	
     	return "connexion";
+    }
+    
+    @RequestMapping("/attente-validation")
+    public String attentevalidation(Model model, User user) {
+    	
+    	return "attente-validation";
+    	
+    		
     }
     
     @RequestMapping("/connexion-form")
@@ -78,10 +86,10 @@ public class ContactController {
     		
     		response.sendRedirect("/connexion");
     	} else {
-    		session.setAttribute("id_user", u.getId_user());
+    		session.setAttribute("iduser", u.getIduser());
     		
     		if(user.getRemember()) {
-    			response.addCookie(new Cookie("id_user", ""+u.getId_user()));
+    			response.addCookie(new Cookie("iduser", ""+u.getIduser()));
     			
     			byte[] key = new byte[32];
     			try {
@@ -90,7 +98,7 @@ public class ContactController {
 	    			
 	    			MessageDigest digest = MessageDigest.getInstance("SHA-256");
 	    			byte[] encodedHash = digest.digest(key);
-	    			u.setEncrypted_key(encodedHash);
+	    			u.setEncryptedkey(encodedHash);
 	    			
 	    			user_repository.save(u);    			
 	    			
@@ -106,7 +114,7 @@ public class ContactController {
     @RequestMapping("/contacts")
     public String affichageContacts(HttpSession session, Model model) {
     	
-    	ArrayList<Contact> c = contact_repository.findByiduser((Long)session.getAttribute("id_user"));
+    	ArrayList<Contact> c = contact_repository.findByiduser((Long)session.getAttribute("iduser"));
     	model.addAttribute("liste", c);
     
     	return "contacts";
@@ -151,26 +159,51 @@ public class ContactController {
     }
     
     @PostMapping("/inscription-form")
-    public void inscriptionForm(@ModelAttribute("user") User user, Model model ,HttpSession session, HttpServletResponse response) throws IOException {
+    public void inscriptionForm(@ModelAttribute("user") User user, Model model ,HttpSession session, HttpServletResponse response, Mail mail) throws IOException {
     	
     	String password1 = user.getPassword();
-    	String password2 = user.getConfirm_password();
-    			
-    	if (password1.equals(password2)) {
+    	String password2 = user.getConfirmpassword();
+    	String useracomparer = user.getLogin();
     	
-    		User u = user_repository.save(user);
-        	
-        	if (u == null) {
-        		
-        		response.sendRedirect("/");
-        	} else {
-        		   		
-        		response.sendRedirect("/test");
-        	}
+    	User userref = user_repository.findByLogin(user.getLogin());
+    	
+    	if(useracomparer!=null && userref!= null && useracomparer.equals(userref.getLogin())) {
+    	
+    		//Cas ou l'on souhaite s'inscrire avec une adresse mail déjà présente en base
     		
-    	} else {    		
     		
-    		response.sendRedirect("/inscription");
+    	} else {
+    			
+	    	if (password1.equals(password2)) {
+	    	
+	    		// Ajout en base de l'utilisateur
+	    		User u = user_repository.save(user);       	
+	        	
+	        	if (u == null) {
+	        		
+	        		response.sendRedirect("/");
+	        	} else {
+	        		
+	        		//Envoi de mail de validation de compte 
+		    		SendEmail envoimailvalidation = new SendEmail(mail);
+		        	mail.setHost("smtp.gmail.com");
+		        	mail.setUser("quentinpetit52@gmail.com");
+		        	mail.setPass("qlmp1602");
+		        	mail.setTo(user.getLogin());
+		        	mail.setFrom("Support");
+		        	mail.setSubject("Activation de votre compte U-Contact");
+		        	mail.setMessageText("Bonjour, \n\nVotre compte n'est pas encore activé. Afin d'activer votre compte, veuillez cliquer ici \n");
+		        	
+		        	envoimailvalidation.send();
+	        		response.sendRedirect("/attente-validation");
+	        	}
+	    		
+	    	} else {    		
+	    		
+	    		// Cas ou les mots de passe sont différents
+	    		response.sendRedirect("/inscription");
+	    	}
+	    	
     	}
     	
     }
