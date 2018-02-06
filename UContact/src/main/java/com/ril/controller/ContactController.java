@@ -209,7 +209,7 @@ public class ContactController {
 				System.out.println("Contact c=null");
 			
 			long idcontact = contactDao.Save(c);
-
+			System.out.println("id contact créé: " +idcontact);
 			if (idcontact>0)
 			{			// Enregistrer les données du contact
 				template.getChamps().forEach(x -> {

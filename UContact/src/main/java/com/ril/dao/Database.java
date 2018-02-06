@@ -1,11 +1,11 @@
 package com.ril.dao;
 
-import java.sql.Connection;
-
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
+
+import com.mysql.jdbc.Connection;
+
 
 @Repository
 public class Database {
@@ -20,7 +20,7 @@ public class Database {
 
 	private void ensureConnectionOpened() throws SQLException {
 		if (sqlConnection == null || sqlConnection.isClosed()) {
-			sqlConnection = DriverManager.getConnection("jdbc:mysql://localhost:3306/ucontact", "root", "");
+			sqlConnection = (Connection) DriverManager.getConnection("jdbc:mysql://localhost:3306/ucontact", "root", "");
 			sqlConnection.setAutoCommit(true);
 		}
 	}

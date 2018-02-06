@@ -30,14 +30,14 @@ public class DonneeDao {
 				
 			 	System.out.println(sql);
 			 				 	
-				PreparedStatement ps = conn.prepareStatement(sql);
+				PreparedStatement ps = conn.prepareStatement(sql,com.mysql.jdbc.Statement.RETURN_GENERATED_KEYS);
 
 				ps.setDate(1,Date.valueOf(d.getDtenregistrement()));
 				ps.setString(2,d.getValeur());
 				ps.setLong(3,d.getIdcontact());
 				ps.setLong(4, d.getIdchamp());
 
-				result = ps.executeUpdate(sql);
+				result = ps.executeUpdate();
 				ResultSet rspk = ps.getGeneratedKeys();
 				rspk.next();
 				result = rspk.getLong(1);

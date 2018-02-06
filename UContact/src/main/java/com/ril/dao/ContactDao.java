@@ -1,8 +1,6 @@
 package com.ril.dao;
 
-import java.sql.Connection;
 import java.sql.Date;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -12,6 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 
+import com.mysql.jdbc.Connection;
+import com.mysql.jdbc.PreparedStatement;
+import com.mysql.jdbc.Statement;
 import com.ril.entity.Contact;
 
 @Repository
@@ -25,10 +26,10 @@ public class ContactDao {
 		List<Contact> liste = new ArrayList<Contact>();
 
 		try {
-			Connection conn = database.getSqlConnection();
+			Connection conn = (Connection) database.getSqlConnection();
 
 			String sql= "select idcontact,dtcreation,favoris from contact where iduser=?";
-			PreparedStatement ps = conn.prepareStatement(sql);
+			PreparedStatement ps = (PreparedStatement) conn.prepareStatement(sql);			
 			ps.setLong(1, iduser);
 
 			System.out.println(sql);
@@ -54,20 +55,20 @@ public class ContactDao {
 		long result = 0;
 
 		try {
-			Connection conn = database.getSqlConnection();
+			Connection conn = (Connection) database.getSqlConnection();
 
 			String sql = "INSERT INTO CONTACT (idcontact,dtcreation,favoris,iduser) VALUES (?,?,?,?) "+
 						"ON DUPLICATE KEY UPDATE dtcreation=VALUES(dtcreation), favoris=VALUES(favoris), iduser=VALUES(iduser)";
 
 			System.out.println(sql);
-			PreparedStatement ps = conn.prepareStatement(sql);
+			PreparedStatement ps = (PreparedStatement) conn.prepareStatement(sql,Statement.RETURN_GENERATED_KEYS);
 
 			ps.setLong(1, c.getIdcontact());
 			ps.setDate(2, Date.valueOf(c.getdtcreation()));
 			ps.setBoolean(3, c.getFavoris());
 			ps.setLong(4, c.getIduser());
 			
-			result = ps.executeUpdate(sql);
+			result = ps.executeUpdate();
 			
 			ResultSet rspk = ps.getGeneratedKeys();
 			rspk.next();

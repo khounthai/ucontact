@@ -1,13 +1,16 @@
 package com.ril.dao;
 
-import java.sql.Connection;
+
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 
+import java.sql.Connection;
 import com.ril.entity.User;
 
 @Repository
@@ -81,18 +84,13 @@ public class UserDao {
 						 "ON DUPLICATE KEY UPDATE login=VALUES(login), password=VALUES(password), role=VALUES(role),encrypted_key=VALUES(encrypted_key)  "; 
 							
 			System.out.println(sql);
-			PreparedStatement ps = conn.prepareStatement(sql);
+			PreparedStatement ps = conn.prepareStatement(sql,Statement.RETURN_GENERATED_KEYS);
 			
 			ps.setString(1,u.getLogin());
 			ps.setString(2,u.getPassword());
 			ps.setString(3,u.getRole());
 			ps.setBytes(4,u.getEncrypted_key());
-			ps.setString(5,u.getLogin());
-			ps.setString(6,u.getPassword());
-			ps.setString(7,u.getRole());
-			ps.setBytes(8,u.getEncrypted_key());
-			
-			result= ps.executeUpdate(sql);
+			result= ps.executeUpdate();
 			
 			ResultSet rspk=ps.getGeneratedKeys();
 			rspk.next();
