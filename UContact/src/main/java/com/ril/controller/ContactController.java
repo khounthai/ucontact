@@ -1,6 +1,7 @@
 package com.ril.controller;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
@@ -10,6 +11,7 @@ import java.util.EnumSet;
 import java.util.Optional;
 
 import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.swing.plaf.synth.SynthSeparatorUI;
@@ -44,9 +46,66 @@ public class ContactController {
 	UserDao user_repository;
 	
 	@Autowired
-	ContactDao contact_repository;
-
+	ContactDao contact_repository;	
 	
+	public User getUserConnected(HttpSession session, SessionStatus session_status, HttpServletRequest request) {
+		
+		// Si une session existe
+		if(session.getAttribute("iduser") != null) {
+			
+			// On récupère l'utilisateur grâce à son id
+			User u = user_repository.findByIduser((Long)session.getAttribute("iduser")); 
+			
+			if (u == null) {
+				session_status.setComplete();
+			} else {
+				return u;
+			}
+			
+		} else {
+			
+			Cookie[] cookies = request.getCookies();
+			
+			// Si des cookies existent
+			if (cookies != null) {
+				
+				Long iduser = 0L;
+				byte[] key = null;
+				
+				for (Cookie cookie : cookies) {
+					
+					// Si le cookie est celui contenant l'id, on le transforme en Long
+					if (cookie.getName().equals("iduser")) {
+						iduser = Long.parseLong(cookie.getValue());	
+					
+					// Si le cookie est celui contenant la clé, on la transforme en byte, puis on la hache
+					} else if (cookie.getName().equals("key")) { 
+
+						key = Base64.getDecoder().decode(cookie.getValue());
+						try {			    			
+			    			MessageDigest digest = MessageDigest.getInstance("SHA-256");
+			    			key = digest.digest(key);
+			    			
+						} catch (NoSuchAlgorithmException e) {
+							e.printStackTrace();
+						} 
+					}
+				}
+				
+				// On récupère l'utilisateur grâce à son id et à sa clé
+    			if (iduser != 0 && key != null) {
+    				
+    				User u = user_repository.findByIduserAndEncryptedkey(iduser, key);  
+    			
+	    	    	if (u != null) {
+	    	    		session.setAttribute("iduser", u.getIduser());
+	    	    		return u;
+	    	    	}
+    			}
+			}
+		}
+		return null;
+	}
 
     @RequestMapping("/")
     public String greeting(@RequestParam(value="name", required=false, defaultValue="World") String name, Model model) {
@@ -60,17 +119,15 @@ public class ContactController {
     }
     
     @RequestMapping("/connexion")
-    public String connexion(Model theModel) { 	
-    	
-    	User user = new User();
-    	theModel.addAttribute("user", user);
+    public String connexion(Model model) { 	
+    	User u = new User();
+    	model.addAttribute("user", u);
     	
     	return "connexion";
     }
     
     @RequestMapping("/connexion-form")
     public void connexionForm(@ModelAttribute("user") User user, HttpSession session, SessionStatus session_status, HttpServletResponse response) throws IOException {
-    	
     	User u = user_repository.findByLoginAndPassword(user.getLogin(), user.getPassword());
     	
     	if (u == null) {
@@ -78,19 +135,23 @@ public class ContactController {
     		
     		response.sendRedirect("/connexion");
     	} else {
-    		session.setAttribute("id_user", u.getId_user());
+    		session.setAttribute("iduser", u.getIduser());
     		
     		if(user.getRemember()) {
-    			response.addCookie(new Cookie("id_user", ""+u.getId_user()));
+    			Cookie cookie = new Cookie("iduser", ""+u.getIduser());
+    			cookie.setMaxAge(2147483647);
+    			response.addCookie(cookie);
     			
     			byte[] key = new byte[32];
     			try {
 					SecureRandom.getInstanceStrong().nextBytes(key);
-					response.addCookie(new Cookie("key", Base64.getEncoder().encodeToString(key)));
+					cookie = new Cookie("key", Base64.getEncoder().encodeToString(key));
+					cookie.setMaxAge(2147483647);
+					response.addCookie(cookie);
 	    			
 	    			MessageDigest digest = MessageDigest.getInstance("SHA-256");
 	    			byte[] encodedHash = digest.digest(key);
-	    			u.setEncrypted_key(encodedHash);
+	    			u.setEncryptedkey(encodedHash);
 	    			
 	    			user_repository.save(u);    			
 	    			
@@ -104,12 +165,20 @@ public class ContactController {
     }
     
     @RequestMapping("/contacts")
-    public String affichageContacts(HttpSession session, Model model) {
+    public String affichageContacts(Model model, HttpServletResponse response, HttpSession session, SessionStatus session_status, HttpServletRequest request) throws IOException {
     	
-    	ArrayList<Contact> c = contact_repository.findByiduser((Long)session.getAttribute("id_user"));
-    	model.addAttribute("liste", c);
+    	User u = getUserConnected(session, session_status, request);
+
+    	if (u == null) {
+
+    		response.sendRedirect("/connexion");
+    		return null;
+    	} else {    	
+    		ArrayList<Contact> c = contact_repository.findByiduser(u.getIduser());
+    		model.addAttribute("liste", c);
     
-    	return "contacts";
+    		return "contacts";
+    	}
     }
 
     @PostMapping("/contactez-nous-form")

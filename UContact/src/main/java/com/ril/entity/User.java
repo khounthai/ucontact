@@ -14,14 +14,15 @@ public class User {
 	
 	@Id
     @GeneratedValue(strategy=GenerationType.AUTO)
-	private Long id_user;
+	private Long iduser;
 	private String login;
 	private String password;
 	
-	@Column(columnDefinition="BINARY(32) NOT NULL", nullable=true)
-	private byte[] encrypted_key;
+	@Column(columnDefinition="BINARY(32)", nullable=true)
+	private byte[] encryptedkey;
 	private String role;
-	@Transient private boolean remember;
+	@Transient
+	private boolean remember;
 	
 	public User() {}
 	
@@ -31,6 +32,9 @@ public class User {
 		this.role=role;
 	}
 
+	public Long getIduser() {
+		return iduser;
+	}
 
 	public String getLogin() {
 		return login;
@@ -65,20 +69,16 @@ public class User {
 	}
 
 	
-	public byte[] getEncrypted_key() {
-		return encrypted_key;
+	public byte[] getEncryptedkey() {
+		return encryptedkey;
 	}
 
-	public void setEncrypted_key(byte[] encrypted_key) {
-		this.encrypted_key = encrypted_key;
-	}
-
-	public Long getId_user() {
-		return id_user;
+	public void setEncryptedkey(byte[] encryptedkey) {
+		this.encryptedkey = encryptedkey;
 	}
 
 	@Override
 	public String toString() {
-		return "User [iduser=" + id_user + ", login=" + login + ", password=" + password + ", role=" + role + "]";
+		return "User [iduser=" + iduser + ", login=" + login + ", password=" + password + ", role=" + role + "]";
 	}
 }
