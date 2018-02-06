@@ -6,21 +6,22 @@
 
 	<br /> <br />
 
-	<form action="#" method="post" th:action="@{/fiche-contact-form}">	
+	<form action="#" method="post" th:action="@{/enregistrer-contact}" th:object="${template}">	
 		<table>
-		
-			<th:block th:each="c :${champs}">
+			<th:block th:each="c, stat :*{champs}">
 				<tr>
 					<td th:text="${c.libelle}"></td>
-					<td th:field="*{donnee}"><input type="text" th:field="*{donnee.valeur}"/></td>															
+					<td><input type="text" th:field="*{champs[__${stat.index}__].donnee.valeur}"/></td>
+					<td><input type="hidden" th:field="*{champs[__${stat.index}__].idchamp}"/></td>
+					<td><input type="hidden" th:field="*{champs[__${stat.index}__].iddatatype}"/></td>
+					<td><input type="hidden" th:field="*{champs[__${stat.index}__].actif}"/></td>
+					<td><input type="hidden" th:field="*{champs[__${stat.index}__].libelle}"/></td>
+					<td><input type="hidden" th:field="*{champs[__${stat.index}__].multivaleur}"/></td>
 				</tr>
 			</th:block>
 		</table>
-	
 	<br/><br/>
 	
 		<input type="submit" value="Enregistrer"/>
 	</form>
-
-
 </div>

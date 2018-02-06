@@ -1,52 +1,36 @@
 package com.ril.entity;
 
-import java.time.LocalDate;
-import java.util.Date;
-
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
-
-import org.springframework.format.annotation.DateTimeFormat;
-
-@Entity
-@Table(name = "user")
 public class User {
-
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	
 	private long iduser;
 	private String login;
 	private String password;
-	@DateTimeFormat(pattern = "dd/MM/yyyy")	
-	private Date dtcreation;
+
+	private byte[] encrypted_key;
 	private String role;
+	
+	private boolean remember;
 
 	public User() {
 	}
 
-
-	public User(long iduser, String login, String password, Date dtcreation, String role) {
-		super();
+	public User(long iduser, String login, String password, String role,byte[] encrypted_key ) {		
 		this.iduser = iduser;
 		this.login = login;
 		this.password = password;
-		this.dtcreation = dtcreation;
+		this.encrypted_key = encrypted_key;
 		this.role = role;
+		this.remember = false;
 	}
-
-
-	public long getIduser() {
-		return iduser;
-	}
-
+	
 	public void setIduser(long iduser) {
 		this.iduser = iduser;
 	}
 
-
+	public long getIduser() {
+		return iduser;
+	}
+	
 	public String getLogin() {
 		return login;
 	}
@@ -70,20 +54,26 @@ public class User {
 	public void setRole(String role) {
 		this.role = role;
 	}
-	
-	 public Date getDtcreation() {
-		return dtcreation;
+
+	public boolean getRemember() {
+		return remember;
 	}
 
-	public void setDtcreation(Date dtcreation) {
-		this.dtcreation = dtcreation;
+	public void setRemember(boolean remember) {
+		this.remember = remember;
+	}
+
+	public byte[] getEncrypted_key() {
+		return encrypted_key;
+	}
+
+	public void setEncrypted_key(byte[] encrypted_key) {
+		this.encrypted_key = encrypted_key;
 	}
 
 
 	@Override
 	public String toString() {
-		return "User [iduser=" + iduser + ", login=" + login + ", password=" + password + ", role=" + role
-				+ ", dtcreation=" + dtcreation  + "]";
+		return "User [iduser=" + iduser + ", login=" + login + ", password=" + password + ", role=" + role + "]";
 	}
-
 }

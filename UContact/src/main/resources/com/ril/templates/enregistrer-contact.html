@@ -1,0 +1,23 @@
+<div class="container" th:fragment="content">
+
+	<br /> <br /> <br /> <br /> <br />
+
+	<h2>Enregistrer un contact</h2>
+
+	<br /> <br />
+
+		<table>		
+			<th:block th:each="c :${champs}">
+				<tr>
+					<td th:text="${c.libelle}"></td>
+					<td><label th:text="${c.donnee.valeur}"/></td>
+					<td><label th:text="${c.idchamp}"/></td>																
+					<td><label th:text="${c.actif}"/></td>
+				</tr>
+			</th:block>
+		</table>
+	
+	<br/><br/>
+
+
+</div>

@@ -1,30 +1,21 @@
 package com.ril.entity;
 
-import java.util.Date;
+import java.time.LocalDate;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
 
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.stereotype.Component;
 
-@Entity
-@Table(name="contact")
+
 public class Contact {
-	
-	@Id
-    @GeneratedValue(strategy=GenerationType.AUTO)
 	private long idcontact;
-	@DateTimeFormat(pattern = "dd/MM/yyyy")	
-	private Date dtcreation;
+	private LocalDate dtcreation;
 	private Boolean favoris;
 	private long iduser;
 	
 	public Contact() {}
 
-	public Contact(long idcontact, Date dtcreation, Boolean favoris, long iduser) {
+	public Contact(long idcontact, LocalDate dtcreation, Boolean favoris, long iduser) {
 		this.idcontact = idcontact;
 		this.dtcreation = dtcreation;
 		this.favoris = favoris;
@@ -39,6 +30,14 @@ public class Contact {
 		this.idcontact = idcontact;
 	}
 
+	public LocalDate getDtcreation() {
+		return dtcreation;
+	}
+
+	public void setDtcreation(LocalDate dtcreation) {
+		this.dtcreation = dtcreation;
+	}
+
 	public long getIduser() {
 		return iduser;
 	}
@@ -47,11 +46,11 @@ public class Contact {
 		this.iduser = iduser;
 	}
 
-	public Date getdtcreation() {
+	public LocalDate getdtcreation() {
 		return dtcreation;
 	}
 
-	public void setdtcreation(Date dtcreation) {
+	public void setdtcreation(LocalDate dtcreation) {
 		this.dtcreation = dtcreation;
 	}
 

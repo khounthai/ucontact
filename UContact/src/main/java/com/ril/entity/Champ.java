@@ -1,8 +1,9 @@
 package com.ril.entity;
 
+import java.io.Serializable;
+
 import org.springframework.stereotype.Component;
 
-@Component
 public class Champ {
 	private long idchamp;
 	private String libelle;
@@ -10,7 +11,6 @@ public class Champ {
 	private boolean actif;
 	private long iddatatype;
 	private Donnee donnee;
-	private String valeur;
 	
 	public Champ() {}
 	
@@ -30,7 +30,6 @@ public class Champ {
 	public void setIdchamp(long idchamp) {
 		this.idchamp = idchamp;
 	}
-	
 
 	public String getLibelle() {
 		return libelle;
@@ -65,26 +64,19 @@ public class Champ {
 	}
 		
 	public Donnee getDonnee() {
+		if (this.donnee==null) {
+			this.donnee=new Donnee();
+			this.donnee.setIdchamp(idchamp);
+		}
+		
 		return donnee;
 	}
 
-	public void setDonnee(Donnee donnee) {
-		this.donnee = donnee;
-	}
-	
-	
-	public String getValeur() {
-		return valeur;
-	}
-
-	public void setValeur(String valeur) {
-		this.valeur = valeur;
-	}
 
 	@Override
 	public String toString() {
 		return "Champ [idchamp=" + idchamp + ", libelle=" + libelle + ", multivaleur=" + multivaleur + ", actif="
-				+ actif + ", iddatatype=" + iddatatype + ", donne=" + donnee + "]";
+				+ actif + ", iddatatype=" + iddatatype + ", donnee=" + donnee + "]";
 	}
 
 }

@@ -1,10 +1,13 @@
 package com.ril.dao;
 
 import java.sql.Connection;
+
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import org.springframework.stereotype.Component;
-@Component
+import org.springframework.stereotype.Repository;
+
+@Repository
 public class Database {
 
 	private Connection sqlConnection = null;

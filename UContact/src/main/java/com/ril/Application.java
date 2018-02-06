@@ -9,7 +9,6 @@ import org.springframework.context.annotation.Bean;
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 
 import com.ril.entity.User;
-import com.ril.model.UserDao;
 
 @SpringBootApplication
 public class Application {
@@ -29,21 +28,6 @@ public class Application {
                                             //and 1
         return yourTemplateResolver;
     }
-    
-    private static final Logger log = LoggerFactory.getLogger(Application.class);
-    
-	@Bean
-	public CommandLineRunner demo(UserDao repository) {
-		return (args) -> {
-			log.info("user found with findByLoginAndPassword('user1'):");
-			log.info("--------------------------------------------");
-			User user=repository.findByLoginAndPassword("user1", "aa1122");
-			if (user!=null)
-				log.info(user.toString());
-				else
-					log.info("user1 non trouvé");
-					
-			log.info("");
-		};
-	}
+   
+   
 }

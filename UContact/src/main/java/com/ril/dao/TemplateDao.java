@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 
 import com.mysql.jdbc.ResultSetMetaData;
@@ -29,31 +30,37 @@ public class TemplateDao {
 			Connection conn = database.getSqlConnection();		
 			
 			String sql;
+			
+			PreparedStatement ps =null;
+			
 			if (idtemplate==0)
+			{
 				sql = "select * from template where iduser is null";
+				ps=conn.prepareStatement(sql);
+			}				
 			else
 			{
-				sql = "select * from template where idtemplate = %d and (iduser= %d or iduser is null)";
-				sql=String.format(sql, idtemplate,iduser);
+				sql = "select * from template where idtemplate = ? and (iduser= ? or iduser is null)";
+				ps=conn.prepareStatement(sql);
+				ps.setLong(1, idtemplate);
+				ps.setLong(2, iduser);
 			}
 			
 			System.out.println(sql);
-			PreparedStatement ps = conn.prepareStatement(sql);
 			ResultSet rs = ps.executeQuery();
 			
 			while (rs.next()) {				
 				Template t = new Template(rs.getLong(1),rs.getString(2),rs.getLong(3),null);
 				liste.add(t);
 			}
+			
 			rs.close();
 			ps.close();
-			
-						
+									
 			liste.forEach(t->{
 				List<Champ> c=chamDao.getChamps(t.getIdtemplate());
 				t.setChamps(c);
 			});
-			
 			
 			
 		} catch (SQLException e) {

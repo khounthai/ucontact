@@ -1,9 +1,8 @@
 package com.ril.entity;
 
 import java.util.List;
-import org.springframework.stereotype.Component;
 
-@Component
+
 public class Template {
 	
 	private long idtemplate;
@@ -13,7 +12,7 @@ public class Template {
 	private boolean check;
 
 	public Template() {
-	};
+	}
 
 	public Template(long idtemplate, String libelle, long iduser, List<Champ> champs) {
 		this.idtemplate = idtemplate;

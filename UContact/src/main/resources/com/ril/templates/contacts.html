@@ -9,7 +9,7 @@
 	<p>Modèle de fiche</p>
 
 
-	<form action="#" method="post" th:action="@{/fiche-contact-form}" th:object="${templates}">
+	<form action="#" th:action="@{/fiche-contact-form}" th:object="${templates}">
 	
 		<ul>
 			<li th:each="t: ${templates}">
@@ -24,7 +24,7 @@
 				<td>Favoris</td>
 				<td>Id user</td>
 			</tr>
-			<th:block th:each="c :${liste}">
+			<th:block th:each="c :${contacts}">
 				<tr>
 					<td th:text="${c.idcontact}"></td>
 
