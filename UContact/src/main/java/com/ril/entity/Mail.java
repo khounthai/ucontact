@@ -77,6 +77,7 @@ public class Mail {
 
 	public String getMessageText() {
 		return messageText;
+		
 	}
 
 	public void setMessageText(String messageText) {

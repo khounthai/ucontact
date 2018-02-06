@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.EnumSet;
 import java.util.Optional;
+import java.util.Random;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
@@ -67,6 +68,8 @@ public class ContactController {
     	
     	return "connexion";
     }
+    
+    
     
     @RequestMapping("/attente-validation")
     public String attentevalidation(Model model, User user) {
@@ -153,9 +156,7 @@ public class ContactController {
     @RequestMapping("/inscription")
     public String inscription(Model model, User user) {
     	
-    	return "inscription";
-    	
-    		
+    	return "inscription";	
     }
     
     @PostMapping("/inscription-form")
@@ -167,14 +168,22 @@ public class ContactController {
     	
     	User userref = user_repository.findByLogin(user.getLogin());
     	
+    	//Si l'email est déjà présent en base
     	if(useracomparer!=null && userref!= null && useracomparer.equals(userref.getLogin())) {
-    	
-    		//Cas ou l'on souhaite s'inscrire avec une adresse mail déjà présente en base
-    		
     		
     	} else {
     			
 	    	if (password1.equals(password2)) {
+	    		
+	    		Random rand = new Random();
+        		String validationkey="";
+        		for(int i = 0 ; i < 20 ; i++){
+        		  char c = (char)(rand.nextInt(26) + 97);
+        		  validationkey += c;
+        		  System.out.print(c+" ");
+        		}
+        		
+        		user.setValidationkey(validationkey);
 	    	
 	    		// Ajout en base de l'utilisateur
 	    		User u = user_repository.save(user);       	
@@ -184,6 +193,7 @@ public class ContactController {
 	        		response.sendRedirect("/");
 	        	} else {
 	        		
+	        		     		
 	        		//Envoi de mail de validation de compte 
 		    		SendEmail envoimailvalidation = new SendEmail(mail);
 		        	mail.setHost("smtp.gmail.com");
@@ -192,7 +202,7 @@ public class ContactController {
 		        	mail.setTo(user.getLogin());
 		        	mail.setFrom("Support");
 		        	mail.setSubject("Activation de votre compte U-Contact");
-		        	mail.setMessageText("Bonjour, \n\nVotre compte n'est pas encore activé. Afin d'activer votre compte, veuillez cliquer ici \n");
+		        	mail.setMessageText("Bonjour, \n\nVotre compte n'est pas encore activé. Afin d'activer votre compte, veuillez cliquer suivant http://localhost:8080/validation/"+user.getIduser()+"/"+validationkey);
 		        	
 		        	envoimailvalidation.send();
 	        		response.sendRedirect("/attente-validation");
@@ -208,5 +218,22 @@ public class ContactController {
     	
     }
     
-    
+    @RequestMapping(value={"/validation/{iduser}/{validationkey}"}, method=RequestMethod.GET)
+    public String validationCompte(Model model, @PathVariable("iduser") Long iduser, @PathVariable("validationkey") String validationkey) {
+    	
+    	User u = user_repository.findByIduserAndValidationkey(iduser, validationkey);
+    	 
+    	if (u != null) {
+    		
+    		u.setValidaccount(true);
+    		u.setValidationkey(null);
+    		user_repository.save(u);
+    		return"/connexion/compte-valide";
+    		
+
+    	} else {
+    		
+    		return "/connexion";
+    	}   
+    }
 }

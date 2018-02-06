@@ -17,6 +17,9 @@ public class User {
 	private Long iduser;
 	private String login;
 	private String password;
+	private String validationkey; //clé de validation de compte
+	@Column(nullable=false)
+	private Boolean validaccount; 
 	
 	@Column(columnDefinition="BINARY(32)", nullable=true)
 	private byte[] encryptedkey;
@@ -85,6 +88,22 @@ public class User {
 
 	public void setConfirmpassword(String confirmpassword) {
 		this.confirmpassword = confirmpassword;
+	}
+
+	public String getValidationkey() {
+		return validationkey;
+	}
+
+	public void setValidationkey(String validationkey) {
+		this.validationkey = validationkey;
+	}
+
+	public Boolean getValidaccount() {
+		return validaccount;
+	}
+
+	public void setValidaccount(Boolean validaccount) {
+		this.validaccount = validaccount;
 	}
 
 	@Override
