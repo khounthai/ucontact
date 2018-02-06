@@ -1,10 +1,37 @@
-<!DOCTYPE HTML>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <title>Getting Started: Serving Web Content</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-</head>
-<body>
-    <p th:text="'Hello, ' + ${name} + '!'" />
-</body>
-</html>
+<div id="accueil" th:fragment="content">
+	<div id="hello" class="container" th:style="'background:url(' + @{/imgs/contact-bluewin.jpg} + ') center center; background-size:cover;'">
+    	<div class="row">
+    		<div class="col-xs-12 col-md-12 col-lg-12">
+    			<h1>U-CONTACT</h1>
+    			<h2>Gardez le contact avec votre réseau !</h2>
+    		</div>
+		</div>
+	</div>
+
+	<div id="presentation" class="container">
+		<div class="row">
+			<div class="col-xs-12 col-md-12 col-lg-5">
+				<img th:src="@{/imgs/iphone.png}" title="Smartphone" />
+			</div>
+			
+			<div class="col-xs-12 col-md-12 col-lg-7">
+				<h3>Qu'est-ce que U-CONTACT ?</h3>
+				<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.</p>
+			</div>
+		</div>
+	</div>
+	
+	<div id="contact" class="container">
+		<div class="row">
+			<div class="col-xs-12 col-md-12 col-lg-5">
+				<h3>Contactez-nous</h3>
+				<p>Une demande, une interrogation, un bug, n'hésitez pas, contactez-nous</p>
+			</div>
+			<div class="col-xs-12 col-md-12 col-lg-7">
+				<a th:href="@{/contactez-nous}" title="Contactez-nous">
+					<span class="glyphicon glyphicon-envelope" aria-hidden="true"></span>
+				</a>
+			</div>
+		</div>
+	</div>
+</div>
