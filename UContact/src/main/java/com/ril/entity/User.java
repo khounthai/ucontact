@@ -5,36 +5,27 @@ public class User {
 	private long iduser;
 	private String login;
 	private String password;
-
-	private byte[] encrypted_key;
+	private byte[] encryptedkey;
+	private String validationkey; //clé de validation de compte	
+	private Boolean validaccount = false;	
+	private boolean remember;
+	private String confirmpassword;
 	private String role;
 	
-	private boolean remember;
-
 	public User() {
 	}
 
-	public User(long iduser, String login, String password, String role,byte[] encrypted_key ) {		
+	public User(long iduser, String login, String password, String role,byte[] encryptedkey,String validationkey,boolean validaccount ) {		
 		this.iduser = iduser;
 		this.login = login;
 		this.password = password;
-		this.encrypted_key = encrypted_key;
+		this.encryptedkey = encryptedkey;
 		this.role = role;
 		this.remember = false;
+		this.validationkey=validationkey;
+		this.validaccount=validaccount;
 	}
 	
-	public void setIduser(long iduser) {
-		this.iduser = iduser;
-	}
-
-	public long getIduser() {
-		return iduser;
-	}
-	
-	public String getLogin() {
-		return login;
-	}
-
 	public void setLogin(String login) {
 		this.login = login;
 	}
@@ -55,6 +46,30 @@ public class User {
 		this.role = role;
 	}
 
+	public String getConfirmpassword() {
+		return confirmpassword;
+	}
+
+	public void setConfirmpassword(String confirmpassword) {
+		this.confirmpassword = confirmpassword;
+	}
+
+	public String getValidationkey() {
+		return validationkey;
+	}
+
+	public void setValidationkey(String validationkey) {
+		this.validationkey = validationkey;
+	}
+
+	public Boolean getValidaccount() {
+		return validaccount;
+	}
+
+	public void setValidaccount(Boolean validaccount) {
+		this.validaccount = validaccount;
+	}
+
 	public boolean getRemember() {
 		return remember;
 	}
@@ -63,14 +78,25 @@ public class User {
 		this.remember = remember;
 	}
 
-	public byte[] getEncrypted_key() {
-		return encrypted_key;
+	public byte[] getEncryptedkey() {
+		return encryptedkey;
 	}
 
-	public void setEncrypted_key(byte[] encrypted_key) {
-		this.encrypted_key = encrypted_key;
+	public void setEncryptedkey(byte[] encryptedkey) {
+		this.encryptedkey = encryptedkey;
 	}
 
+	public long getIduser() {
+		return iduser;
+	}
+
+	public void setIduser(long iduser) {
+		this.iduser = iduser;
+	}
+
+	public String getLogin() {
+		return login;
+	}
 
 	@Override
 	public String toString() {

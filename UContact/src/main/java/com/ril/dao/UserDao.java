@@ -24,7 +24,7 @@ public class UserDao {
 		try {
 			Connection conn = database.getSqlConnection();		
 			
-			String sql = "select iduser,login,password,role,encrypted_key from user where login=? and password=?";
+			String sql = "select iduser,login,password,role,encryptedkey,validationkey,validaccount from user where login=? and password=?";
 			System.out.println(sql);
 			PreparedStatement ps = conn.prepareStatement(sql);
 			ps.setString(1,login);
@@ -33,7 +33,7 @@ public class UserDao {
 			ResultSet rs = ps.executeQuery();
 			
 			while (rs.next()) {			
-				u = new User(rs.getInt(1),rs.getString(2),rs.getString(3),rs.getString(4),rs.getBytes(5));		
+				u = new User(rs.getInt(1),rs.getString(2),rs.getString(3),rs.getString(4),rs.getBytes(5),rs.getString(6),rs.getBoolean(7));		
 			}
 			
 			rs.close();
@@ -53,14 +53,14 @@ public class UserDao {
 		try {
 			Connection conn = database.getSqlConnection();		
 			
-			String sql= "select iduser,login,password,role,encrypted_key from user where iduser=?";
+			String sql= "select iduser,login,password,role,encryptedkey,validationkey,validaccount from user where iduser=?";
 			
 			System.out.println(sql);
 			PreparedStatement ps = conn.prepareStatement(sql);
 			ps.setLong(1, iduser);
 			ResultSet rs = ps.executeQuery();			
 			while (rs.next()) {			
-				u = new User(rs.getInt(1),rs.getString(2),rs.getString(3),rs.getString(4),rs.getBytes(5));		
+				u = new User(rs.getInt(1),rs.getString(2),rs.getString(3),rs.getString(4),rs.getBytes(5),rs.getString(6),rs.getBoolean(5));		
 			}
 			
 			rs.close();
@@ -74,23 +74,29 @@ public class UserDao {
 		return u;
 	}
 	
+	
 	public long Save(User u) {
 		long result=0;
 		
 		try {
 			Connection conn = database.getSqlConnection();		
 			
-			String sql = "INSERT INTO USER (login,password,role,encrypted_key) VALUES (?,?,?,?) "+
-						 "ON DUPLICATE KEY UPDATE login=VALUES(login), password=VALUES(password), role=VALUES(role),encrypted_key=VALUES(encrypted_key)  "; 
+			String sql = "INSERT INTO USER (iduser,login,password,role,encryptedkey,validationkey,validaccount) VALUES (?,?,?,?,?,?,?) "+
+						 "ON DUPLICATE KEY UPDATE login=VALUES(login), password=VALUES(password), role=VALUES(role),encryptedkey=VALUES(encryptedkey),  "+
+						 "validationkey=VALUES(validationkey), validaccount=VALUES(validaccount)"; 
 							
 			System.out.println(sql);
 			PreparedStatement ps = conn.prepareStatement(sql,Statement.RETURN_GENERATED_KEYS);
 			
-			ps.setString(1,u.getLogin());
-			ps.setString(2,u.getPassword());
-			ps.setString(3,u.getRole());
-			ps.setBytes(4,u.getEncrypted_key());
-			result= ps.executeUpdate();
+			ps.setLong(1,u.getIduser());
+			ps.setString(2,u.getLogin());
+			ps.setString(3,u.getPassword());
+			ps.setString(4,u.getRole());
+			ps.setBytes(5,u.getEncryptedkey());
+			ps.setString(6,u.getValidationkey());
+			ps.setBoolean(7,u.getValidaccount());
+			
+			ps.executeUpdate();
 			
 			ResultSet rspk=ps.getGeneratedKeys();
 			rspk.next();
@@ -105,5 +111,62 @@ public class UserDao {
 		}
 
 		return result;
+	}
+	
+	public User findByLogin(String login) {
+		User u=null;
+
+		try {
+			Connection conn = database.getSqlConnection();		
+			
+			String sql= "select iduser,login,password,role,encryptedkey,validationkey,validaccount from user where login=?";
+			
+			System.out.println(sql);
+			PreparedStatement ps = conn.prepareStatement(sql);
+			ps.setString(1, login);
+			ResultSet rs = ps.executeQuery();			
+			while (rs.next()) {			
+				u = new User(rs.getInt(1),rs.getString(2),rs.getString(3),rs.getString(4),rs.getBytes(5),rs.getString(6),rs.getBoolean(7));		
+			}
+			
+			rs.close();
+			ps.close();
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return u;
+	}
+	
+	public User findByIduserAndValidationkey(Long iduser, String validationkey) {
+		User u=null;
+
+		try {
+			Connection conn = database.getSqlConnection();		
+			
+			String sql= "select iduser,login,password,role,encryptedkey,validationkey,validaccount from user where iduser=? and validationkey=?";
+			
+			System.out.println(sql);
+			PreparedStatement ps = conn.prepareStatement(sql);
+			ps.setLong(1, iduser);
+			ps.setString(2, validationkey);
+			
+			ResultSet rs = ps.executeQuery();
+			
+			while (rs.next()) {			
+				u = new User(rs.getInt(1),rs.getString(2),rs.getString(3),rs.getString(4),rs.getBytes(5),rs.getString(6),rs.getBoolean(7));			
+			}
+			
+			rs.close();
+			ps.close();
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return u;
 	}
 }
