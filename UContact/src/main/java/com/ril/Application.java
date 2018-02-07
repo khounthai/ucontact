@@ -26,6 +26,7 @@ public class Application {
         yourTemplateResolver.setOrder(0);  // this is iportant. This way spring 
                                             //boot will listen to both places 0 
                                             //and 1
-        return yourTemplateResolver;
+        return yourTemplateResolver; 
+        
     }
 }
