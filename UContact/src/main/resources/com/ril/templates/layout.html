@@ -9,7 +9,7 @@
 	<meta name="description" content="" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-	<title>U-Contact</title>
+	<title>U-CONTACT</title>
 	
 	<link rel="stylesheet" type="text/css" media="screen" th:href="@{/css/bootstrap.css}" />
 	<link rel="stylesheet/less" type="text/css" media="screen" th:href="@{/less/ucontact.less}" />
@@ -49,6 +49,14 @@
 
 	<div th:replace="${view} :: content">
     	Content
+	</div>
+	
+	<div id="footer" class="container">
+		<div class="row">
+			<div class="col-md-offset-1 col-sd-10 col-md-8 col-md-offset-3 col-lg-8 col-lg-offset-3">
+				<p>U-CONTACT - CESI WEB PROJECT</p>
+			</div>
+		</div>
 	</div>
 	
 	<script th:src="@{/js/jquery.min.js}"></script>
