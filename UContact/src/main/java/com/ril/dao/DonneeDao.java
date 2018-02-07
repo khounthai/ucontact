@@ -26,7 +26,8 @@ public class DonneeDao {
 			try {
 				Connection conn = database.getSqlConnection();		
 				
-			    String sql="INSERT INTO donnees (dtenregistrement, valeur, idcontact, idchamp) VALUES (?,?,?,?)";
+			    String sql="INSERT INTO donnees (dtenregistrement, valeur, idcontact, idchamp) VALUES (?,?,?,?) "+
+			    		"ON DUPLICATE KEY UPDATE valeur=VALUES(valeur)";
 				
 			 	System.out.println(sql);
 			 				 	
