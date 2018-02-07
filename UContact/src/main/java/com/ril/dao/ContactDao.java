@@ -14,12 +14,16 @@ import com.mysql.jdbc.Connection;
 import com.mysql.jdbc.PreparedStatement;
 import com.mysql.jdbc.Statement;
 import com.ril.entity.Contact;
+import com.ril.entity.Donnee;
 
 @Repository
 public class ContactDao {
 
 	@Autowired
 	private Database database;
+	
+	@Autowired 
+	private DonneeDao donneeDao;
 
 	public List<Contact> findByIduser(long iduser) {
 
@@ -36,13 +40,18 @@ public class ContactDao {
 			ResultSet rs = ps.executeQuery();
 
 			while (rs.next()) {
-				Contact c = new Contact(rs.getLong(1), rs.getDate(2).toLocalDate(), rs.getBoolean(3), iduser);
+				Contact c = new Contact(rs.getLong(1), rs.getDate(2).toLocalDate(), rs.getBoolean(3), iduser,new ArrayList<Donnee>() );
 				liste.add(c);
 			}
 
 			rs.close();
 			ps.close();
-
+			
+			liste.forEach(x->{
+				List<Donnee> listeDonnees=donneeDao.findByIdContact(x.getIdcontact());
+				x.setDonnees(listeDonnees);
+			});
+			
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

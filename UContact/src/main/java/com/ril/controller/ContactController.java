@@ -1,21 +1,19 @@
 package com.ril.controller;
 
 import java.io.IOException;
-
 import java.time.LocalDate;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
-
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
-
 import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,22 +39,83 @@ import com.ril.dao.ContactDao;
 import com.ril.dao.UserDao;
 
 @Controller
-public class ContactController {
-
+public class ContactController {	
 	@Autowired
 	UserDao userDao;
-
+	
 	@Autowired
 	ContactDao contactDao;
 
 	@Autowired
 	DonneeDao donneeDao;
+	
 	@Autowired
 	TemplateDao templateDao;
+	
+	public User getUserConnected(HttpSession session, SessionStatus session_status, HttpServletRequest request) {		
+		// Si une session existe
+		if(session.getAttribute("iduser") != null) {
+			
+			// On récupère l'utilisateur grâce à son id
+			User u = userDao.findByIduser((Long)session.getAttribute("iduser")); 
+			
+			if (u == null) {
+				session_status.setComplete();
+			} else {
+				return u;
+			}
+			
+		} else {
+			
+			Cookie[] cookies = request.getCookies();
+			
+			// Si des cookies existent
+			if (cookies != null) {
+				
+				Long iduser = 0L;
+				byte[] key = null;
+				
+				for (Cookie cookie : cookies) {
+					
+					// Si le cookie est celui contenant l'id, on le transforme en Long
+					if (cookie.getName().equals("iduser")) {
+						iduser = Long.parseLong(cookie.getValue());	
+					
+					// Si le cookie est celui contenant la clé, on la transforme en byte, puis on la hache
+					} else if (cookie.getName().equals("key")) { 
 
-    @RequestMapping("/test")
-    public String test() {
-        return "test";
+						key = Base64.getDecoder().decode(cookie.getValue());
+						try {			    			
+			    			MessageDigest digest = MessageDigest.getInstance("SHA-256");
+			    			key = digest.digest(key);
+			    			
+						} catch (NoSuchAlgorithmException e) {
+							e.printStackTrace();
+						} 
+					}
+				}
+				
+				// On récupère l'utilisateur grâce à son id et à sa clé
+    			if (iduser != 0 && key != null) {
+    				
+    				User u = userDao.findByIduserAndEncryptedkey(iduser, key);  
+    			
+	    	    	if (u != null) {
+	    	    		session.setAttribute("iduser", u.getIduser());
+	    	    		return u;
+	    	    	}
+    			}
+			}
+		}
+		return null;
+	}
+	
+    @RequestMapping("/connexion")
+    public String connexion(Model Model) { 	
+    	User u = new User();
+    	Model.addAttribute("user", u);
+    	
+    	return "connexion";
     }
     
     @RequestMapping("/attente-validation")
@@ -65,9 +124,9 @@ public class ContactController {
     
     @RequestMapping("/connexion-form")
     public void connexionForm(@ModelAttribute("user") User user, HttpSession session, SessionStatus session_status, HttpServletResponse response) throws IOException {
-    	
+    	//User u = userDao.findByLoginAndHashedPassword(user.getLogin(), user.getHashedPassword());
     	User u = userDao.findByLoginAndPassword(user.getLogin(), user.getPassword());
-    	System.out.println("user connexion-form :"+u);
+
     	if (u == null) {
     		session_status.setComplete();
     		
@@ -76,12 +135,17 @@ public class ContactController {
     		session.setAttribute("iduser", u.getIduser());
     		
     		if(user.getRemember()) {
-    			response.addCookie(new Cookie("iduser", ""+u.getIduser()));
+
+    			Cookie cookie = new Cookie("iduser", ""+u.getIduser());
+    			cookie.setMaxAge(2147483647);
+    			response.addCookie(cookie);
     			
     			byte[] key = new byte[32];
     			try {
 					SecureRandom.getInstanceStrong().nextBytes(key);
-					response.addCookie(new Cookie("key", Base64.getEncoder().encodeToString(key)));
+					cookie = new Cookie("key", Base64.getEncoder().encodeToString(key));
+					cookie.setMaxAge(2147483647);
+					response.addCookie(cookie);
 	    			
 	    			MessageDigest digest = MessageDigest.getInstance("SHA-256");
 	    			byte[] encodedHash = digest.digest(key);
@@ -98,6 +162,7 @@ public class ContactController {
     	}
     }
     
+
 	@RequestMapping("/")
 	public String greeting(@RequestParam(value = "name", required = false, defaultValue = "World") String name,
 			Model model) {
@@ -134,24 +199,22 @@ public class ContactController {
         return "contactez-nous";
     }
 
-	@RequestMapping("/connexion")
-	public String connexion(Model theModel) {
-		User user = new User();
-		theModel.addAttribute("user", user);
-		return "connexion";
-	}
-
 	@RequestMapping("/contacts")
 	public String affichageContacts(@ModelAttribute("templates") ArrayList<Template> templates, HttpSession session,
 			Model model) {
 
-		List<Contact> contacts = contactDao.findByIduser((long) session.getAttribute("iduser"));
-		model.addAttribute("contacts", contacts);
-
 		long iduser = (long) session.getAttribute("iduser");
 		User u = userDao.findByIduser(iduser);
 
-		if (u != null) {
+		if (u != null) {			
+			List<Contact> contacts = contactDao.findByIduser(iduser);
+			model.addAttribute("contacts", contacts);
+			System.out.println(contacts+"; "+session.getAttribute("iduser"));
+			
+			contacts.forEach(x->{
+				System.out.println(x);
+			});
+			
 			templates = (ArrayList<Template>) templateDao.getTemplates(0, 0);
 
 			// s'il y a q'un template, il est sélectionné
@@ -258,17 +321,16 @@ public class ContactController {
     	
     	String password1 = user.getPassword();
     	String password2 = user.getConfirmpassword();
-    	String useracomparer = user.getLogin();
-    	
+    	String useracomparer = user.getLogin();    	
     	User userref = userDao.findByLogin(user.getLogin());
     	
     	//Si l'email est déjà présent en base
     	if(useracomparer!=null && userref!= null && useracomparer.equals(userref.getLogin())) {
     		
-    	} else {
-    			
-	    	if (password1.equals(password2)) {
-	    		
+    	} 
+    	else {    			
+	    	if (password1.equals(password2)) {	    		
+	    		//Chiffrement du mot de passe
 	    		Random rand = new Random();
         		String validationkey="";
         		for(int i = 0 ; i < 20 ; i++){
@@ -287,7 +349,6 @@ public class ContactController {
 	        		response.sendRedirect("/");
 	        	} else {
 	        		
-	        		     		
 	        		//Envoi de mail de validation de compte 
 		    		SendEmail envoimailvalidation = new SendEmail(mail);
 		        	mail.setHost("smtp.gmail.com");
@@ -321,13 +382,12 @@ public class ContactController {
     		u.setValidaccount(true);
     		u.setValidationkey(null);
     		userDao.Save(u);
-    		return"/connexion/compte-valide";
-    		
+    		return"/connexion/compte-valide";    		
 
     	} else {
     		
     		return "/connexion";
     	}   
     }
-
+    
 }

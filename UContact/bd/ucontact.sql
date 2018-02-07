@@ -428,7 +428,7 @@ ALTER TABLE `champ`
 -- Contraintes pour la table `contact`
 --
 ALTER TABLE `contact`
-  ADD CONSTRAINT `fk_contact_user` FOREIGN KEY (`iduser`) REFERENCES `user` (`iduser`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+  ADD CONSTRAINT `fk_contact_user` FOREIGN KEY (`iduser`) REFERENCES `user` (`iduser`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Contraintes pour la table `donnees`

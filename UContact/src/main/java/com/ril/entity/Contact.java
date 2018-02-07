@@ -1,25 +1,23 @@
 package com.ril.entity;
 
 import java.time.LocalDate;
-
-
-import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.stereotype.Component;
-
+import java.util.List;
 
 public class Contact {
 	private long idcontact;
 	private LocalDate dtcreation;
 	private Boolean favoris;
 	private long iduser;
+	private List<Donnee> donnees;
 	
 	public Contact() {}
 
-	public Contact(long idcontact, LocalDate dtcreation, Boolean favoris, long iduser) {
+	public Contact(long idcontact, LocalDate dtcreation, Boolean favoris, long iduser,List<Donnee> donnees) {
 		this.idcontact = idcontact;
 		this.dtcreation = dtcreation;
 		this.favoris = favoris;
 		this.iduser = iduser;
+		this.donnees=donnees;
 	}
 
 	public long getIdcontact() {
@@ -61,11 +59,19 @@ public class Contact {
 	public void setFavoris(Boolean favoris) {
 		this.favoris = favoris;
 	}
+	
+	public List<Donnee> getDonnees() {
+		return donnees;
+	}
+
+	public void setDonnees(List<Donnee> donnees) {
+		this.donnees = donnees;
+	}
 
 	@Override
 	public String toString() {
 		return "Contact [idcontact=" + idcontact + ", dtcreation=" + dtcreation + ", favoris=" + favoris + ", iduser="
-				+ iduser + "]";
+				+ iduser + ", donnees=" + donnees + "]";
 	}
 
 }

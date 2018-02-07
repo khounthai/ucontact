@@ -28,6 +28,4 @@ public class Application {
                                             //and 1
         return yourTemplateResolver;
     }
-   
-   
 }

@@ -23,7 +23,7 @@ public class TemplateDao {
 	@Autowired
 	ChampDao chamDao;
 
-	public List<Template>  getTemplates(long iduser, long idtemplate) {
+	public List<Template> getTemplates(long iduser, long idtemplate) {
 		List<Template> liste = new ArrayList<Template>();
 		
 		try {
@@ -61,7 +61,6 @@ public class TemplateDao {
 				List<Champ> c=chamDao.getChamps(t.getIdtemplate());
 				t.setChamps(c);
 			});
-			
 			
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block

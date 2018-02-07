@@ -1,4 +1,11 @@
 package com.ril.entity;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
+import java.util.Arrays;
+import java.util.Base64;
+
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.PBEKeySpec;
 
 public class User {
 	
@@ -9,8 +16,10 @@ public class User {
 	private String validationkey; //clé de validation de compte	
 	private Boolean validaccount = false;	
 	private boolean remember;
+	private byte[] hashedPassword;
 	private String confirmpassword;
 	private String role;
+	private static final byte[] salt = Base64.getDecoder().decode("wA1AIEqxQeWY+FgwfUTtBqHmVdrC69Op");
 	
 	public User() {
 	}
@@ -25,18 +34,48 @@ public class User {
 		this.validationkey=validationkey;
 		this.validaccount=validaccount;
 	}
-	
+ 
+	public User(String login, String password, String role) throws NoSuchAlgorithmException, InvalidKeySpecException {
+		this.login=login;
+		setPassword(password);
+		this.role=role;
+	}
+
 	public void setLogin(String login) {
 		this.login = login;
 	}
 
+	public void setHashedPassword(byte[] hashedPassword) {
+		this.hashedPassword = hashedPassword;
+	}
+
+	public byte[] getHashedPassword() {
+		return hashedPassword;
+	}
+
+	public void setPassword(String password) throws NoSuchAlgorithmException, InvalidKeySpecException {
+		this.hashedPassword = hashPassword(password);
+		this.password = password;
+	}
+	
 	public String getPassword() {
 		return password;
 	}
 
-	public void setPassword(String password) {
-		this.password = password;
+	public boolean comparePassword(String password) throws NoSuchAlgorithmException, InvalidKeySpecException
+	{
+		return Arrays.equals(hashedPassword, hashPassword(password));
 	}
+	
+	private byte [] hashPassword(String pwd) throws NoSuchAlgorithmException, InvalidKeySpecException
+	{
+		if (pwd==null)
+			return null;
+		PBEKeySpec spec = new PBEKeySpec(pwd.toCharArray(), salt, 10000, 32 * 8);
+    	SecretKeyFactory skf = SecretKeyFactory.getInstance("PBKDF2WithHMacSHA256");
+    	return skf.generateSecret(spec).getEncoded();
+	}
+	
 
 	public String getRole() {
 		return role;
@@ -68,6 +107,7 @@ public class User {
 
 	public void setValidaccount(Boolean validaccount) {
 		this.validaccount = validaccount;
+
 	}
 
 	public boolean getRemember() {
@@ -99,7 +139,7 @@ public class User {
 	}
 
 	@Override
-	public String toString() {
+	public String toString() {		
 		return "User [iduser=" + iduser + ", login=" + login + ", password=" + password + ", role=" + role + "]";
 	}
 }
