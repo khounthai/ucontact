@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : 127.0.0.1
--- Généré le :  mar. 06 fév. 2018 à 15:57
+-- Généré le :  mer. 07 fév. 2018 à 15:43
 -- Version du serveur :  10.1.30-MariaDB
 -- Version de PHP :  5.6.33
 
@@ -21,6 +21,8 @@ SET time_zone = "+00:00";
 --
 -- Base de données :  `ucontact`
 --
+CREATE DATABASE IF NOT EXISTS `ucontact` DEFAULT CHARACTER SET latin1 COLLATE latin1_swedish_ci;
+USE `ucontact`;
 
 -- --------------------------------------------------------
 
@@ -32,7 +34,6 @@ CREATE TABLE `champ` (
   `idchamp` int(11) NOT NULL,
   `libelle` varchar(50) DEFAULT NULL,
   `multivaleur` tinyint(1) DEFAULT NULL,
-  `actif` tinyint(1) DEFAULT NULL,
   `iddatatype` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -40,21 +41,21 @@ CREATE TABLE `champ` (
 -- Déchargement des données de la table `champ`
 --
 
-INSERT INTO `champ` (`idchamp`, `libelle`, `multivaleur`, `actif`, `iddatatype`) VALUES
-(1, 'Nom', 0, 1, 1),
-(2, 'Prénom', 0, 1, 1),
-(3, 'Portable', 0, 1, 1),
-(4, 'Email', 0, 1, 1),
-(5, 'Ville', 0, 1, 1),
-(6, 'Pays', 0, 1, 1),
-(7, 'Langue', 1, 1, 1),
-(8, 'Profession', 0, 1, 1),
-(9, 'Compétence', 1, 1, 1),
-(10, 'Taille', 0, 1, 3),
-(11, 'Date de naissance', 0, 1, 4),
-(12, 'CP', 0, 1, 1),
-(13, 'Téléphone fixe', 0, 1, 2),
-(14, 'Adresse', 0, 1, 1);
+INSERT INTO `champ` (`idchamp`, `libelle`, `multivaleur`, `iddatatype`) VALUES
+(1, 'Nom', 0, 1),
+(2, 'Prénom', 0, 1),
+(3, 'Portable', 0, 1),
+(4, 'Email', 0, 1),
+(5, 'Ville', 0, 1),
+(6, 'Pays', 0, 1),
+(7, 'Langue', 1, 1),
+(8, 'Profession', 0, 1),
+(9, 'Compétence', 1, 1),
+(10, 'Taille', 0, 3),
+(11, 'Date de naissance', 0, 4),
+(12, 'CP', 0, 1),
+(13, 'Téléphone fixe', 0, 2),
+(14, 'Adresse', 0, 1);
 
 -- --------------------------------------------------------
 
@@ -66,18 +67,19 @@ CREATE TABLE `contact` (
   `idcontact` int(11) NOT NULL,
   `dtcreation` date DEFAULT NULL,
   `favoris` tinyint(1) DEFAULT NULL,
-  `iduser` int(11) DEFAULT NULL
+  `iduser` int(11) DEFAULT NULL,
+  `actif` tinyint(1) NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Déchargement des données de la table `contact`
 --
 
-INSERT INTO `contact` (`idcontact`, `dtcreation`, `favoris`, `iduser`) VALUES
-(1, '2018-02-06', 0, 1),
-(6, '2018-02-06', 0, 1),
-(7, '2018-02-06', 0, 1),
-(8, '2018-02-06', 0, 7);
+INSERT INTO `contact` (`idcontact`, `dtcreation`, `favoris`, `iduser`, `actif`) VALUES
+(1, '2018-02-06', 0, 1, 1),
+(6, '2018-02-06', 0, 1, 0),
+(7, '2018-02-06', 0, 1, 1),
+(9, '2018-02-07', 0, 1, 1);
 
 -- --------------------------------------------------------
 
@@ -137,15 +139,15 @@ INSERT INTO `donnees` (`iddonnee`, `dtenregistrement`, `valeur`, `idcontact`, `i
 (35, '2018-02-06 00:00:00', 'rsrserer', 7, 13),
 (36, '2018-02-06 00:00:00', 't', 7, 3),
 (37, '2018-02-06 00:00:00', '', 7, 4),
-(38, '2018-02-06 00:00:00', 'qze', 8, 1),
-(39, '2018-02-06 00:00:00', 'zqe', 8, 2),
-(40, '2018-02-06 00:00:00', 'ezq', 8, 14),
-(41, '2018-02-06 00:00:00', 'zee', 8, 12),
-(42, '2018-02-06 00:00:00', '', 8, 5),
-(43, '2018-02-06 00:00:00', 'qeqz', 8, 6),
-(44, '2018-02-06 00:00:00', 'eqz', 8, 13),
-(45, '2018-02-06 00:00:00', 'eqze', 8, 3),
-(46, '2018-02-06 00:00:00', 'zqez', 8, 4);
+(47, '2018-02-07 00:00:00', 'eaz', 9, 1),
+(48, '2018-02-07 00:00:00', 'aza', 9, 2),
+(49, '2018-02-07 00:00:00', '', 9, 14),
+(50, '2018-02-07 00:00:00', 'eaeza', 9, 12),
+(51, '2018-02-07 00:00:00', '', 9, 5),
+(52, '2018-02-07 00:00:00', '', 9, 6),
+(53, '2018-02-07 00:00:00', '', 9, 13),
+(54, '2018-02-07 00:00:00', 'daz', 9, 3),
+(55, '2018-02-07 00:00:00', '', 9, 4);
 
 -- --------------------------------------------------------
 
@@ -187,34 +189,35 @@ CREATE TABLE `liencontactgroupe` (
 CREATE TABLE `lientemplatechamp` (
   `idtemplate` int(11) NOT NULL,
   `idchamp` int(11) NOT NULL,
-  `ordre` int(11) NOT NULL
+  `ordre` int(11) NOT NULL,
+  `champactif` tinyint(4) NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Déchargement des données de la table `lientemplatechamp`
 --
 
-INSERT INTO `lientemplatechamp` (`idtemplate`, `idchamp`, `ordre`) VALUES
-(1, 1, 1),
-(1, 2, 2),
-(1, 3, 8),
-(1, 4, 9),
-(1, 5, 5),
-(1, 6, 6),
-(1, 12, 4),
-(1, 13, 7),
-(1, 14, 3),
-(2, 1, 0),
-(2, 2, 0),
-(2, 3, 0),
-(2, 4, 0),
-(2, 5, 0),
-(2, 6, 0),
-(2, 7, 0),
-(2, 8, 0),
-(2, 9, 0),
-(2, 10, 0),
-(2, 11, 0);
+INSERT INTO `lientemplatechamp` (`idtemplate`, `idchamp`, `ordre`, `champactif`) VALUES
+(1, 1, 1, 1),
+(1, 2, 2, 1),
+(1, 3, 8, 1),
+(1, 4, 9, 1),
+(1, 5, 5, 1),
+(1, 6, 6, 1),
+(1, 12, 4, 1),
+(1, 13, 7, 1),
+(1, 14, 3, 1),
+(2, 1, 0, 1),
+(2, 2, 0, 1),
+(2, 3, 0, 1),
+(2, 4, 0, 1),
+(2, 5, 0, 1),
+(2, 6, 0, 1),
+(2, 7, 0, 1),
+(2, 8, 0, 1),
+(2, 9, 0, 1),
+(2, 10, 0, 1),
+(2, 11, 0, 1);
 
 -- --------------------------------------------------------
 
@@ -277,17 +280,17 @@ CREATE TABLE `user` (
   `role` varchar(255) DEFAULT NULL,
   `encryptedkey` binary(32) DEFAULT NULL,
   `validationkey` varchar(30) DEFAULT NULL,
-  `validaccount` tinyint(1) DEFAULT NULL
+  `validaccount` tinyint(1) DEFAULT NULL,
+  `actif` tinyint(1) NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Déchargement des données de la table `user`
 --
 
-INSERT INTO `user` (`iduser`, `login`, `password`, `dtcreation`, `role`, `encryptedkey`, `validationkey`, `validaccount`) VALUES
-(1, 'user1@hotmail.fr', 'user1', '2017-11-20', NULL, 0x2fcc9384143c56f2eafdcb29d6331ffffe0db17b34a5ce7001fca0d7c183c402, NULL, 0),
-(2, 'user2@yahoo.fr', 'user2', '2017-11-20', NULL, 0x0000000000000000000000000000000000000000000000000000000000000000, NULL, NULL),
-(7, 'khounthai.houang@viacesi.fr', 'kh1', NULL, NULL, NULL, NULL, 1);
+INSERT INTO `user` (`iduser`, `login`, `password`, `dtcreation`, `role`, `encryptedkey`, `validationkey`, `validaccount`, `actif`) VALUES
+(1, 'user1@hotmail.fr', 'user1', '2017-11-20', NULL, 0x2fcc9384143c56f2eafdcb29d6331ffffe0db17b34a5ce7001fca0d7c183c402, NULL, 0, 1),
+(2, 'user2@yahoo.fr', 'user2', '2017-11-20', NULL, 0x0000000000000000000000000000000000000000000000000000000000000000, NULL, NULL, 1);
 
 --
 -- Index pour les tables déchargées
@@ -376,7 +379,7 @@ ALTER TABLE `champ`
 -- AUTO_INCREMENT pour la table `contact`
 --
 ALTER TABLE `contact`
-  MODIFY `idcontact` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `idcontact` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT pour la table `datatype`
@@ -388,7 +391,7 @@ ALTER TABLE `datatype`
 -- AUTO_INCREMENT pour la table `donnees`
 --
 ALTER TABLE `donnees`
-  MODIFY `iddonnee` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=47;
+  MODIFY `iddonnee` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=74;
 
 --
 -- AUTO_INCREMENT pour la table `groupe`
@@ -460,7 +463,7 @@ ALTER TABLE `preselection`
 -- Contraintes pour la table `template`
 --
 ALTER TABLE `template`
-  ADD CONSTRAINT `fk_user` FOREIGN KEY (`iduser`) REFERENCES `user` (`iduser`);
+  ADD CONSTRAINT `fk_user` FOREIGN KEY (`iduser`) REFERENCES `user` (`idUser`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

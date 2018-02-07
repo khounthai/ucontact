@@ -9,12 +9,13 @@
 	<p>Modèle de fiche</p>
 
 
-	<form action="#" th:action="@{/fiche-contact-form}" th:object="${templates}">
-	
+	<form action="#" th:action="@{/fiche-contact-form}"
+		th:object="${templates}">
+
 		<ul>
-			<li th:each="t: ${templates}">
-			<input type="radio" checked="${t.isCheck}"/>
-			<label th:text="${t.libelle}" th:field="*{t.idtemplate}"></label></li>
+			<li th:each="t: ${templates}"><input type="radio"
+				checked="${t.isCheck}" /> <label th:text="${t.libelle}"
+				th:field="*{t.idtemplate}"></label></li>
 		</ul>
 
 		<table>
@@ -24,18 +25,18 @@
 				<td>Favoris</td>
 				<td>Id user</td>
 			</tr>
+			
 			<th:block th:each="c :${contacts}">
 				<tr>
 					<td th:text="${c.idcontact}"></td>
-
 					<td th:text="${c.favoris}"></td>
 					<td th:text="${c.iduser}"></td>
-				</tr>
+				</tr>	
 			</th:block>
+			
 		</table>
 
-		<br/><br/>
-		
-		<input type="submit" value="Nouveau contact"/>
+		<br />
+		<br /> <input type="submit" value="Nouveau contact" />
 	</form>
 </div>

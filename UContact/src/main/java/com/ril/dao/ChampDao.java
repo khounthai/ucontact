@@ -18,68 +18,95 @@ public class ChampDao {
 	@Autowired
 	private Database database;
 
-	public List<Champ> getChamps(long idtemplate) {
-		
-			List<Champ> liste=new ArrayList<Champ>();
-		
-			try {
-				Connection conn=database.getSqlConnection();
-			     
-	            String sql = "SELECT a.idchamp,a.libelle,a.multivaleur,a.actif,a.iddatatype FROM champ a " + 
-	            			"join lientemplatechamp b using(idchamp) " + 
-	            			"where b.idtemplate=? and a.actif=1 " + 
-	            			"order by b.ordre";
-	            
-	            sql=String.format(sql, idtemplate);
+	public List<Champ> getChamps(long idtemplate,boolean champactif) {
 
-				System.out.println(sql);
-				
-	            PreparedStatement ps = conn.prepareStatement(sql);
-	            ps.setLong(1,idtemplate);
-	            ResultSet rs = ps.executeQuery();
-	            
-	            while (rs.next()) {                                
-	            	Champ c=new Champ(rs.getLong(1),rs.getString(2),rs.getInt(3),rs.getBoolean(4),rs.getLong(5),new Donnee());	                                
-	                liste.add(c);
-	            }
-	            
-	            rs.close();
-	            ps.close();
-	            
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
-			return liste;		
-		}
-	
-	public Champ getChamp(long idchamp) {
-		
-		Champ c=null;
-	
+		List<Champ> liste = new ArrayList<Champ>();
+
 		try {
-			Connection conn=database.getSqlConnection();
-		     
-            String sql = "SELECT * FROM champ WHERE idchamp=? and a.actif=1";
-            sql=String.format(sql, idchamp);
-            
-            PreparedStatement ps = conn.prepareStatement(sql);
-            ps.setLong(1,idchamp);
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {                                
-            	 c=new Champ(rs.getLong(0),rs.getString(1),rs.getInt(2),rs.getBoolean(3),rs.getLong(4),null);
-            }
-            rs.close();
-            ps.close();
-            
+			Connection conn = database.getSqlConnection();
+
+			String sql = "SELECT a.idchamp,a.libelle,a.multivaleur,a.iddatatype FROM champ a "
+					+ "join lientemplatechamp b using(idchamp) " + "where b.idtemplate=? and b.champactif=? "
+					+ "order by b.ordre";
+
+			sql = String.format(sql, idtemplate);
+
+			System.out.println(sql);
+
+			PreparedStatement ps = conn.prepareStatement(sql);
+			ps.setLong(1, idtemplate);
+			ps.setBoolean(2, champactif);
+			ResultSet rs = ps.executeQuery();
+
+			while (rs.next()) {
+				Champ c = new Champ(rs.getLong(1), rs.getString(2), rs.getBoolean(3), rs.getLong(4), new Donnee());
+				liste.add(c);
+			}
+
+			rs.close();
+			ps.close();
+
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
+		return liste;
+	}
+
+	public Champ getChamp(long idchamp) {
+		Champ c = null;
+
+		try {
+			Connection conn = database.getSqlConnection();
+
+			String sql = "SELECT idchamp,libelle,multivaleur,iddatatype FROM champ WHERE idchamp=?";
+
+			PreparedStatement ps = conn.prepareStatement(sql);
+			ps.setLong(1, idchamp);
+			ResultSet rs = ps.executeQuery();
+			while (rs.next()) {
+				c = new Champ(rs.getLong(1), rs.getString(2), rs.getBoolean(3), rs.getLong(4), new Donnee());
+			}
+			rs.close();
+			ps.close();
+
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 		return c;
 	}
-	
-		
+
+	public int ActiverDesactiver(long idtemplate, long idchamp, boolean actif) throws Exception {
+		int result = 0;
+
+		try {
+			Connection conn = database.getSqlConnection();
+
+			String sql = "update lientemplatechamp set champactif=? where idtemplate=? and idchamp=?";
+
+			PreparedStatement ps = conn.prepareStatement(sql);
+			ps.setBoolean(1, actif);
+			ps.setLong(2, idtemplate);
+			ps.setLong(3, idchamp);
+
+			result = ps.executeUpdate();
+
+			ps.close();
+
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		if (result == 0)
+			throw new Exception(
+					String.format("Erreur dans ChampDao.ActiverDesactive: idtemplate=%d, idchamp=%d, actid=%s",
+							idtemplate, idchamp, actif));
+
+		return result;
+	}
+
 }

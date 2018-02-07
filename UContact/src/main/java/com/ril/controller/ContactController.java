@@ -35,6 +35,7 @@ import com.ril.entity.Contact;
 import com.ril.entity.Mail;
 import com.ril.entity.Template;
 import com.ril.entity.User;
+import com.ril.dao.ChampDao;
 import com.ril.dao.ContactDao;
 import com.ril.dao.UserDao;
 
@@ -51,13 +52,16 @@ public class ContactController {
 	
 	@Autowired
 	TemplateDao templateDao;
+
+	@Autowired
+	ChampDao champDao;
 	
 	public User getUserConnected(HttpSession session, SessionStatus session_status, HttpServletRequest request) {		
 		// Si une session existe
 		if(session.getAttribute("iduser") != null) {
 			
 			// On récupère l'utilisateur grâce à son id
-			User u = userDao.findByIduser((Long)session.getAttribute("iduser")); 
+			User u = userDao.findByIduser((Long)session.getAttribute("iduser"),true); 
 			
 			if (u == null) {
 				session_status.setComplete();
@@ -98,7 +102,7 @@ public class ContactController {
 				// On récupère l'utilisateur grâce à son id et à sa clé
     			if (iduser != 0 && key != null) {
     				
-    				User u = userDao.findByIduserAndEncryptedkey(iduser, key);  
+    				User u = userDao.findByIduserAndEncryptedkey(iduser, key,true);  
     			
 	    	    	if (u != null) {
 	    	    		session.setAttribute("iduser", u.getIduser());
@@ -111,10 +115,9 @@ public class ContactController {
 	}
 	
     @RequestMapping("/connexion")
-    public String connexion(Model Model) { 	
+    public String connexion(Model Model) throws Exception { 	
     	User u = new User();
     	Model.addAttribute("user", u);
-    	
     	return "connexion";
     }
     
@@ -123,9 +126,11 @@ public class ContactController {
     	return "attente-validation";    }
     
     @RequestMapping("/connexion-form")
-    public void connexionForm(@ModelAttribute("user") User user, HttpSession session, SessionStatus session_status, HttpServletResponse response) throws IOException {
+    public void connexionForm(@ModelAttribute("user") User user, HttpSession session, SessionStatus session_status, HttpServletResponse response) throws Exception {
     	//User u = userDao.findByLoginAndHashedPassword(user.getLogin(), user.getHashedPassword());
-    	User u = userDao.findByLoginAndPassword(user.getLogin(), user.getPassword());
+    
+    	User u = userDao.findByLoginAndPassword(user.getLogin(), user.getPassword(),true);
+    	System.out.println("Connexion-form u: "+user);
 
     	if (u == null) {
     		session_status.setComplete();
@@ -162,7 +167,6 @@ public class ContactController {
     	}
     }
     
-
 	@RequestMapping("/")
 	public String greeting(@RequestParam(value = "name", required = false, defaultValue = "World") String name,
 			Model model) {
@@ -201,21 +205,20 @@ public class ContactController {
 
 	@RequestMapping("/contacts")
 	public String affichageContacts(@ModelAttribute("templates") ArrayList<Template> templates, HttpSession session,
-			Model model) {
+			Model model) throws Exception {
 
 		long iduser = (long) session.getAttribute("iduser");
-		User u = userDao.findByIduser(iduser);
+		User u = userDao.findByIduser(iduser,true);
 
-		if (u != null) {			
-			List<Contact> contacts = contactDao.findByIduser(iduser);
-			model.addAttribute("contacts", contacts);
+		if (u != null) {
+			List<Contact> contacts = contactDao.findByIduser(iduser,true);
 			System.out.println(contacts+"; "+session.getAttribute("iduser"));
 			
-			contacts.forEach(x->{
+			contacts.forEach(x->{		
 				System.out.println(x);
 			});
 			
-			templates = (ArrayList<Template>) templateDao.getTemplates(0, 0);
+			templates = (ArrayList<Template>) templateDao.getTemplates(0, 0,true);
 
 			// s'il y a q'un template, il est sélectionné
 			if (templates.size() == 1) {
@@ -225,19 +228,23 @@ public class ContactController {
 
 			System.out.println(templates.size());
 			model.addAttribute("templates", templates);
+			model.addAttribute("contacts", contacts);
+
+			return "contacts";
+		}else
+		{	
+			model.addAttribute("user",new User());
+			
+			return "connexion";	
 		}
-
-		return "contacts";
 	}
-
-
+	
 	@GetMapping("/fiche-contact-form")
-	public String ficheContactForm(HttpSession session, Model model) {
-
+	public String ficheContactForm(HttpSession session, Model model) throws Exception {
 		long idtemplate = (long) session.getAttribute("idtemplate");
 		long iduser = (long) session.getAttribute("iduser");
 
-		List<Template> templates = templateDao.getTemplates(iduser, idtemplate);
+		List<Template> templates = templateDao.getTemplates(iduser, idtemplate,true);
 		Template t = null;
 
 		System.out.println(templates.size());
@@ -275,7 +282,7 @@ public class ContactController {
 			System.out.println("t:c= "+x);
 		});
 
-		User u = userDao.findByIduser((long) session.getAttribute("iduser"));
+		User u = userDao.findByIduser((long) session.getAttribute("iduser"),true);
 		if (u == null)
 			response.sendRedirect("/fiche-contact-form");
 		else {
@@ -294,15 +301,11 @@ public class ContactController {
 			long idcontact = contactDao.Save(c);
 			System.out.println("id contact créé: " +idcontact);
 			if (idcontact>0)
-			{			// Enregistrer les données du contact
+			{	// Enregistrer les données du contact
 				template.getChamps().forEach(x -> {
 					x.getDonnee().setDtenregistrement(LocalDate.now());
 					x.getDonnee().setIdcontact(idcontact);
 					x.getDonnee().setIdchamp(x.getIdchamp());
-					
-					long r = donneeDao.Save(x.getDonnee());
-					
-					System.out.println("donnee sauvegardée: " + r);
 				});
 			}
 
@@ -311,18 +314,17 @@ public class ContactController {
     }
     
     @RequestMapping("/inscription")
-    public String inscription(Model model, User user) {
-    	
+    public String inscription(Model model, User user) {    	
     	return "inscription";	
     }
     
     @PostMapping("/inscription-form")
-    public void inscriptionForm(@ModelAttribute("user") User user, Model model ,HttpSession session, HttpServletResponse response, Mail mail) throws IOException {
+    public void inscriptionForm(@ModelAttribute("user") User user, Model model ,HttpSession session, HttpServletResponse response, Mail mail) throws Exception {
     	
     	String password1 = user.getPassword();
     	String password2 = user.getConfirmpassword();
     	String useracomparer = user.getLogin();    	
-    	User userref = userDao.findByLogin(user.getLogin());
+    	User userref = userDao.findByLogin(user.getLogin(),true);
     	
     	//Si l'email est déjà présent en base
     	if(useracomparer!=null && userref!= null && useracomparer.equals(userref.getLogin())) {
@@ -343,7 +345,7 @@ public class ContactController {
         		
 	    		// Ajout en base de l'utilisateur
         		long result = userDao.Save(user);       	
-        		User u=userDao.findByIduser(result);
+        		User u=userDao.findByIduser(result,true);
         		
 	        	if (u == null) {	        		
 	        		response.sendRedirect("/");
@@ -374,9 +376,9 @@ public class ContactController {
     }
     
     @RequestMapping(value={"/validation/{iduser}/{validationkey}"}, method=RequestMethod.GET)
-    public String validationCompte(Model model, @PathVariable("iduser") Long iduser, @PathVariable("validationkey") String validationkey) {
+    public String validationCompte(Model model, @PathVariable("iduser") Long iduser, @PathVariable("validationkey") String validationkey) throws Exception {
     	
-    	User u = userDao.findByIduserAndValidationkey(iduser, validationkey);
+    	User u = userDao.findByIduserAndValidationkey(iduser, validationkey,true);
     	 System.out.println(u+" "+iduser);
     	if (u != null) {
     		u.setValidaccount(true);

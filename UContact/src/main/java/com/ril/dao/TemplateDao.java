@@ -23,7 +23,7 @@ public class TemplateDao {
 	@Autowired
 	ChampDao chamDao;
 
-	public List<Template> getTemplates(long iduser, long idtemplate) {
+	public List<Template> getTemplates(long iduser, long idtemplate,boolean champactif) {
 		List<Template> liste = new ArrayList<Template>();
 		
 		try {
@@ -58,7 +58,7 @@ public class TemplateDao {
 			ps.close();
 									
 			liste.forEach(t->{
-				List<Champ> c=chamDao.getChamps(t.getIdtemplate());
+				List<Champ> c=chamDao.getChamps(t.getIdtemplate(),champactif);
 				t.setChamps(c);
 			});
 			

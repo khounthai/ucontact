@@ -20,11 +20,12 @@ public class User {
 	private String confirmpassword;
 	private String role;
 	private static final byte[] salt = Base64.getDecoder().decode("wA1AIEqxQeWY+FgwfUTtBqHmVdrC69Op");
+	private boolean actif;
 	
 	public User() {
 	}
 
-	public User(long iduser, String login, String password, String role,byte[] encryptedkey,String validationkey,boolean validaccount ) {		
+	public User(long iduser, String login, String password, String role,byte[] encryptedkey,String validationkey,boolean validaccount,boolean actif ) {		
 		this.iduser = iduser;
 		this.login = login;
 		this.password = password;
@@ -33,6 +34,7 @@ public class User {
 		this.remember = false;
 		this.validationkey=validationkey;
 		this.validaccount=validaccount;
+		this.actif=actif;
 	}
  
 	public User(String login, String password, String role) throws NoSuchAlgorithmException, InvalidKeySpecException {
@@ -136,6 +138,14 @@ public class User {
 
 	public String getLogin() {
 		return login;
+	}
+	
+	public boolean isActif() {
+		return actif;
+	}
+
+	public void setActif(boolean actif) {
+		this.actif = actif;
 	}
 
 	@Override

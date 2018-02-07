@@ -11,7 +11,6 @@ public class Donnee {
 	private long idchamp;
 	private long idcontact;
 	private String valeur;
-	
 	@DateTimeFormat(pattern = "dd/MM/yyyy")	
 	private LocalDate dtenregistrement;
 	
@@ -71,6 +70,5 @@ public class Donnee {
 		return "Donnee [iddonnee=" + iddonnee + ", idchamp=" + idchamp + ", idcontact=" + idcontact + ", valeur="
 				+ valeur + ", dtenregistrement=" + dtenregistrement + "]";
 	}
-	
-	
+
 }
