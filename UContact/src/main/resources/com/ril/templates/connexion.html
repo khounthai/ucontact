@@ -2,7 +2,7 @@
 	<br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
 	<form action="#" method="post" th:object="${user}" th:action="@{/connexion-form}">
 		Adresse email : <input type="email" th:field="*{login}" /><br />
-		Mot de passe : <input type="password" th:field="*{password}" /><br />
+		Mot de passe : <input type="password" th:field="*{password}" /> <a th:href="@{/mot-de-passe-oublie}" title="Mot de passe oublie">Mot de passe oublie</a><br />
 		Se souvenir de moi : <input type="checkbox" th:field="*{remember}" />
 		<input type="submit" value="Submit" />
 	</form>

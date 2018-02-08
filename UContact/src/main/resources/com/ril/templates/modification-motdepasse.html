@@ -1,0 +1,12 @@
+<div class="container" th:fragment="content">
+	<br /><br />
+	<form action="#" method="post" th:object="${user}" th:action="@{/modification-mot-de-passe-form}">
+		Nouveau mot de passe : <input type="password" th:field="*{password}" /><br />
+		Confirmation nouveau mot de passe : <input type="password" th:field="*{confirmpassword}" /><br /><br />
+		<input type="hidden" th:value="*{iduser}" />
+		
+		<input type="submit" value="Confirmer" />
+		
+		
+	</form>
+</div>

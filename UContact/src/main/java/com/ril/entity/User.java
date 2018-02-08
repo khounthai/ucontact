@@ -2,6 +2,7 @@ package com.ril.entity;
 
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
+import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.Base64;
 
@@ -28,6 +29,7 @@ public class User {
 	private String validationkey; //clé de validation de compte
 	@Column(nullable=false)
 	private Boolean validaccount = false; 
+	private Timestamp timestampModifPwd;
 	
 	@Transient
 	private String password;
@@ -40,6 +42,8 @@ public class User {
 
 	@Column(columnDefinition="BINARY(32)", nullable=true)
 	private byte[] encryptedkey;
+	@Column(columnDefinition="BINARY(32)", nullable=true)
+	private byte[] encryptedkeypwd;
 	private String role;
 	@Transient
 	private boolean remember;
@@ -119,6 +123,14 @@ public class User {
 
 	}
 	
+	public byte[] getEncryptedkeypwd() {
+		return encryptedkeypwd;
+	}
+
+	public void setEncryptedkeypwd(byte[] encryptedkeypwd) {
+		this.encryptedkeypwd = encryptedkeypwd;
+	}
+
 	public String getConfirmpassword() {
 		return confirmpassword;
 	}
@@ -142,6 +154,14 @@ public class User {
 	public void setValidaccount(Boolean validaccount) {
 		this.validaccount = validaccount;
 
+	}
+
+	public Timestamp getTimestampModifPwd() {
+		return timestampModifPwd;
+	}
+
+	public void setTimestampModifPwd(Timestamp timestampModifPwd) {
+		this.timestampModifPwd = timestampModifPwd;
 	}
 
 	@Override

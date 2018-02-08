@@ -12,6 +12,7 @@ public interface UserDao extends CrudRepository<User,Long> {
 	public User findByIduserAndValidationkey(Long iduser, String validationkey);
 	public User findByIduser(Long id_user);		
 	public User findByIduserAndEncryptedkey(Long id_user, byte[] key);
+	public User findByIduserAndEncryptedkeypwd(Long iduser, byte[] key);
 
 	
 }
