@@ -5,8 +5,12 @@
 	<h2>Fiche d'un contact</h2>
 
 	<br /> <br />
-
-	<form action="#" method="post" th:action="@{/enregistrer-contact}" th:object="${template}">	
+	
+	<form action="#" method="post" th:action="@{/enregistrer-contact}" th:object="${template}">
+		 
+		 <input type="text" th:value="${idcontact}" name="idcontact"/>
+		
+		<br/>
 		<table>
 			<th:block th:each="c, stat :*{champs}">
 				<tr>

@@ -5,6 +5,8 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Time;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,24 +53,36 @@ public class DonneeDao {
 		return result;
 	}
 
-	public List<Donnee> findByIdContact(long idcontact) {
+	public List<Donnee> findByIdContact(long idcontact,Date date) {
 
 		List<Donnee> liste = new ArrayList<Donnee>();
 
 		try {
 			Connection conn = (Connection) database.getSqlConnection();
 
-			String sql = "select iddonnee,idchamp,idcontact,valeur,dtenregistrement from donnees where idcontact=?";
+			//String sql = "select iddonnee,idchamp,idcontact,valeur,dtenregistrement from donnees where idcontact=?";
+			
+			String sql ="select d1.iddonnee,d1.idchamp,d1.idcontact,d1.valeur,d1.dtenregistrement from donnees d1 "+
+						"join ( " +
+						"select idchamp,idcontact,max(dtenregistrement) as dtenregistrement from donnees "+ 
+						"where (idcontact=? ) "+
+						"group by idchamp,idcontact "+
+						"having  max(dtenregistrement) <= ? "+
+						") d2 on (d1.idchamp=d2.idchamp and d1.dtenregistrement=d2.dtenregistrement) "+
+						"where d1.idcontact=? "+
+						"order by d1.idchamp";
+
 
 			PreparedStatement ps = (PreparedStatement) conn.prepareStatement(sql);
 			ps.setLong(1, idcontact);
+			ps.setDate(2, date);
+			ps.setLong(3, idcontact);
 
 			System.out.println(sql);
 			ResultSet rs = ps.executeQuery();
-
+			
 			while (rs.next()) {
-				Donnee d = new Donnee(rs.getLong(1), rs.getLong(2), rs.getLong(3), rs.getString(4),
-						rs.getDate(5).toLocalDate());
+				Donnee d = new Donnee(rs.getLong(1), rs.getLong(2), rs.getLong(3), rs.getString(4),rs.getDate(5).toLocalDate());
 				liste.add(d);
 			}
 

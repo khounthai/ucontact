@@ -23,7 +23,7 @@ public class ContactDao {
 	@Autowired 
 	private DonneeDao donneeDao;
 
-	public List<Contact> findByIduser(long iduser,boolean actif ) {
+	public List<Contact> findByIduser(long iduser,boolean actif,Date date ) {
 
 		List<Contact> liste = new ArrayList<Contact>();
 
@@ -47,7 +47,7 @@ public class ContactDao {
 			ps.close();
 			
 			liste.forEach(x->{
-				List<Donnee> listeDonnees=donneeDao.findByIdContact(x.getIdcontact());
+				List<Donnee> listeDonnees=donneeDao.findByIdContact(x.getIdcontact(),date);
 				x.setDonnees(listeDonnees);
 			});
 			
@@ -59,7 +59,7 @@ public class ContactDao {
 		return liste;
 	}
 	
-	public Contact findByIdcontact(long idcontact,boolean actif ) {
+	public Contact findByIdcontact(long idcontact,boolean actif, Date date ) {
 		 Contact c=null;
 
 		try {
@@ -81,7 +81,7 @@ public class ContactDao {
 			ps.close();			
 							
 			if (c!=null)
-				c.setDonnees(donneeDao.findByIdContact(c.getIdcontact()));
+				c.setDonnees(donneeDao.findByIdContact(c.getIdcontact(),date));
 						
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
