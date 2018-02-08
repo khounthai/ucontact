@@ -8,6 +8,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.sql.Date;
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.EnumSet;
@@ -216,12 +217,20 @@ public class ContactController {
 	@RequestMapping("/contacts")
 	public String affichageContacts(@ModelAttribute("templates") ArrayList<Template> templates, HttpSession session,
 			Model model) throws Exception {
-
+	
 		long iduser = (long) session.getAttribute("iduser");
 		User u = userDao.findByIduser(iduser, true);
 
 		if (u != null) {
-			List<Contact> contacts = contactDao.findByIduser(iduser, true, Date.valueOf(LocalDate.now()));
+			/*java.util.Date d = new java.util.Date();
+			SimpleDateFormat parser = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+			java.util.Date date = parser.parse("08/02/2018 09:40:00");
+			Timestamp t = new Timestamp(date.getTime());*/
+			
+			Timestamp t = new Timestamp(new java.util.Date().getTime());
+			
+			List<Contact> contacts = contactDao.findByIduser(iduser, true, t);
+			
 			System.out.println(contacts + "; " + session.getAttribute("iduser"));
 
 			contacts.forEach(x -> {
@@ -260,7 +269,7 @@ public class ContactController {
 		} catch (Exception e) {
 		}
 
-		System.err.println("fiche-contact-form: idcontact=" + idcontact);
+		System.out.println("fiche-contact-form: idcontact=" + idcontact);
 
 		long idtemplate = (long) session.getAttribute("idtemplate");
 		long iduser = (long) session.getAttribute("iduser");
@@ -270,6 +279,7 @@ public class ContactController {
 
 		System.out.println(templates.size());
 
+		//récupère qu'un template : le template standard, pas encore de gestion de template personnalisé 
 		if (templates.size() == 1) {
 			t = templates.get(0);
 		}
@@ -284,7 +294,7 @@ public class ContactController {
 		});
 
 		// renseigne les données du contact
-		Contact c = contactDao.findByIdcontact(idcontact, true, Date.valueOf(LocalDate.now()));
+		Contact c = contactDao.findByIdcontact(idcontact, true, new Timestamp(new java.util.Date().getTime()));
 		if (c != null) {
 			for (Champ item1 : t.getChamps()) {
 
@@ -309,26 +319,26 @@ public class ContactController {
 		System.out.println("idcontact: " + strIdContact);
 
 		// récuère le contact passé en paramètre
-		long idcontact=0;
-		
+		long idcontact = 0;
 		try {
 			idcontact = Long.parseLong(strIdContact);
-		} catch (Exception e) {			
+		} catch (Exception e) {
 		}
 
+		
 		User u = userDao.findByIduser((long) session.getAttribute("iduser"), true);
 
 		if (u == null)
 			response.sendRedirect("/fiche-contact-form");
 		else {
 
-			Contact c = contactDao.findByIdcontact(idcontact, true, Date.valueOf(LocalDate.now()));
-			
+			Contact c = contactDao.findByIdcontact(idcontact, true, new Timestamp(new java.util.Date().getTime()));
+
 			if (c == null) {
 				// Enregistrer un contact
 				c = new Contact();
 				c.setIduser(u.getIduser());
-				c.setdtcreation(LocalDate.now());
+				c.setDtcreation(Date.valueOf(LocalDate.now()));
 				c.setFavoris(false);
 				c.setActif(true);
 
@@ -336,11 +346,14 @@ public class ContactController {
 				System.out.println("id contact créé: " + idcontact);
 			}
 
-			final long idcontact_donnee=idcontact;
-			
+			final long idcontact_donnee = idcontact;
+
 			if (idcontact > 0) { // Enregistrer les données du contact
 				template.getChamps().forEach(x -> {
-					x.getDonnee().setDtenregistrement(LocalDate.now());
+					java.util.Date date = new java.util.Date();
+					Timestamp now = new Timestamp(date.getTime());
+
+					x.getDonnee().setDtenregistrement(now);
 					x.getDonnee().setIdcontact(idcontact_donnee);
 					x.getDonnee().setIdchamp(x.getIdchamp());
 
@@ -358,6 +371,22 @@ public class ContactController {
 		}
 	}
 
+	@GetMapping("/supprimer-contact/{idcontact}")
+	public void supprimerUnContact(@PathVariable("idcontact") String stringIdContact,HttpServletResponse response)
+			throws Exception {
+
+		long idcontact = 0;
+
+		try {
+			idcontact = Long.parseLong(stringIdContact);
+		} catch (Exception e) {
+		}
+
+		System.out.println("supprimer-contact: idcontact=" + idcontact);
+		contactDao.ActiverDesactiverByIdContact(idcontact,false);		
+		response.sendRedirect("/contacts");
+	}
+	
 	@RequestMapping("/inscription")
 	public String inscription(Model model, User user) {
 		return "inscription";
@@ -439,5 +468,4 @@ public class ContactController {
 			return "/connexion";
 		}
 	}
-
 }

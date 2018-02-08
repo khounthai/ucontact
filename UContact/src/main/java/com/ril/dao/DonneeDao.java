@@ -32,7 +32,7 @@ public class DonneeDao {
 
 			PreparedStatement ps = conn.prepareStatement(sql, com.mysql.jdbc.Statement.RETURN_GENERATED_KEYS);
 
-			ps.setDate(1, Date.valueOf(d.getDtenregistrement()));
+			ps.setTimestamp(1,d.getDtenregistrement());
 			ps.setString(2, d.getValeur());
 			ps.setLong(3, d.getIdcontact());
 			ps.setLong(4, d.getIdchamp());
@@ -53,7 +53,7 @@ public class DonneeDao {
 		return result;
 	}
 
-	public List<Donnee> findByIdContact(long idcontact,Date date) {
+	public List<Donnee> findByIdContact(long idcontact,Timestamp date) {
 
 		List<Donnee> liste = new ArrayList<Donnee>();
 
@@ -64,25 +64,26 @@ public class DonneeDao {
 			
 			String sql ="select d1.iddonnee,d1.idchamp,d1.idcontact,d1.valeur,d1.dtenregistrement from donnees d1 "+
 						"join ( " +
-						"select idchamp,idcontact,max(dtenregistrement) as dtenregistrement from donnees "+ 
-						"where (idcontact=? ) "+
-						"group by idchamp,idcontact "+
-						"having  max(dtenregistrement) <= ? "+
+						"select idchamp,idcontact,max(dtenregistrement) as dtenregistrement "+
+						"   from donnees "+
+						"   where (idcontact=? and dtenregistrement <  ?) "+
+						"   group by  idchamp,idcontact "+
 						") d2 on (d1.idchamp=d2.idchamp and d1.dtenregistrement=d2.dtenregistrement) "+
-						"where d1.idcontact=? "+
-						"order by d1.idchamp";
-
-
+						"where d1.idcontact=?" ;
+			
 			PreparedStatement ps = (PreparedStatement) conn.prepareStatement(sql);
 			ps.setLong(1, idcontact);
-			ps.setDate(2, date);
+			ps.setTimestamp(2, date);
 			ps.setLong(3, idcontact);
 
 			System.out.println(sql);
+			
+			//System.out.println("timestamp:"+date.toString());
+			
 			ResultSet rs = ps.executeQuery();
 			
 			while (rs.next()) {
-				Donnee d = new Donnee(rs.getLong(1), rs.getLong(2), rs.getLong(3), rs.getString(4),rs.getDate(5).toLocalDate());
+				Donnee d = new Donnee(rs.getLong(1), rs.getLong(2), rs.getLong(3), rs.getString(4),rs.getTimestamp(5));
 				liste.add(d);
 			}
 
@@ -115,8 +116,7 @@ public class DonneeDao {
 			ResultSet rs = ps.executeQuery();
 
 			while (rs.next()) {
-				Donnee d = new Donnee(rs.getLong(1), rs.getLong(2), rs.getLong(3), rs.getString(4),
-						rs.getDate(5).toLocalDate());
+				Donnee d = new Donnee(rs.getLong(1), rs.getLong(2), rs.getLong(3), rs.getString(4),rs.getTimestamp(5));
 				liste.add(d);
 			}
 

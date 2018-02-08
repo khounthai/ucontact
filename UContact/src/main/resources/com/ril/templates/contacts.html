@@ -39,6 +39,7 @@
 					<th:block th:each="d :${contacts[__${stat.index}__].donnees}">					
 						<td th:text="${d.valeur}"></td>						
 					</th:block>
+					<td><a th:href="@{'/supprimer-contact/'+${c.idcontact}}" th:text="Supprimer"/></td>
 				</tr>	
 				
 			</th:block>			

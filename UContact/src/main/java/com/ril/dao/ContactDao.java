@@ -3,6 +3,7 @@ package com.ril.dao;
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +24,7 @@ public class ContactDao {
 	@Autowired 
 	private DonneeDao donneeDao;
 
-	public List<Contact> findByIduser(long iduser,boolean actif,Date date ) {
+	public List<Contact> findByIduser(long iduser,boolean actif,Timestamp date ) {
 
 		List<Contact> liste = new ArrayList<Contact>();
 
@@ -39,7 +40,7 @@ public class ContactDao {
 			ResultSet rs = ps.executeQuery();
 
 			while (rs.next()) {
-				Contact c = new Contact(rs.getLong(1), rs.getDate(2).toLocalDate(), rs.getBoolean(3), iduser, rs.getBoolean(4), new ArrayList<Donnee>() );
+				Contact c = new Contact(rs.getLong(1), rs.getDate(2), rs.getBoolean(3), iduser, rs.getBoolean(4), new ArrayList<Donnee>() );
 				liste.add(c);
 			}
 
@@ -59,7 +60,7 @@ public class ContactDao {
 		return liste;
 	}
 	
-	public Contact findByIdcontact(long idcontact,boolean actif, Date date ) {
+	public Contact findByIdcontact(long idcontact,boolean actif, Timestamp date ) {
 		 Contact c=null;
 
 		try {
@@ -74,7 +75,7 @@ public class ContactDao {
 			ResultSet rs = ps.executeQuery();
 
 			while (rs.next()) {
-				 c = new Contact(rs.getLong(1), rs.getDate(2).toLocalDate(), rs.getBoolean(3), 0, rs.getBoolean(4), new ArrayList<Donnee>() );				
+				 c = new Contact(rs.getLong(1), rs.getDate(2), rs.getBoolean(3), 0, rs.getBoolean(4), new ArrayList<Donnee>() );				
 			}
 
 			rs.close();
@@ -105,7 +106,7 @@ public class ContactDao {
 			PreparedStatement ps = (PreparedStatement) conn.prepareStatement(sql,Statement.RETURN_GENERATED_KEYS);
 
 			ps.setLong(1, c.getIdcontact());
-			ps.setDate(2, Date.valueOf(c.getdtcreation()));
+			ps.setDate(2, c.getDtcreation());
 			ps.setBoolean(3, c.getFavoris());
 			ps.setLong(4, c.getIduser());
 			ps.setBoolean(5, c.getActif());

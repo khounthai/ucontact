@@ -1,5 +1,6 @@
 package com.ril.entity;
 
+import java.sql.Timestamp;
 import java.time.LocalDate;
 
 import org.springframework.format.annotation.DateTimeFormat;
@@ -11,12 +12,12 @@ public class Donnee {
 	private long idchamp;
 	private long idcontact;
 	private String valeur;
-	@DateTimeFormat(pattern = "dd/MM/yyyy")	
-	private LocalDate dtenregistrement;
+	
+	private Timestamp dtenregistrement;
 	
 	public Donnee() {}
 
-	public Donnee(long iddonnee, long idchamp, long idcontact, String valeur, LocalDate dtenregistrement) {
+	public Donnee(long iddonnee, long idchamp, long idcontact, String valeur, Timestamp dtenregistrement) {
 		super();
 		this.iddonnee = iddonnee;
 		this.idchamp = idchamp;
@@ -57,11 +58,11 @@ public class Donnee {
 		this.valeur = valeur;
 	}
 
-	public LocalDate getDtenregistrement() {
+	public Timestamp getDtenregistrement() {
 		return dtenregistrement;
 	}
 
-	public void setDtenregistrement(LocalDate dtenregistrement) {
+	public void setDtenregistrement(Timestamp dtenregistrement) {
 		this.dtenregistrement = dtenregistrement;
 	}
 
