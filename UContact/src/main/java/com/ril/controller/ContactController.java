@@ -31,7 +31,9 @@ import com.ril.SendEmail;
 import com.ril.dao.DonneeDao;
 import com.ril.dao.TemplateDao;
 import com.ril.entity.Categories;
+import com.ril.entity.Champ;
 import com.ril.entity.Contact;
+import com.ril.entity.Donnee;
 import com.ril.entity.Mail;
 import com.ril.entity.Template;
 import com.ril.entity.User;
@@ -227,9 +229,10 @@ public class ContactController {
 			}
 
 			System.out.println(templates.size());
+			
 			model.addAttribute("templates", templates);
 			model.addAttribute("contacts", contacts);
-
+			
 			return "contacts";
 		}else
 		{	
@@ -239,8 +242,17 @@ public class ContactController {
 		}
 	}
 	
-	@GetMapping("/fiche-contact-form")
-	public String ficheContactForm(HttpSession session, Model model) throws Exception {
+	@GetMapping("/fiche-contact-form/{idcontact}")
+	public String ficheContactForm(@PathVariable("idcontact") String stringIdContact,HttpSession session, Model model) throws Exception {
+		
+		long idcontact=0;
+		
+		try {
+				idcontact=Long.parseLong(stringIdContact);
+		}catch (Exception e) {}
+		
+		System.err.println("fiche-contact-form: idcontact="+idcontact);
+		
 		long idtemplate = (long) session.getAttribute("idtemplate");
 		long iduser = (long) session.getAttribute("iduser");
 
@@ -262,6 +274,22 @@ public class ContactController {
 			System.out.println(x);
 		});
 
+		
+		//renseigne les données du contact
+		Contact c=contactDao.findByIdcontact(idcontact,true);
+		if (c!=null)
+		{						
+			for (Champ item1 : t.getChamps()){
+				
+				for (Donnee item2:c.getDonnees()) {
+					if (item1.getIdchamp()==item2.getIdchamp())
+					{
+						item1.setDonnee(item2);
+					}
+				}
+			}
+		}
+		
 		model.addAttribute("template", t);
 		return "fiche-contact-form";
 	}
@@ -287,10 +315,11 @@ public class ContactController {
 			response.sendRedirect("/fiche-contact-form");
 		else {
 			// Enregistrer un contact
-			Contact c = new Contact();
+			Contact c = new Contact();			
 			c.setIduser(u.getIduser());
 			c.setdtcreation(LocalDate.now());
 			c.setFavoris(false);
+			c.setActif(true);
 			
 			if (contactDao==null)
 				System.out.println("contactDao null");
@@ -306,9 +335,17 @@ public class ContactController {
 					x.getDonnee().setDtenregistrement(LocalDate.now());
 					x.getDonnee().setIdcontact(idcontact);
 					x.getDonnee().setIdchamp(x.getIdchamp());
+					
+					//enregistre les données en base
+					try {
+						donneeDao.Save(x.getDonnee());
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 				});
 			}
-
+			
 			response.sendRedirect("/contacts");
 		}
     }

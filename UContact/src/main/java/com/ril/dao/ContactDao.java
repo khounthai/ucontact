@@ -58,6 +58,39 @@ public class ContactDao {
 
 		return liste;
 	}
+	
+	public Contact findByIdcontact(long idcontact,boolean actif ) {
+		 Contact c=null;
+
+		try {
+			Connection conn = (Connection) database.getSqlConnection();
+
+			String sql= "select idcontact,dtcreation,favoris,actif from contact where idcontact=? and actif=?";
+			PreparedStatement ps = (PreparedStatement) conn.prepareStatement(sql);			
+			ps.setLong(1, idcontact);
+			ps.setBoolean(2, actif);
+
+			System.out.println(sql);
+			ResultSet rs = ps.executeQuery();
+
+			while (rs.next()) {
+				 c = new Contact(rs.getLong(1), rs.getDate(2).toLocalDate(), rs.getBoolean(3), 0, rs.getBoolean(4), new ArrayList<Donnee>() );				
+			}
+
+			rs.close();
+			ps.close();			
+							
+			if (c!=null)
+				c.setDonnees(donneeDao.findByIdContact(c.getIdcontact()));
+						
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return c;
+	}
+
 
 	public long Save(Contact c) {
 		long result = 0;
@@ -65,7 +98,7 @@ public class ContactDao {
 		try {
 			Connection conn = (Connection) database.getSqlConnection();
 
-			String sql = "INSERT INTO CONTACT (idcontact,dtcreation,favoris,iduser,actif) VALUES (?,?,?,?;?) "+
+			String sql = "INSERT INTO CONTACT (idcontact,dtcreation,favoris,iduser,actif) VALUES (?,?,?,?,?) "+
 						"ON DUPLICATE KEY UPDATE dtcreation=VALUES(dtcreation), favoris=VALUES(favoris), iduser=VALUES(iduser), actif=VALUES(actif)";
 
 			System.out.println(sql);
@@ -85,7 +118,7 @@ public class ContactDao {
 
 			rspk.close();
 			ps.close();
-
+		
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

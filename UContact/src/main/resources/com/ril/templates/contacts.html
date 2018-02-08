@@ -9,8 +9,7 @@
 	<p>Modèle de fiche</p>
 
 
-	<form action="#" th:action="@{/fiche-contact-form}"
-		th:object="${templates}">
+	<form action="#" th:action="@{/fiche-contact-form/0}" th:object="${templates}">
 
 		<ul>
 			<li th:each="t: ${templates}"><input type="radio"
@@ -18,22 +17,31 @@
 				th:field="*{t.idtemplate}"></label></li>
 		</ul>
 
-		<table>
+		<table border='1'>
 			<tr>
 				<td>Id contact</td>
 				<td>Date creation</td>
 				<td>Favoris</td>
 				<td>Id user</td>
+				<div th:if="${templates.size()==1}">
+							<th:block th:each="c: ${templates[0].champs}">					
+						<td th:text="${c.libelle}"></td>						
+				</th:block> 
+				</div>
 			</tr>
 			
-			<th:block th:each="c :${contacts}">
-				<tr>
-					<td th:text="${c.idcontact}"></td>
+			<th:block th:each="c,stat :${contacts}">
+				<tr>				
+					<td><a th:href="@{'/fiche-contact-form/'+${c.idcontact}}" th:text="${c.idcontact}" /></td>
+					<td th:text="${c.dtcreation}"></td>
 					<td th:text="${c.favoris}"></td>
 					<td th:text="${c.iduser}"></td>
+					<th:block th:each="d :${contacts[__${stat.index}__].donnees}">					
+						<td th:text="${d.valeur}"></td>						
+					</th:block>
 				</tr>	
-			</th:block>
-			
+				
+			</th:block>			
 		</table>
 
 		<br />
