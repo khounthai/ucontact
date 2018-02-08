@@ -19,9 +19,12 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -120,61 +123,73 @@ public class ContactController {
 		return null;
 	}
 
-	@RequestMapping("/connexion")
-	public String connexion(Model Model) throws Exception {
-		User u = new User();
-		Model.addAttribute("user", u);
-		return "connexion";
-	}
-
-	@RequestMapping("/attente-validation")
-	public String attentevalidation(Model model, User user) {
-		return "attente-validation";
-	}
-
-	@RequestMapping("/connexion-form")
-	public void connexionForm(@ModelAttribute("user") User user, HttpSession session, SessionStatus session_status,
-			HttpServletResponse response) throws Exception {
-		// User u = userDao.findByLoginAndHashedPassword(user.getLogin(),
-		// user.getHashedPassword());
-
-		User u = userDao.findByLoginAndPassword(user.getLogin(), user.getPassword(), true);
-		System.out.println("Connexion-form u: " + user);
-
-		if (u == null) {
-			session_status.setComplete();
-
-			response.sendRedirect("/connexion");
-		} else {
-			session.setAttribute("iduser", u.getIduser());
-
-			if (user.getRemember()) {
-
-				Cookie cookie = new Cookie("iduser", "" + u.getIduser());
-				cookie.setMaxAge(2147483647);
-				response.addCookie(cookie);
-
-				byte[] key = new byte[32];
-				try {
-					SecureRandom.getInstanceStrong().nextBytes(key);
-					cookie = new Cookie("key", Base64.getEncoder().encodeToString(key));
-					cookie.setMaxAge(2147483647);
-					response.addCookie(cookie);
-
-					MessageDigest digest = MessageDigest.getInstance("SHA-256");
-					byte[] encodedHash = digest.digest(key);
-					u.setEncryptedkey(encodedHash);
-
-					userDao.Save(u);
-
-				} catch (NoSuchAlgorithmException e) {
-					e.printStackTrace();
-				}
-			}
-
-			response.sendRedirect("/contacts");
-		}
-	}
+    @RequestMapping(value={"/connexion","/connexion/{retour}"})
+    public String connexion(Model model, @PathVariable("retour") Optional<String> retour, User user, HttpSession session, SessionStatus session_status, HttpServletResponse response) throws Exception {	
+    	
+    	// S'il y a un paramètre GET
+    	if (retour.isPresent()) {
+    		model.addAttribute("retour", retour.get());
+    	} else {
+    		model.addAttribute("retour", null);
+    	}
+    	
+    	// Si le formulaire a été rempli
+    	if (user.getLogin() != null && user.getPassword() != null) {
+   
+	    	// On récupère l'utilisateur grâce à son login et à son mot de passe
+	    	User u = userDao.findByLoginAndPassword(user.getLogin(), user.getPassword(),true);
+	    	
+	    	// Si on ne récupère pas l'utilisateur
+	    	if (u == null) {
+	    		session_status.setComplete();
+	    		
+	    		response.sendRedirect("/connexion/erreur");
+	    		return null;
+	    		
+	    	// Si on récupère l'utilisateur
+	    	} else {
+	    		
+	    		// On enregistre son id en session
+	    		session.setAttribute("iduser", u.getIduser());
+	    		
+	    		// Si l'utilisateur veut qu'on se souvienne de lui
+	    		if(user.getRemember()) {
+	
+	    			// On stocke son id et une clé hashée dans 2 cookies, et on enregistre la clé en bdd
+	    			Cookie cookie = new Cookie("iduser", ""+u.getIduser());
+	    			cookie.setMaxAge(2147483647);
+	    			response.addCookie(cookie);
+	    			
+	    			byte[] key = new byte[32];
+	    			try {
+						SecureRandom.getInstanceStrong().nextBytes(key);
+						cookie = new Cookie("key", Base64.getEncoder().encodeToString(key));
+						cookie.setMaxAge(2147483647);
+						response.addCookie(cookie);
+		    			
+		    			MessageDigest digest = MessageDigest.getInstance("SHA-256");
+		    			byte[] encodedHash = digest.digest(key);
+		    			u.setEncryptedkey(encodedHash);
+		    			
+		    			userDao.Save(u);    			
+		    			
+					} catch (NoSuchAlgorithmException e) {
+						e.printStackTrace();
+					}    			    			
+	    		}
+	    		
+	    		// Une fois l'utilisateur logué, on le redirige vers sa page de contacts
+	    		response.sendRedirect("/contacts");
+	    		return null;
+	    	}
+    	} else {
+    		return "connexion";
+    	}
+    }
+    
+    @RequestMapping("/attente-validation")
+    public String attentevalidation(Model model, User user) {    	
+    	return "attente-validation";    }
 
 	@RequestMapping("/")
 	public String greeting(@RequestParam(value = "name", required = false, defaultValue = "World") String name,
@@ -216,10 +231,9 @@ public class ContactController {
 
 	@RequestMapping("/contacts")
 	public String affichageContacts(@ModelAttribute("templates") ArrayList<Template> templates, HttpSession session,
-			Model model) throws Exception {
-	
-		long iduser = (long) session.getAttribute("iduser");
-		User u = userDao.findByIduser(iduser, true);
+			Model model,SessionStatus session_status, HttpServletRequest request) throws Exception {
+		
+		User u = getUserConnected(session, session_status, request);
 
 		if (u != null) {
 			/*java.util.Date d = new java.util.Date();
@@ -229,7 +243,7 @@ public class ContactController {
 			
 			Timestamp t = new Timestamp(new java.util.Date().getTime());
 			
-			List<Contact> contacts = contactDao.findByIduser(iduser, true, t);
+			List<Contact> contacts = contactDao.findByIduser(u.getIduser(), true, t);
 			
 			System.out.println(contacts + "; " + session.getAttribute("iduser"));
 
@@ -251,9 +265,7 @@ public class ContactController {
 			model.addAttribute("contacts", contacts);
 
 			return "contacts";
-		} else {
-			model.addAttribute("user", new User());
-
+		} else {			
 			return "connexion";
 		}
 	}

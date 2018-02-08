@@ -14,7 +14,6 @@
 	<link rel="stylesheet" type="text/css" media="screen" th:href="@{/css/bootstrap.css}" />
 	<link rel="stylesheet/less" type="text/css" media="screen" th:href="@{/less/ucontact.less}" />
 
-
     <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
     <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
@@ -62,6 +61,9 @@
 	<script th:src="@{/js/jquery.min.js}"></script>
 	<script th:src="@{/js/bootstrap.js}"></script>
 	<script th:src="@{/js/less.min.js}"></script>
+	<div th:replace="${view} :: javascript">
+		Code Javascript
+	</div>
 	
 	
 </body>

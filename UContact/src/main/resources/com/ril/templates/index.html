@@ -1,7 +1,7 @@
 <div id="accueil" th:fragment="content">
 	<div id="hello" class="container" th:style="'background:url(' + @{/imgs/contact-bluewin.jpg} + ') center center; background-size:cover;'">
     	<div class="row">
-    		<div class="col-xs-12 col-md-12 col-lg-12">
+    		<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
     			<h1>U-CONTACT</h1>
     			<h2>Gardez le contact avec votre réseau !</h2>
     		</div>
@@ -10,11 +10,11 @@
 
 	<div id="presentation" class="container">
 		<div class="row">
-			<div class="col-xs-12 col-md-12 col-lg-4">
+			<div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
 				<img th:src="@{/imgs/iphone.png}" title="Smartphone" />
 			</div>
 			
-			<div class="col-xs-12 col-md-12 col-lg-6">
+			<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
 				<h3>Qu'est-ce que U-CONTACT ?</h3>
 				<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.</p>
 			</div>
@@ -23,7 +23,7 @@
 	
 	<div id="contact" class="container">
 		<div class="row">
-			<div class="col-xs-12 col-md-12 col-lg-12">
+			<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
 				<h3>
 					Contactez-nous
 					<a th:href="@{/contactez-nous}" title="Contactez-nous">
@@ -31,8 +31,6 @@
 					</a>
 				</h3>
 				<p>Une demande, une interrogation, un bug, n'hésitez pas, contactez-nous</p>
-			</div>
-			<div class="col-xs-12 col-md-12 col-lg-7">
 			</div>
 		</div>
 	</div>

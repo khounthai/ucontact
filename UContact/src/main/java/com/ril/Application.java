@@ -27,6 +27,5 @@ public class Application {
                                             //boot will listen to both places 0 
                                             //and 1
         return yourTemplateResolver; 
-        
     }
 }
