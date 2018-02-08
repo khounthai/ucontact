@@ -1,15 +1,37 @@
-<div class="container" th:fragment="content">
-	<br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
-	<form action="#" method="post" th:object="${user}" th:action="@{/connexion-form}">
-		Adresse email : <input type="email" th:field="*{login}" /><br />
-		Mot de passe : <input type="password" th:field="*{password}" /><br />
-		Se souvenir de moi : <input type="checkbox" th:field="*{remember}" />
-		<input type="submit" value="Submit" />
-	</form>
-	
-	<br/>
-	<br/>
-	<br/>
-	
-	<label th:text="${message}"></label>
+<div class="container main_content" th:fragment="content">
+
+	<div class="alert alert-success" role="alert" th:if="${retour} == 'compte-valide'">Félicitation, votre compte a bien été activé !</div>
+	<div class="alert alert-danger" role="alert" th:if="${retour} == 'erreur'">Erreur de login et/ou de mot de passe !</div>
+
+	<form class="form-horizontal" action="#" method="post" th:object="${user}" th:action="@{/connexion}">
+  		<div class="form-group">
+  			<label for="inputEmail" class="col-xs-12 col-sm-4 col-md-4 col-lg-4 control-label">Adresse email</label>
+  			<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6 ">
+  				<div class="input-group">
+  					<span class="input-group-addon">@</span>
+  					<input type="email" class="form-control" id="inputEmail" placeholder="Adresse email" th:field="*{login}" />
+  				</div>
+  			</div>
+  		</div>
+  		<div class="form-group">
+   			<label for="inputPwd" class="col-xs-12 col-sm-4 col-md-4 col-lg-4 control-label">Mot de passe</label>
+  			<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6 ">
+  				<input type="password" class="form-control" id="inputPwd" placeholder="Mot de passe" th:field="*{password}" />
+  			</div>
+  		</div>
+		<div class="form-group">
+    		<div class="col-xs-offset-4 col-xs-6 col-sm-offset-4 col-sm-6 col-md-offset-4 col-md-6 col-lg-offset-4 col-lg-6">
+      			<div class="checkbox">
+        			<label>
+          				<input type="checkbox" th:field="*{remember}" /> Se souvenir de moi
+        			</label>
+      			</div>
+    		</div>
+		</div>
+		<div class="form-group">
+			<div class="col-xs-offset-12 col-xs-12 col-sm-offset-4 col-sm-6 col-md-offset-4 col-md-6 col-lg-offset-4 col-lg-6">
+      			<button type="submit" class="btn btn-default">Se connecter</button>
+    		</div>
+  		</div>
+	</form>	
 </div>
