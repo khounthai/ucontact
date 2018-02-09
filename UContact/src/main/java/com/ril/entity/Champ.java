@@ -62,8 +62,7 @@ public class Champ {
 		
 		return donnee;
 	}
-	
-	
+		
 	public void setDonnee(Donnee donnee) {
 		this.donnee = donnee;
 	}

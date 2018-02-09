@@ -29,7 +29,7 @@ public class DonneeDao {
 					+ "ON DUPLICATE KEY UPDATE valeur=VALUES(valeur)";
 
 			System.out.println(sql);
-
+			
 			PreparedStatement ps = conn.prepareStatement(sql, com.mysql.jdbc.Statement.RETURN_GENERATED_KEYS);
 
 			ps.setTimestamp(1,d.getDtenregistrement());
@@ -53,37 +53,39 @@ public class DonneeDao {
 		return result;
 	}
 
-	public List<Donnee> findByIdContact(long idcontact,Timestamp date) {
+	public List<Donnee> findByIdContactAndIdTemplate(long idcontact,long idtemplate,Timestamp date) {
 
 		List<Donnee> liste = new ArrayList<Donnee>();
 
 		try {
 			Connection conn = (Connection) database.getSqlConnection();
-
-			//String sql = "select iddonnee,idchamp,idcontact,valeur,dtenregistrement from donnees where idcontact=?";
 			
-			String sql ="select d1.iddonnee,d1.idchamp,d1.idcontact,d1.valeur,d1.dtenregistrement from donnees d1 "+
+			String sql ="select d1.iddonnee,d1.idchamp,d1.idcontact,d1.valeur,d1.dtenregistrement,l.ordre from donnees d1 "+
 						"join ( " +
 						"select idchamp,idcontact,max(dtenregistrement) as dtenregistrement "+
 						"   from donnees "+
-						"   where (idcontact=? and dtenregistrement <  ?) "+
+						"   where (idcontact=? and dtenregistrement <=  ?) "+
 						"   group by  idchamp,idcontact "+
 						") d2 on (d1.idchamp=d2.idchamp and d1.dtenregistrement=d2.dtenregistrement) "+
-						"where d1.idcontact=?" ;
-			
+						"join lientemplatechamp l on l.idchamp=d1.idchamp "+
+						"where d1.idcontact=? and l.idtemplate=?";
+									
 			PreparedStatement ps = (PreparedStatement) conn.prepareStatement(sql);
 			ps.setLong(1, idcontact);
 			ps.setTimestamp(2, date);
 			ps.setLong(3, idcontact);
+			ps.setLong(4, idtemplate);
 
 			System.out.println(sql);
+			
+			System.out.println(date);
 			
 			//System.out.println("timestamp:"+date.toString());
 			
 			ResultSet rs = ps.executeQuery();
 			
 			while (rs.next()) {
-				Donnee d = new Donnee(rs.getLong(1), rs.getLong(2), rs.getLong(3), rs.getString(4),rs.getTimestamp(5));
+				Donnee d = new Donnee(rs.getLong(1), rs.getLong(2), rs.getLong(3), rs.getString(4),rs.getTimestamp(5), rs.getLong(6));
 				liste.add(d);
 			}
 
@@ -97,7 +99,7 @@ public class DonneeDao {
 		return liste;
 	}
 
-	public List<Donnee> findByIdContactAndIdtemplate(long idcontact, long idtemplate) {
+/*	public List<Donnee> findByIdContactAndIdtemplate(long idcontact, long idtemplate) {
 
 		List<Donnee> liste = new ArrayList<Donnee>();
 		try {
@@ -128,5 +130,5 @@ public class DonneeDao {
 		}
 
 		return liste;
-	}
+	}*/
 }

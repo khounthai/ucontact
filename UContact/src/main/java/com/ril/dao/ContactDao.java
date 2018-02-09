@@ -5,6 +5,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -14,6 +15,7 @@ import com.mysql.jdbc.PreparedStatement;
 import com.mysql.jdbc.Statement;
 import com.ril.entity.Contact;
 import com.ril.entity.Donnee;
+import com.ril.entity.DonneeComparator;
 
 @Repository
 public class ContactDao {
@@ -24,7 +26,7 @@ public class ContactDao {
 	@Autowired 
 	private DonneeDao donneeDao;
 
-	public List<Contact> findByIduser(long iduser,boolean actif,Timestamp date ) {
+	public List<Contact> findByIduserAndIdTemplate(long iduser,long idtemplate,boolean actif,Timestamp date ) {
 
 		List<Contact> liste = new ArrayList<Contact>();
 
@@ -48,7 +50,8 @@ public class ContactDao {
 			ps.close();
 			
 			liste.forEach(x->{
-				List<Donnee> listeDonnees=donneeDao.findByIdContact(x.getIdcontact(),date);
+				List<Donnee> listeDonnees=donneeDao.findByIdContactAndIdTemplate(x.getIdcontact(),idtemplate,date);
+				listeDonnees.sort(new DonneeComparator());
 				x.setDonnees(listeDonnees);
 			});
 			
@@ -60,7 +63,7 @@ public class ContactDao {
 		return liste;
 	}
 	
-	public Contact findByIdcontact(long idcontact,boolean actif, Timestamp date ) {
+	public Contact findByIdcontactAndIdTemplate(long idcontact,long idtemplate,boolean actif, Timestamp date ) {
 		 Contact c=null;
 
 		try {
@@ -82,7 +85,7 @@ public class ContactDao {
 			ps.close();			
 							
 			if (c!=null)
-				c.setDonnees(donneeDao.findByIdContact(c.getIdcontact(),date));
+				c.setDonnees(donneeDao.findByIdContactAndIdTemplate(c.getIdcontact(),idtemplate,date));
 						
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block

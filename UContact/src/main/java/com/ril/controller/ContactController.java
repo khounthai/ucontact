@@ -241,9 +241,25 @@ public class ContactController {
 			java.util.Date date = parser.parse("08/02/2018 09:40:00");
 			Timestamp t = new Timestamp(date.getTime());*/
 			
-			Timestamp t = new Timestamp(new java.util.Date().getTime());
+			java.util.Date date =new java.util.Date();
 			
-			List<Contact> contacts = contactDao.findByIduser(u.getIduser(), true, t);
+			Timestamp t = new Timestamp(date.getTime());
+			
+			//recherche du template
+			templates = (ArrayList<Template>) templateDao.getTemplates(0, 0, true);
+			long idtemplate=0;
+
+			/*** s'il y a q'un template, il est sélectionné ***/
+			if (templates.size() == 1) {
+				templates.get(0).setCheck(true);
+				session.setAttribute("idtemplate", templates.get(0).getIdtemplate());
+				idtemplate=templates.get(0).getIdtemplate();
+			}
+			
+			System.out.println(templates.size());
+			/*** **************************************** ***/
+			
+			List<Contact> contacts = contactDao.findByIduserAndIdTemplate(u.getIduser(),idtemplate, true, t);
 			
 			System.out.println(contacts + "; " + session.getAttribute("iduser"));
 
@@ -251,16 +267,7 @@ public class ContactController {
 				System.out.println(x);
 			});
 
-			templates = (ArrayList<Template>) templateDao.getTemplates(0, 0, true);
-
-			// s'il y a q'un template, il est sélectionné
-			if (templates.size() == 1) {
-				templates.get(0).setCheck(true);
-				session.setAttribute("idtemplate", templates.get(0).getIdtemplate());
-			}
-
-			System.out.println(templates.size());
-
+			
 			model.addAttribute("templates", templates);
 			model.addAttribute("contacts", contacts);
 
@@ -273,7 +280,7 @@ public class ContactController {
 	@GetMapping("/fiche-contact-form/{idcontact}")
 	public String ficheContactForm(@PathVariable("idcontact") String stringIdContact, HttpSession session, Model model)
 			throws Exception {
-
+		
 		long idcontact = 0;
 
 		try {
@@ -306,7 +313,7 @@ public class ContactController {
 		});
 
 		// renseigne les données du contact
-		Contact c = contactDao.findByIdcontact(idcontact, true, new Timestamp(new java.util.Date().getTime()));
+		Contact c = contactDao.findByIdcontactAndIdTemplate(idcontact,idtemplate, true, new Timestamp(new java.util.Date().getTime()));
 		if (c != null) {
 			for (Champ item1 : t.getChamps()) {
 
@@ -327,9 +334,9 @@ public class ContactController {
 	public void enregistrerContact(@ModelAttribute("template") Template template,
 			@ModelAttribute("idcontact") String strIdContact, Model model, HttpSession session,
 			HttpServletResponse response) throws IOException {
-		System.out.println("template: " + template);
-		System.out.println("idcontact: " + strIdContact);
-
+		
+		long idtemplate = (long) session.getAttribute("idtemplate");
+		
 		// récuère le contact passé en paramètre
 		long idcontact = 0;
 		try {
@@ -344,7 +351,7 @@ public class ContactController {
 			response.sendRedirect("/fiche-contact-form");
 		else {
 
-			Contact c = contactDao.findByIdcontact(idcontact, true, new Timestamp(new java.util.Date().getTime()));
+			Contact c = contactDao.findByIdcontactAndIdTemplate(idcontact,idtemplate, true, new Timestamp(new java.util.Date().getTime()));
 
 			if (c == null) {
 				// Enregistrer un contact

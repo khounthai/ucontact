@@ -12,18 +12,20 @@ public class Donnee {
 	private long idchamp;
 	private long idcontact;
 	private String valeur;
+	private long ordre;
 	
 	private Timestamp dtenregistrement;
 	
 	public Donnee() {}
 
-	public Donnee(long iddonnee, long idchamp, long idcontact, String valeur, Timestamp dtenregistrement) {
+	public Donnee(long iddonnee, long idchamp, long idcontact, String valeur, Timestamp dtenregistrement,long ordre) {
 		super();
 		this.iddonnee = iddonnee;
 		this.idchamp = idchamp;
 		this.idcontact = idcontact;
 		this.valeur = valeur;
 		this.dtenregistrement = dtenregistrement;
+		this.ordre=ordre;
 	}
 
 	public long getIddonnee() {
@@ -66,10 +68,19 @@ public class Donnee {
 		this.dtenregistrement = dtenregistrement;
 	}
 
+	
+	public long getOrdre() {
+		return ordre;
+	}
+
+	public void setOrdre(long ordre) {
+		this.ordre = ordre;
+	}
+
 	@Override
 	public String toString() {
 		return "Donnee [iddonnee=" + iddonnee + ", idchamp=" + idchamp + ", idcontact=" + idcontact + ", valeur="
-				+ valeur + ", dtenregistrement=" + dtenregistrement + "]";
+				+ valeur + ", ordre=" + ordre + ", dtenregistrement=" + dtenregistrement + "]";
 	}
-
+	
 }
