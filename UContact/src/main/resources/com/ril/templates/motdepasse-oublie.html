@@ -1,0 +1,7 @@
+<div class="container" th:fragment="content">
+	<br /><br />
+	<form action="#" method="post" th:object="${user}" th:action="@{/mot-de-passe-oublie-form}">
+		Adresse email : <input type="email" th:field="*{login}" /><br /><br />
+		<input type="submit" value="Submit" />
+	</form>
+</div>

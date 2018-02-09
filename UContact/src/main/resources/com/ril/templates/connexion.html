@@ -1,7 +1,9 @@
 <div class="container main_content" th:fragment="content">
 
 	<div class="alert alert-success" role="alert" th:if="${retour} == 'compte-valide'">Félicitation, votre compte a bien été activé !</div>
-	<div class="alert alert-danger" role="alert" th:if="${retour} == 'erreur'">Erreur de login et/ou de mot de passe !</div>
+	<div class="alert alert-danger" role="alert" th:if="${retour} == 'erreur-connexion'">Erreur de login et/ou de mot de passe !</div>
+	<div class="alert alert-danger" role="alert" th:if="${retour} == 'erreur-validation-compte'">Compte introuvable, veuillez contactez le support technique !</div>
+	
 
 	<form class="form-horizontal" action="#" method="post" th:object="${user}" th:action="@{/connexion}">
   		<div class="form-group">
@@ -19,6 +21,13 @@
   				<input type="password" class="form-control" id="inputPwd" placeholder="Mot de passe" th:field="*{password}" />
   			</div>
   		</div>
+  		<div class="container">
+			<div class="row">
+				<div id="lienMdpOublie" class="col-xs-10 col-sm-10 col-md-10 col-lg-10">
+					<a th:href="@{/mot-de-passe-oublie}" title="Mot de passe oublié">Mot de passe oublié</a>
+				</div>
+			</div>
+		</div>
 		<div class="form-group">
     		<div class="col-xs-offset-4 col-xs-6 col-sm-offset-4 col-sm-6 col-md-offset-4 col-md-6 col-lg-offset-4 col-lg-6">
       			<div class="checkbox">

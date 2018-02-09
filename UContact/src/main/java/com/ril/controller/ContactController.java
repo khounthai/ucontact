@@ -9,6 +9,7 @@ import java.security.SecureRandom;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.EnumSet;
@@ -20,7 +21,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -33,6 +33,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.support.SessionStatus;
+import org.springframework.web.servlet.ModelAndView;
+
 import com.ril.SendEmail;
 import com.ril.dao.DonneeDao;
 import com.ril.dao.TemplateDao;
@@ -53,6 +55,7 @@ public class ContactController {
 	UserDao userDao;
 
 	@Autowired
+
 	ContactDao contactDao;
 
 	@Autowired
@@ -63,6 +66,10 @@ public class ContactController {
 
 	@Autowired
 	ChampDao champDao;
+
+	ContactDao contact_repository;	
+	
+	//_____ BLOC FONCTIONS --> _____\\
 
 	public User getUserConnected(HttpSession session, SessionStatus session_status, HttpServletRequest request) {
 		// Si une session existe
@@ -123,111 +130,327 @@ public class ContactController {
 		return null;
 	}
 
-    @RequestMapping(value={"/connexion","/connexion/{retour}"})
-    public String connexion(Model model, @PathVariable("retour") Optional<String> retour, User user, HttpSession session, SessionStatus session_status, HttpServletResponse response) throws Exception {	
+	// Fonction de réinitialisation du mot de passe
+	public void ReinitialisationPwd(Mail mail, User user) throws Exception {
+		
+		byte[] key = null;
     	
-    	// S'il y a un paramètre GET
+    	// Récupération des informations de l'utilisateur
+    	User urecupere = userDao.findByLogin(user.getLogin(),true);
+    	
+    	//Génération d'une clé de validation de modif de mot de passe non chiffrée
+    	Random rand = new Random();
+		String encryptedkeypwd1="";
+		for(int i = 0 ; i < 20 ; i++){
+		  char c = (char)(rand.nextInt(26) + 97);
+		  encryptedkeypwd1 += c;
+		  System.out.print(c+" ");
+		}
+		
+		//Hashage de la clé 
+		key = Base64.getDecoder().decode(encryptedkeypwd1);
+		try {			    			
+			MessageDigest digest = MessageDigest.getInstance("SHA-256");
+			key = digest.digest(key);
+			
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+		}
+		
+    	//Envoi de mail de validation de compte 
+		SendEmail envoimailvalidation = new SendEmail(mail);
+    	mail.setHost("smtp.gmail.com");
+    	mail.setUser("quentinpetit52@gmail.com");
+    	mail.setPass("qlmp1602");
+    	mail.setTo(urecupere.getLogin());
+    	mail.setFrom("Support");
+    	mail.setSubject("Modification mot de passe - U-Contact");
+    	mail.setMessageText("Bonjour, afin de modifier votre mot de passe, veuillez cliquer sur le lien suivant http://localhost:8080/modification-mot-de-passe/"+urecupere.getIduser()+"/"+encryptedkeypwd1);
+    	envoimailvalidation.send();   
+    	
+    	Timestamp ts = new Timestamp(System.currentTimeMillis()); 
+    	
+    	//Ajout de la clé de validation chiffrée
+    	urecupere.setEncryptedkeypwd(key);
+    	
+    	//Ajout du timestamp au moment de l'envoi du mail
+    	urecupere.setTimestampModifPwd(ts);
+    			
+    	//Enregistrement en base de la clé de validation chiffrée
+    	userDao.Save(urecupere);
+		
+	}
+	//_____ <-- BLOC FONCTIONS _____\\
+	
+	
+	//_____ BLOC MÉTHODES --> _____\\
+	// Affichage de la page index
+	@RequestMapping("/")
+    public String greeting(@RequestParam(value="name", required=false, defaultValue="World") String name, Model model) {
+        model.addAttribute("name", name);
+        return "index";
+    }
+	
+	// Affichage de la page d'inscription
+	@RequestMapping("/inscription")
+    public String inscription(Model model, User user) {    	
+    	return "inscription";	
+    }
+    
+	//Traitement de l'inscription d'une personne
+    @PostMapping("/inscription-form")
+    public void inscriptionForm(@ModelAttribute("user") User user, Model model ,HttpSession session, HttpServletResponse response, Mail mail) throws Exception {
+    	
+    	String password1 = user.getPassword();
+    	String password2 = user.getConfirmpassword();
+    	String useracomparer = user.getLogin();
+    	
+    	User userref = userDao.findByLogin(user.getLogin(),true);
+    	
+    	//Si l'email renseigné dans le formulaire est déjà présent en base
+    	if(useracomparer!=null && userref!= null && useracomparer.equals(userref.getLogin())) {    		
+    		
+    	} else {
+    			
+	    	if (password1.equals(password2)) {
+	    				
+	    		// Génération de la validationkey
+	    		Random rand = new Random();
+        		String validationkey="";
+        		for(int i = 0 ; i < 20 ; i++){
+        		  char c = (char)(rand.nextInt(26) + 97);
+        		  validationkey += c;
+        		  System.out.print(c+" ");
+        		}
+        		
+        		// Ajout de la validationkey à l'objet de type user 
+        		user.setValidationkey(validationkey);
+        		user.setPassword(password1);
+        		
+        		
+	    		// Ajout en base de l'utilisateur (enregistrement des modifications)
+	    		long idUser=0;
+	    		
+				try {
+					user.setActif(true);
+					
+					idUser = userDao.Save(user);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+				System.out.println(idUser);
+				
+	    		User u=userDao.findByIduser(idUser, true);
+	    		
+	    		System.out.println(u);
+	        	
+	        	if (u == null) {	        		
+	        		response.sendRedirect("/");
+	        	} else {
+	        		
+	        		//Envoi de mail de validation de compte 
+		    		SendEmail envoimailvalidation = new SendEmail(mail);
+		        	mail.setHost("smtp.gmail.com");
+		        	mail.setUser("quentinpetit52@gmail.com");
+		        	mail.setPass("qlmp1602");
+		        	mail.setTo(u.getLogin());
+		        	mail.setFrom("Support");
+		        	mail.setSubject("Activation de votre compte U-Contact");
+		        	mail.setMessageText("Bonjour, \n\nVotre compte n'est pas encore activé. Afin d'activer votre compte, veuillez cliquer suivant http://localhost:8080/validation/"+u.getIduser()+"/"+validationkey);
+		        	envoimailvalidation.send();
+		        	
+		        	//Redirection vers la page attente-validation
+	        		response.sendRedirect("/attente-validation");
+	        	}
+	    		
+	    	} else {    		
+	    		
+	    			// Si les mots de passe sont différents on est redirigé vers la page inscription
+	    			response.sendRedirect("/inscription");
+	    	}
+	    	
+    	}
+    	
+    }
+    
+    // Affichage de la page attente-validation
+    @RequestMapping("/attente-validation")
+    public String attentevalidation(Model model, User user) {    	
+    	return "attente-validation";    		
+    }
+    
+    // Traitement de la validation du compte de l'utilisateur
+    @RequestMapping(value={"/validation/{iduser}/{validationkey}"}, method=RequestMethod.GET)
+    public void validationCompte(Model model, @PathVariable("iduser") Long iduser, @PathVariable("validationkey") String validationkey, HttpServletResponse response) throws Exception {
+    	
+    	User u = userDao.findByIduserAndValidationkey(iduser, validationkey,true);
+    	 
+    	if (u != null) {
+    		
+    		u.setValidaccount(true);
+    		u.setValidationkey(null);
+    		userDao.Save(u);
+    		response.sendRedirect("/connexion/compte-valide");
+    		
+
+    	} else {
+    		
+    		response.sendRedirect("/connexion/erreur-validation-compte");
+    	}   
+    }
+    
+    // Affichage de la page changement-motdepasse
+    @RequestMapping("/mot-de-passe-oublie")
+    public String forgetPassword(Model Model) {
+    	
+    	User u = new User();
+    	Model.addAttribute("user", u);
+        return "motdepasse-oublie";
+    }
+    
+    // Traitement d'un mot de passe oublié
+    @RequestMapping("/mot-de-passe-oublie-form")
+    public void forgetPasswordForm(@ModelAttribute("user") User user, Mail mail, HttpServletResponse response) throws Exception {
+    	
+    	// Envoi d'un e-mail à l'adresse mail renseigné dans le formulaire
+    	ReinitialisationPwd(mail, user);
+    	
+    	//Redirection vers la page Connexion
+        response.sendRedirect("/connexion");
+    }
+    
+    // Traitement après le clic sur le lien de l'email mot de passe oublié 
+    @RequestMapping(value={"/modification-mot-de-passe/{iduser}/{encryptedkeypwd}"}, method=RequestMethod.GET)
+    public ModelAndView modificationMotDePasse(Model Model, @PathVariable("iduser") Long iduser, @PathVariable("encryptedkeypwd") String encryptedkeypwd, Mail mail, User user, HttpSession session) throws Exception {
+    	
+    	byte[] key = null;
+    	
+    	//Hashage de la clé 
+    			key = Base64.getDecoder().decode(encryptedkeypwd);
+    			try {			    			
+    				MessageDigest digest = MessageDigest.getInstance("SHA-256");
+    				key = digest.digest(key);
+    				
+    			} catch (NoSuchAlgorithmException e) {
+    				e.printStackTrace();
+    			}
+    	
+    	// On vérifie les informations présentes dans l'URL en recherchant un utilisateur par rapport à l'id et encryptedkeypwd
+    	User u = userDao.findByIduserAndEncryptedkeypwd(iduser, key,true);
+    	
+    	Timestamp tsmdp = u.getTimestampModifPwd();
+    	Timestamp tsnow = new Timestamp(System.currentTimeMillis());
+    	
+    	// Si la différence est de plus de 24h alors 
+    	if((tsnow.getTime() - tsmdp.getTime()) > 86400000){
+    		
+    		ModelAndView modelview = new ModelAndView("renvoi-mail-delai-depasse");
+    		// On renvoie le mail de réinitialisation du mot de passe
+    		ReinitialisationPwd(mail, u);
+    		return modelview;
+    		
+    	} else {
+    		
+    		session.setAttribute("idtemp", u.getIduser());
+    		
+    		ModelAndView modelview2 = new ModelAndView("modification-motdepasse");
+    		modelview2.addObject("usertemp", u); 
+    		// On affiche le formulaire de modification du mot de passe
+    		return modelview2;    		
+    	}
+    	
+    }
+        
+    @RequestMapping("/modification-mot-de-passe-form")
+    public void modificationMotDePasseForm(Model Model, HttpSession session, @ModelAttribute("usertemp") User usertemp) {
+    	
+    	System.out.println(usertemp);
+    		
+    }
+    
+    // Affichage de la page Contactez-nous
+    @RequestMapping(value={"/contactez-nous","/contactez-nous/{retour}"}, method=RequestMethod.GET)
+    public String contactezNous(Model model, @PathVariable("retour") Optional<String> retour, @ModelAttribute("mail") Mail mail,SessionStatus session_status,HttpServletResponse response, HttpSession session) {
+    	
+    	model.addAttribute("mail", new Mail());
+    	model.addAttribute("categories", EnumSet.allOf(Categories.class));
+    	
     	if (retour.isPresent()) {
     		model.addAttribute("retour", retour.get());
     	} else {
     		model.addAttribute("retour", null);
     	}
+    	   return "contactez-nous";
+
+    }
+    
+    @RequestMapping(value={"/connexion","/connexion/{retour}"})
+    public String connexion(Model model, @PathVariable("retour") Optional<String> retour, User user, HttpSession session, SessionStatus session_status, HttpServletResponse response) throws Exception {
+    	
+    	// S'il y a un paramètre GET
+    	if (retour.isPresent()) {
+    		model.addAttribute("retour", retour.get());
+    	} else {
+
+    		model.addAttribute("retour", null);
+    	}
     	
     	// Si le formulaire a été rempli
     	if (user.getLogin() != null && user.getPassword() != null) {
-   
 	    	// On récupère l'utilisateur grâce à son login et à son mot de passe
-	    	User u = userDao.findByLoginAndPassword(user.getLogin(), user.getPassword(),true);
-	    	
+    		user.setPassword(user.getPassword());
+    		
+    		System.err.println(user);
+    		
+	    	User u = userDao.findByLoginAndHashedPassword(user.getLogin(), user.getHashedPassword(), true);
+
 	    	// Si on ne récupère pas l'utilisateur
+	    	
 	    	if (u == null) {
 	    		session_status.setComplete();
-	    		
-	    		response.sendRedirect("/connexion/erreur");
-	    		return null;
-	    		
+	    		response.sendRedirect("/connexion/erreur-connexion");
+	    		return null;	    		
+
 	    	// Si on récupère l'utilisateur
+
 	    	} else {
-	    		
 	    		// On enregistre son id en session
-	    		session.setAttribute("iduser", u.getIduser());
-	    		
-	    		// Si l'utilisateur veut qu'on se souvienne de lui
-	    		if(user.getRemember()) {
-	
+	    		session.setAttribute("iduser", u.getIduser());	    		// Si l'utilisateur veut qu'on se souvienne de lui
+
+	    		if(user.isRemember()) {
 	    			// On stocke son id et une clé hashée dans 2 cookies, et on enregistre la clé en bdd
 	    			Cookie cookie = new Cookie("iduser", ""+u.getIduser());
 	    			cookie.setMaxAge(2147483647);
 	    			response.addCookie(cookie);
-	    			
 	    			byte[] key = new byte[32];
+
 	    			try {
 						SecureRandom.getInstanceStrong().nextBytes(key);
 						cookie = new Cookie("key", Base64.getEncoder().encodeToString(key));
 						cookie.setMaxAge(2147483647);
 						response.addCookie(cookie);
-		    			
 		    			MessageDigest digest = MessageDigest.getInstance("SHA-256");
 		    			byte[] encodedHash = digest.digest(key);
-		    			u.setEncryptedkey(encodedHash);
-		    			
-		    			userDao.Save(u);    			
-		    			
-					} catch (NoSuchAlgorithmException e) {
+		    			u.setEncryptedkey(encodedHash);		    			
+		    			userDao.Save(u);
+		    			} catch (NoSuchAlgorithmException e) {
 						e.printStackTrace();
 					}    			    			
+
 	    		}
-	    		
 	    		// Une fois l'utilisateur logué, on le redirige vers sa page de contacts
 	    		response.sendRedirect("/contacts");
 	    		return null;
+
 	    	}
+
     	} else {
+
     		return "connexion";
     	}
     }
-    
-    @RequestMapping("/attente-validation")
-    public String attentevalidation(Model model, User user) {    	
-    	return "attente-validation";    }
-
-	@RequestMapping("/")
-	public String greeting(@RequestParam(value = "name", required = false, defaultValue = "World") String name,
-			Model model) {
-		model.addAttribute("name", name);
-		return "index";
-	}
-
-	@PostMapping("/contactez-nous-form")
-	public String contactezNousForm(@ModelAttribute("mail") Mail mail) {
-
-		SendEmail envoimail = new SendEmail(mail);
-		mail.setHost("smtp-mail.outlook.com");
-		mail.setUser("khounthai.houang@viacesi.fr");
-		mail.setPass("Gypab516");
-		mail.setTo("khounthai.houang@viacesi.fr");
-		mail.setFrom("Support");
-		mail.setSubject(mail.getCategorie() + " - " + mail.getSubject());
-
-		boolean bok = envoimail.send();
-		if (bok)
-			return "contactez-nous/succes";
-		return "contactez-nous/erreur";
-	}
-
-	@RequestMapping(value = { "/contactez-nous", "/contactez-nous/{retour}" }, method = RequestMethod.GET)
-	public String contactezNous(Model model, @PathVariable("retour") Optional<String> retour,
-			@ModelAttribute("mail") Mail mail) {
-
-		model.addAttribute("mail", new Mail());
-		model.addAttribute("categories", EnumSet.allOf(Categories.class));
-		if (retour.isPresent()) {
-			model.addAttribute("retour", retour.get());
-		} else {
-			model.addAttribute("retour", null);
-		}
-		return "contactez-nous";
-	}
 
 	@RequestMapping("/contacts")
 	public String affichageContacts(@ModelAttribute("templates") ArrayList<Template> templates, HttpSession session,
@@ -405,86 +628,22 @@ public class ContactController {
 		contactDao.ActiverDesactiverByIdContact(idcontact,false);		
 		response.sendRedirect("/contacts");
 	}
-	
-	@RequestMapping("/inscription")
-	public String inscription(Model model, User user) {
-		return "inscription";
-	}
 
-	@PostMapping("/inscription-form")
-	public void inscriptionForm(@ModelAttribute("user") User user, Model model, HttpSession session,
-			HttpServletResponse response, Mail mail) throws Exception {
-
-		String password1 = user.getPassword();
-		String password2 = user.getConfirmpassword();
-		String useracomparer = user.getLogin();
-		User userref = userDao.findByLogin(user.getLogin(), true);
-
-		// Si l'email est déjà présent en base
-		if (useracomparer != null && userref != null && useracomparer.equals(userref.getLogin())) {
-
-		} else {
-			if (password1.equals(password2)) {
-				// Chiffrement du mot de passe
-				Random rand = new Random();
-				String validationkey = "";
-				for (int i = 0; i < 20; i++) {
-					char c = (char) (rand.nextInt(26) + 97);
-					validationkey += c;
-					System.out.print(c + " ");
-				}
-
-				user.setValidationkey(validationkey);
-
-				// Ajout en base de l'utilisateur
-				long result = userDao.Save(user);
-				User u = userDao.findByIduser(result, true);
-
-				if (u == null) {
-					response.sendRedirect("/");
-				} else {
-
-					// Envoi de mail de validation de compte
-					SendEmail envoimailvalidation = new SendEmail(mail);
-					mail.setHost("smtp.gmail.com");
-					mail.setUser("quentinpetit52@gmail.com");
-					mail.setPass("qlmp1602");
-					mail.setTo(u.getLogin());
-					mail.setFrom("Support");
-					mail.setSubject("Activation de votre compte U-Contact");
-					mail.setMessageText(
-							"Bonjour, \n\nVotre compte n'est pas encore activé. Afin d'activer votre compte, veuillez cliquer suivant http://localhost:8080/validation/"
-									+ u.getIduser() + "/" + validationkey);
-
-					envoimailvalidation.send();
-					response.sendRedirect("/attente-validation");
-				}
-
-			} else {
-
-				// Cas ou les mots de passe sont différents
-				response.sendRedirect("/inscription");
-			}
-
-		}
-
-	}
-
-	@RequestMapping(value = { "/validation/{iduser}/{validationkey}" }, method = RequestMethod.GET)
-	public String validationCompte(Model model, @PathVariable("iduser") Long iduser,
-			@PathVariable("validationkey") String validationkey) throws Exception {
-
-		User u = userDao.findByIduserAndValidationkey(iduser, validationkey, true);
-		System.out.println(u + " " + iduser);
-		if (u != null) {
-			u.setValidaccount(true);
-			u.setValidationkey(null);
-			userDao.Save(u);
-			return "/connexion/compte-valide";
-
-		} else {
-
-			return "/connexion";
-		}
-	}
+    // Traitement de l'envoi d'un mail de contact support
+    @PostMapping("/contactez-nous-form")
+    public String contactezNousForm(@ModelAttribute("mail") Mail mail) {
+    	
+    	SendEmail envoimail = new SendEmail(mail);
+    	mail.setHost("smtp.gmail.com");
+    	mail.setUser("quentinpetit52@gmail.com");
+    	mail.setPass("qlmp1602");
+    	mail.setTo("quentin.petit@yahoo.fr");
+    	mail.setFrom("Support");
+    	mail.setSubject(mail.getCategorie()+" - "+mail.getSubject());
+    	
+    	// Envoi de l'email
+    	boolean bok = envoimail.send();
+    	if(bok) return "contactez-nous/succes";
+    	return "contactez-nous/erreur";
+   }
 }

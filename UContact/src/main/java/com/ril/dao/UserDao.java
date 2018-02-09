@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -16,6 +17,8 @@ import com.ril.entity.User;
 public class UserDao {	
 	@Autowired
 	private Database database;
+
+	private final String selectSql="select iduser,login,encryptedkey,validationkey,validaccount,hashed_password,role,timestamp_modif_pwd,encryptedkeypwd from user ";
 	
 	public User findByLoginAndPassword(String login,String password,boolean actif) {
 		User u=null;
@@ -23,7 +26,7 @@ public class UserDao {
 		try {
 			Connection conn = database.getSqlConnection();		
 			
-			String sql = "select iduser,login,password,role,encryptedkey,validationkey,validaccount,actif from user where login=? and password=? and actif=?";
+			String sql = selectSql+"where login=? and password=? and actif=?";
 			System.out.println(sql);
 			PreparedStatement ps = conn.prepareStatement(sql);
 			ps.setString(1,login);
@@ -33,7 +36,8 @@ public class UserDao {
 			ResultSet rs = ps.executeQuery();
 			
 			while (rs.next()) {			
-				u = new User(rs.getInt(1),rs.getString(2),rs.getString(3),rs.getString(4),rs.getBytes(5),rs.getString(6),rs.getBoolean(7),rs.getBoolean(8));		
+				u = new User(rs.getLong(1),rs.getString(2),rs.getBytes(3),rs.getString(4),rs.getBoolean(5),false,
+						rs.getBytes(6),"",rs.getString(7),true,rs.getTimestamp(8),rs.getBytes(9) );		
 			}
 			
 			rs.close();
@@ -53,15 +57,18 @@ public class UserDao {
 		try {
 			Connection conn = database.getSqlConnection();		
 			
-			String sql= "select iduser,login,password,role,encryptedkey,validationkey,validaccount,actif from user where iduser=? and actif=?";
+			String sql= selectSql+"where iduser=? and actif=?";
 			
 			System.out.println(sql);
 			PreparedStatement ps = conn.prepareStatement(sql);
+			
 			ps.setLong(1, iduser);
 			ps.setBoolean(2, actif);
+			
 			ResultSet rs = ps.executeQuery();			
 			while (rs.next()) {			
-				u = new User(rs.getInt(1),rs.getString(2),rs.getString(3),rs.getString(4),rs.getBytes(5),rs.getString(6),rs.getBoolean(7),rs.getBoolean(8));
+				u = new User(rs.getLong(1),rs.getString(2),rs.getBytes(3),rs.getString(4),rs.getBoolean(5),false,
+						rs.getBytes(6),"",rs.getString(7),true,rs.getTimestamp(8),rs.getBytes(9) );	
 			}
 			
 			rs.close();
@@ -81,21 +88,23 @@ public class UserDao {
 		try {
 			Connection conn = database.getSqlConnection();		
 			
-			String sql = "INSERT INTO USER (iduser,login,password,role,encryptedkey,validationkey,validaccount,actif) VALUES (?,?,?,?,?,?,?;?) "+
-						 "ON DUPLICATE KEY UPDATE login=VALUES(login), password=VALUES(password), role=VALUES(role),encryptedkey=VALUES(encryptedkey),  "+
-						 "validationkey=VALUES(validationkey), validaccount=VALUES(validaccount), actif=VALUES(actif)"; 
+			String sql = "INSERT INTO USER (iduser,login,encryptedkeypwd,role,encryptedkey,validationkey,validaccount,actif,hashed_password,timestamp_modif_pwd) VALUES (?,?,?,?,?,?,?,?,?,?) "+
+						 "ON DUPLICATE KEY UPDATE login=VALUES(login), encryptedkeypwd=VALUES(encryptedkeypwd), role=VALUES(role),encryptedkey=VALUES(encryptedkey),  "+
+						 "validationkey=VALUES(validationkey), validaccount=VALUES(validaccount), actif=VALUES(actif),hashed_password=VALUES(hashed_password), timestamp_modif_pwd=VALUES(timestamp_modif_pwd)"; 
 							
 			System.out.println(sql);
 			PreparedStatement ps = conn.prepareStatement(sql,Statement.RETURN_GENERATED_KEYS);
 			
 			ps.setLong(1,u.getIduser());
 			ps.setString(2,u.getLogin());
-			ps.setString(3,u.getPassword());
+			ps.setBytes(3,u.getEncryptedkeypwd());
 			ps.setString(4,u.getRole());
 			ps.setBytes(5,u.getEncryptedkey());
 			ps.setString(6,u.getValidationkey());
 			ps.setBoolean(7,u.getValidaccount());
 			ps.setBoolean(8,u.isActif());
+			ps.setBytes(9,u.getHashedPassword());
+			ps.setTimestamp(10,u.getTimestampModifPwd());
 			
 			ps.executeUpdate();
 			
@@ -123,7 +132,7 @@ public class UserDao {
 		try {
 			Connection conn = database.getSqlConnection();		
 			
-			String sql= "select iduser,login,password,role,encryptedkey,validationkey,validaccount from user where login=? and actif=?";
+			String sql= selectSql+"where login=? and actif=?";
 			
 			System.out.println(sql);
 			PreparedStatement ps = conn.prepareStatement(sql);
@@ -132,7 +141,8 @@ public class UserDao {
 			ResultSet rs = ps.executeQuery();
 			
 			while (rs.next()) {
-				u = new User(rs.getInt(1),rs.getString(2),rs.getString(3),rs.getString(4),rs.getBytes(5),rs.getString(6),rs.getBoolean(7),rs.getBoolean(8));	
+				u = new User(rs.getLong(1),rs.getString(2),rs.getBytes(3),rs.getString(4),rs.getBoolean(5),false,
+						rs.getBytes(6),"",rs.getString(7),true,rs.getTimestamp(8),rs.getBytes(9) );	
 			}
 			
 			rs.close();
@@ -152,7 +162,7 @@ public class UserDao {
 		try {
 			Connection conn = database.getSqlConnection();		
 			
-			String sql= "select iduser,login,password,role,encryptedkey,validationkey,validaccount from user where iduser=? and validationkey=? and actif=?";
+			String sql= selectSql+"where iduser=? and validationkey=? and actif=?";
 			
 			System.out.println(sql);
 			PreparedStatement ps = conn.prepareStatement(sql);
@@ -162,9 +172,9 @@ public class UserDao {
 			
 			ResultSet rs = ps.executeQuery();
 			
-			while (rs.next()) {			
-
-				u = new User(rs.getInt(1),rs.getString(2),rs.getString(3),rs.getString(4),rs.getBytes(5),rs.getString(6),rs.getBoolean(7),rs.getBoolean(8));			
+			while (rs.next()) {
+				u = new User(rs.getLong(1),rs.getString(2),rs.getBytes(3),rs.getString(4),rs.getBoolean(5),false,
+						rs.getBytes(6),"",rs.getString(7),true,rs.getTimestamp(8),rs.getBytes(9) );			
 			}
 			
 			rs.close();
@@ -184,7 +194,7 @@ public class UserDao {
 		try {
 			Connection conn = database.getSqlConnection();		
 			
-			String sql= "select iduser,login,hashedPassword,role,encryptedkey,validationkey,validaccount from user where login=? and hashedPassword=? and actif=?";
+			String sql=selectSql+"where login=? and hashed_Password=? and actif=?";
 			
 			System.out.println(sql);
 			PreparedStatement ps = conn.prepareStatement(sql);
@@ -194,7 +204,8 @@ public class UserDao {
 			ResultSet rs = ps.executeQuery();
 			
 			while (rs.next()) {			
-				u = new User(rs.getInt(1),rs.getString(2),rs.getString(3),rs.getString(4),rs.getBytes(5),rs.getString(6),rs.getBoolean(7),rs.getBoolean(8));	
+				u = new User(rs.getLong(1),rs.getString(2),rs.getBytes(3),rs.getString(4),rs.getBoolean(5),false,
+						rs.getBytes(6),"",rs.getString(7),true,rs.getTimestamp(8),rs.getBytes(9) );			
 			}
 			
 			rs.close();
@@ -214,7 +225,7 @@ public class UserDao {
 		try {
 			Connection conn = database.getSqlConnection();		
 			
-			String sql= "select iduser,login,hashedPassword,role,encryptedkey,validationkey,validaccount from user where iduser=? and encryptedkey=? and actif=?";
+			String sql= selectSql+"where iduser=? and encryptedkey=? and actif=?";
 			
 			System.out.println(sql);
 			PreparedStatement ps = conn.prepareStatement(sql);
@@ -224,7 +235,8 @@ public class UserDao {
 			ResultSet rs = ps.executeQuery();
 			
 			while (rs.next()) {			
-				u = new User(rs.getInt(1),rs.getString(2),rs.getString(3),rs.getString(4),rs.getBytes(5),rs.getString(6),rs.getBoolean(7),rs.getBoolean(8));			
+				u = new User(rs.getLong(1),rs.getString(2),rs.getBytes(3),rs.getString(4),rs.getBoolean(5),false,
+						rs.getBytes(6),"",rs.getString(7),true,rs.getTimestamp(8),rs.getBytes(9) );		
 			}
 			
 			rs.close();
@@ -269,4 +281,38 @@ public class UserDao {
 	public int ActiverDesactiverUser(User u, boolean actif) throws Exception {
 		return ActiverDesactiverByIduser(u.getIduser(),actif);
 	}
+
+	
+	public User findByIduserAndEncryptedkeypwd(Long iduser, byte[] key,boolean actif)
+	{
+		User u=null;
+				
+		try {
+			Connection conn = database.getSqlConnection();		
+			
+			String sql=selectSql+"where iduser=? and encryptedkey=? and actif=?";
+			
+			System.out.println(sql);
+			PreparedStatement ps = conn.prepareStatement(sql);
+			ps.setLong(1, iduser);
+			ps.setBytes(2, key);
+			ps.setBoolean(3, actif);
+			ResultSet rs = ps.executeQuery();
+			
+			while (rs.next()) {			
+				u = new User(rs.getLong(1),rs.getString(2),rs.getBytes(3),rs.getString(4),rs.getBoolean(5),false,
+						rs.getBytes(6),"",rs.getString(7),true,rs.getTimestamp(8),rs.getBytes(9) );				
+			}
+			
+			rs.close();
+			ps.close();
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return u;
+	}
+
 }
