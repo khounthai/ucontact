@@ -500,6 +500,8 @@ public class ContactController {
 		}
 	}
 
+	
+	
 	@GetMapping("/fiche-contact-form/{idcontact}")
 	public String ficheContactForm(@PathVariable("idcontact") String stringIdContact, HttpSession session, Model model)
 			throws Exception {
