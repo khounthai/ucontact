@@ -477,9 +477,16 @@ public class ContactController {
 				templates.get(0).setCheck(true);
 				session.setAttribute("idtemplate", templates.get(0).getIdtemplate());
 				idtemplate=templates.get(0).getIdtemplate();
+				
+				templates.get(0).getChamps().forEach(x->{
+					System.out.println(x);
+				});
+				
 			}
 			
+
 			System.out.println(templates.size());
+			
 			/*** **************************************** ***/
 			
 			List<Contact> contacts = contactDao.findByIduserAndIdTemplate(u.getIduser(),idtemplate, true, t);
@@ -490,7 +497,6 @@ public class ContactController {
 				System.out.println(x);
 			});
 
-			
 			model.addAttribute("templates", templates);
 			model.addAttribute("contacts", contacts);
 

@@ -6,7 +6,6 @@ import org.springframework.stereotype.Repository;
 
 import com.mysql.jdbc.Connection;
 
-
 @Repository
 public class Database {
 
