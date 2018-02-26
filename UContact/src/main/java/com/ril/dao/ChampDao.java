@@ -43,12 +43,12 @@ public class ChampDao {
 			ps.setLong(1, idtemplate);
 			ps.setBoolean(2, champactif);
 			ResultSet rs = ps.executeQuery();
+			
 
 			while (rs.next()) {
 				Champ c = new Champ(rs.getLong(1), rs.getString(2), rs.getBoolean(3), rs.getLong(4),new Donnee(),new DataType(),new ArrayList<String>());
 				DataType d=datatypedao.getDataType(c.getIddatatype());
-				c.setDatatype(d);
-				
+				c.setDatatype(d);				
 				List<Preselection> p=preselectiondao.getPreselectionsByIdChamp(c.getIdchamp());
 					
 				p.forEach(x->{
