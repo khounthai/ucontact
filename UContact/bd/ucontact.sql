@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : 127.0.0.1
--- Généré le :  ven. 09 fév. 2018 à 16:33
--- Version du serveur :  10.1.30-MariaDB
--- Version de PHP :  5.6.33
+-- Généré le :  mer. 28 fév. 2018 à 19:04
+-- Version du serveur :  10.1.28-MariaDB
+-- Version de PHP :  7.1.11
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET AUTOCOMMIT = 0;
@@ -43,7 +43,7 @@ INSERT INTO `champ` (`idchamp`, `libelle`, `multivaleur`, `iddatatype`) VALUES
 (1, 'Nom', 0, 1),
 (2, 'Prénom', 0, 1),
 (3, 'Portable', 0, 1),
-(4, 'Email', 0, 1),
+(4, 'Email', 0, 5),
 (5, 'Ville', 0, 1),
 (6, 'Pays', 0, 1),
 (7, 'Langue', 1, 1),
@@ -99,7 +99,8 @@ INSERT INTO `datatype` (`iddatatype`, `libelle`) VALUES
 (1, 'TEXTE'),
 (2, 'ENTIER'),
 (3, 'DECIMAL'),
-(4, 'DATE');
+(4, 'DATE'),
+(5, 'EMAIL');
 
 -- --------------------------------------------------------
 
@@ -171,7 +172,7 @@ INSERT INTO `donnees` (`iddonnee`, `dtenregistrement`, `valeur`, `idcontact`, `i
 (113, '2018-02-08 14:39:25', 'Doe', 12, 2),
 (114, '2018-02-08 14:39:25', '35 rue la gare', 12, 14),
 (115, '2018-02-08 14:39:25', '51100', 12, 12),
-(116, '2018-02-08 14:39:25', 'REIMS', 12, 5),
+(116, '2018-02-08 14:39:25', 'Reims', 12, 5),
 (117, '2018-02-08 14:39:25', 'France', 12, 6),
 (118, '2018-02-08 14:39:26', '032601020304', 12, 13),
 (119, '2018-02-08 14:39:26', '060102030405', 12, 3),
@@ -217,7 +218,7 @@ INSERT INTO `donnees` (`iddonnee`, `dtenregistrement`, `valeur`, `idcontact`, `i
 (159, '2018-02-09 11:04:39', '15 rue de AAAAA', 15, 14),
 (160, '2018-02-09 11:04:39', '51100', 15, 12),
 (161, '2018-02-09 11:04:39', 'PARIS', 15, 5),
-(162, '2018-02-09 11:04:39', 'REIMS', 15, 6),
+(162, '2018-02-09 11:04:39', 'Reims', 15, 6),
 (163, '2018-02-09 11:04:39', '0102030405', 15, 13),
 (164, '2018-02-09 11:04:39', '0607080902', 15, 3),
 (165, '2018-02-09 11:04:39', 'nom15@yahoo.fr', 15, 4),
@@ -306,7 +307,7 @@ INSERT INTO `donnees` (`iddonnee`, `dtenregistrement`, `valeur`, `idcontact`, `i
 (248, '2018-02-09 12:04:19', 'prénom 7', 7, 2),
 (249, '2018-02-09 12:04:19', '1 rue de la paix', 7, 14),
 (250, '2018-02-09 12:04:19', '51100', 7, 12),
-(251, '2018-02-09 12:04:19', 'REIMS', 7, 5),
+(251, '2018-02-09 12:04:19', 'Reims', 7, 5),
 (252, '2018-02-09 12:04:19', 'FRANCE', 7, 6),
 (253, '2018-02-09 12:04:19', '01-02-03-04-05-06', 7, 13),
 (254, '2018-02-09 12:04:19', '06-11-22-33-44-55', 7, 3),
@@ -463,7 +464,7 @@ CREATE TABLE `user` (
 --
 
 INSERT INTO `user` (`iduser`, `login`, `encryptedkeypwd`, `dtcreation`, `role`, `encryptedkey`, `validationkey`, `validaccount`, `actif`, `hashed_password`, `timestamp_modif_pwd`) VALUES
-(1, 'user1@hotmail.fr', 0x7573657231000000000000000000000000000000000000000000000000000000, '2017-11-20', NULL, 0x2fcc9384143c56f2eafdcb29d6331ffffe0db17b34a5ce7001fca0d7c183c402, NULL, 0, 1, NULL, NULL),
+(1, 'user1@hotmail.fr', 0x7573657231000000000000000000000000000000000000000000000000000000, '2017-11-20', NULL, 0x6e64d78613c9d79d1441eb7491ec1074ca238e8241b2069ab81ef46d52a38a69, NULL, 0, 1, 0x289cfe05c74e2c262238f6057e2130ec6e7c1234c4229bff8aefd80438169cee, NULL),
 (2, 'user2@yahoo.fr', 0x7573657232000000000000000000000000000000000000000000000000000000, '2017-11-20', NULL, 0x0000000000000000000000000000000000000000000000000000000000000000, NULL, NULL, 1, NULL, NULL),
 (10, 'quentin.petit@yahoo.fr', NULL, NULL, NULL, NULL, NULL, 1, 1, 0x944bb3c8d217077fd474a8639f5312bddef75651f2eb6694e6285d9a0d6eb728, NULL);
 
@@ -560,7 +561,7 @@ ALTER TABLE `contact`
 -- AUTO_INCREMENT pour la table `datatype`
 --
 ALTER TABLE `datatype`
-  MODIFY `iddatatype` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `iddatatype` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT pour la table `donnees`
@@ -638,7 +639,7 @@ ALTER TABLE `preselection`
 -- Contraintes pour la table `template`
 --
 ALTER TABLE `template`
-  ADD CONSTRAINT `fk_user` FOREIGN KEY (`iduser`) REFERENCES `user` (`idUser`);
+  ADD CONSTRAINT `fk_user` FOREIGN KEY (`iduser`) REFERENCES `user` (`iduser`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

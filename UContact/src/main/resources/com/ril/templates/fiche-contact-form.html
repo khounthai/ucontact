@@ -15,6 +15,7 @@
 			<th:block th:each="c, stat :*{champs}">
 				<tr>
 					<td th:text="${c.libelle}"></td>
+					
 					<td>
 						<div th:if="*{champs[__${stat.index}__].datatype.libelle} == 'EMAIL'" class="input-group">
   							<span class="input-group-addon">@</span>
@@ -27,6 +28,7 @@
 							   th:field="*{champs[__${stat.index}__].donnee.valeur}" />
 							   
 					</td>
+					
 					<td><input type="hidden" th:field="*{champs[__${stat.index}__].idchamp}"/></td>
 					<td><input type="text" th:field="*{champs[__${stat.index}__].iddatatype}"/></td>
 					<td><input type="text" th:field="*{champs[__${stat.index}__].datatype.libelle}"/></td>
@@ -35,7 +37,8 @@
 						<select  th:if="*{champs[__${stat.index}__].preselectionsize} gt 0">
 							<option th:each="d : *{champs[__${stat.index}__].preselection}"
                 					th:value="${d}"
-                					th:text="${d}"/>
+                					th:text="${d}"
+                					th:selected="*{champs[__${stat.index}__].libelle}"/>
 						</select>
 						<!-- <h2 th:unless="*{champs[__${stat.index}__].preselectionsize} gt 0">AU revoir</h2> -->
 					</td>

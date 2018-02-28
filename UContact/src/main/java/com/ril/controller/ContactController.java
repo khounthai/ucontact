@@ -188,7 +188,7 @@ public class ContactController {
 	// Affichage de la page index
 	@RequestMapping("/")
     public String greeting(@RequestParam(value="name", required=false, defaultValue="World") String name, Model model) {
-		User u=userDao.findByIduser(1,true);
+		/*User u=userDao.findByIduser(1,true);
 		try {
 			u.setPassword("user1");
 			userDao.Save(u);
@@ -201,7 +201,7 @@ public class ContactController {
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		}*/
 		
         model.addAttribute("name", name);
         return "index";

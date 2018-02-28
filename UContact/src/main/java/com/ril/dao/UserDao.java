@@ -37,7 +37,7 @@ public class UserDao {
 			
 			while (rs.next()) {			
 				u = new User(rs.getLong(1),rs.getString(2),rs.getBytes(3),rs.getString(4),rs.getBoolean(5),false,
-						rs.getBytes(6),"",rs.getString(7),true,rs.getTimestamp(8),rs.getBytes(9) );		
+						rs.getBytes(6),"",rs.getString(7),true,rs.getTimestamp(8),rs.getBytes(9));		
 			}
 			
 			rs.close();
@@ -88,9 +88,11 @@ public class UserDao {
 		try {
 			Connection conn = database.getSqlConnection();		
 			
-			String sql = "INSERT INTO USER (iduser,login,encryptedkeypwd,role,encryptedkey,validationkey,validaccount,actif,hashed_password,timestamp_modif_pwd) VALUES (?,?,?,?,?,?,?,?,?,?) "+
+			String sql = "INSERT INTO USER (iduser,login,encryptedkeypwd,role,encryptedkey,validationkey,validaccount,actif,hashed_password,timestamp_modif_pwd) "+
+						 "VALUES (?,?,?,?,?,?,?,?,?,?) "+
 						 "ON DUPLICATE KEY UPDATE login=VALUES(login), encryptedkeypwd=VALUES(encryptedkeypwd), role=VALUES(role),encryptedkey=VALUES(encryptedkey),  "+
-						 "validationkey=VALUES(validationkey), validaccount=VALUES(validaccount), actif=VALUES(actif),hashed_password=VALUES(hashed_password), timestamp_modif_pwd=VALUES(timestamp_modif_pwd)"; 
+						 "validationkey=VALUES(validationkey), validaccount=VALUES(validaccount), actif=VALUES(actif),hashed_password=VALUES(hashed_password), "+
+						 "timestamp_modif_pwd=VALUES(timestamp_modif_pwd)"; 
 							
 			System.out.println(sql);
 			PreparedStatement ps = conn.prepareStatement(sql,Statement.RETURN_GENERATED_KEYS);
