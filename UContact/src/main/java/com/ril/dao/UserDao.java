@@ -18,38 +18,7 @@ public class UserDao {
 	@Autowired
 	private Database database;
 
-	private final String selectSql="select iduser,login,encryptedkey,validationkey,validaccount,hashed_password,role,timestamp_modif_pwd,encryptedkeypwd from user ";
-	
-	public User findByLoginAndPassword(String login,String password,boolean actif) {
-		User u=null;
-		
-		try {
-			Connection conn = database.getSqlConnection();		
-			
-			String sql = selectSql+"where login=? and password=? and actif=?";
-			System.out.println(sql);
-			PreparedStatement ps = conn.prepareStatement(sql);
-			ps.setString(1,login);
-			ps.setString(2,password);
-			ps.setBoolean(3,actif);
-			
-			ResultSet rs = ps.executeQuery();
-			
-			while (rs.next()) {			
-				u = new User(rs.getLong(1),rs.getString(2),rs.getBytes(3),rs.getString(4),rs.getBoolean(5),false,
-						rs.getBytes(6),"",rs.getString(7),true,rs.getTimestamp(8),rs.getBytes(9));		
-			}
-			
-			rs.close();
-			ps.close();
-			
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		return u;
-	}
+	private final String selectSql="select iduser, login, encryptedkey, validationkey, validaccount, hashed_password, role, timestamp_modif_pwd, encryptedkeypwd, dtcreation from user ";
 	
 	public User findByIduser(long iduser,boolean actif) {
 		User u=null;
@@ -67,8 +36,8 @@ public class UserDao {
 			
 			ResultSet rs = ps.executeQuery();			
 			while (rs.next()) {			
-				u = new User(rs.getLong(1),rs.getString(2),rs.getBytes(3),rs.getString(4),rs.getBoolean(5),false,
-						rs.getBytes(6),"",rs.getString(7),true,rs.getTimestamp(8),rs.getBytes(9) );	
+				u = new User(rs.getLong(1), rs.getString(2), rs.getBytes(3), rs.getString(4), rs.getBoolean(5),
+						rs.getBytes(6), rs.getString(7), true, rs.getTimestamp(8), rs.getBytes(9), rs.getDate(10));	
 			}
 			
 			rs.close();
@@ -88,11 +57,11 @@ public class UserDao {
 		try {
 			Connection conn = database.getSqlConnection();		
 			
-			String sql = "INSERT INTO USER (iduser,login,encryptedkeypwd,role,encryptedkey,validationkey,validaccount,actif,hashed_password,timestamp_modif_pwd) "+
-						 "VALUES (?,?,?,?,?,?,?,?,?,?) "+
+			String sql = "INSERT INTO USER (iduser, login, encryptedkeypwd, role, encryptedkey, validationkey, validaccount, actif, hashed_password, timestamp_modif_pwd, dtcreation) "+
+						 "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) "+
 						 "ON DUPLICATE KEY UPDATE login=VALUES(login), encryptedkeypwd=VALUES(encryptedkeypwd), role=VALUES(role),encryptedkey=VALUES(encryptedkey),  "+
 						 "validationkey=VALUES(validationkey), validaccount=VALUES(validaccount), actif=VALUES(actif),hashed_password=VALUES(hashed_password), "+
-						 "timestamp_modif_pwd=VALUES(timestamp_modif_pwd)"; 
+						 "timestamp_modif_pwd=VALUES(timestamp_modif_pwd), "+"dtcreation=VALUES(dtcreation)"; 
 							
 			System.out.println(sql);
 			PreparedStatement ps = conn.prepareStatement(sql,Statement.RETURN_GENERATED_KEYS);
@@ -107,6 +76,7 @@ public class UserDao {
 			ps.setBoolean(8,u.isActif());
 			ps.setBytes(9,u.getHashedPassword());
 			ps.setTimestamp(10,u.getTimestampModifPwd());
+			ps.setDate(11,u.getDtcreation());
 			
 			ps.executeUpdate();
 			
@@ -143,8 +113,8 @@ public class UserDao {
 			ResultSet rs = ps.executeQuery();
 			
 			while (rs.next()) {
-				u = new User(rs.getLong(1),rs.getString(2),rs.getBytes(3),rs.getString(4),rs.getBoolean(5),false,
-						rs.getBytes(6),"",rs.getString(7),true,rs.getTimestamp(8),rs.getBytes(9) );	
+				u = new User(rs.getLong(1), rs.getString(2), rs.getBytes(3), rs.getString(4), rs.getBoolean(5),
+						rs.getBytes(6), rs.getString(7), true, rs.getTimestamp(8), rs.getBytes(9), rs.getDate(10));	
 			}
 			
 			rs.close();
@@ -175,8 +145,8 @@ public class UserDao {
 			ResultSet rs = ps.executeQuery();
 			
 			while (rs.next()) {
-				u = new User(rs.getLong(1),rs.getString(2),rs.getBytes(3),rs.getString(4),rs.getBoolean(5),false,
-						rs.getBytes(6),"",rs.getString(7),true,rs.getTimestamp(8),rs.getBytes(9) );			
+				u = new User(rs.getLong(1), rs.getString(2), rs.getBytes(3), rs.getString(4), rs.getBoolean(5),
+						rs.getBytes(6), rs.getString(7), true, rs.getTimestamp(8), rs.getBytes(9), rs.getDate(10));			
 			}
 			
 			rs.close();
@@ -190,7 +160,7 @@ public class UserDao {
 		return u;
 	}
 
-	public User findByLoginAndHashedPassword(String login,byte[] hashedPassword,boolean actif) {
+	public User findByLoginAndHashedPassword(String login, byte[] hashedPassword, boolean actif) {
 		User u=null;
 
 		try {
@@ -206,8 +176,8 @@ public class UserDao {
 			ResultSet rs = ps.executeQuery();
 			
 			while (rs.next()) {			
-				u = new User(rs.getLong(1),rs.getString(2),rs.getBytes(3),rs.getString(4),rs.getBoolean(5),false,
-						rs.getBytes(6),"",rs.getString(7),true,rs.getTimestamp(8),rs.getBytes(9) );			
+				u = new User(rs.getLong(1), rs.getString(2), rs.getBytes(3), rs.getString(4), rs.getBoolean(5),
+						rs.getBytes(6), rs.getString(7), true, rs.getTimestamp(8), rs.getBytes(9), rs.getDate(10));			
 			}
 			
 			rs.close();
@@ -237,8 +207,8 @@ public class UserDao {
 			ResultSet rs = ps.executeQuery();
 			
 			while (rs.next()) {			
-				u = new User(rs.getLong(1),rs.getString(2),rs.getBytes(3),rs.getString(4),rs.getBoolean(5),false,
-						rs.getBytes(6),"",rs.getString(7),true,rs.getTimestamp(8),rs.getBytes(9) );		
+				u = new User(rs.getLong(1), rs.getString(2), rs.getBytes(3), rs.getString(4), rs.getBoolean(5),
+						rs.getBytes(6), rs.getString(7), true, rs.getTimestamp(8), rs.getBytes(9), rs.getDate(10));		
 			}
 			
 			rs.close();
@@ -302,8 +272,8 @@ public class UserDao {
 			ResultSet rs = ps.executeQuery();
 			
 			while (rs.next()) {			
-				u = new User(rs.getLong(1),rs.getString(2),rs.getBytes(3),rs.getString(4),rs.getBoolean(5),false,
-						rs.getBytes(6),"",rs.getString(7),true,rs.getTimestamp(8),rs.getBytes(9) );				
+				u = new User(rs.getLong(1), rs.getString(2), rs.getBytes(3), rs.getString(4), rs.getBoolean(5),
+						rs.getBytes(6), rs.getString(7), true, rs.getTimestamp(8), rs.getBytes(9), rs.getDate(10));				
 			}
 			
 			rs.close();

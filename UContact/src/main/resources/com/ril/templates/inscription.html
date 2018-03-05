@@ -1,5 +1,9 @@
 <div class="container main_content" th:fragment="content">
-	<form class="form-horizontal" action="#" method="post" th:object="${user}" th:action="@{/inscription-form}">
+
+	<div class="alert alert-danger" role="alert" th:if="${retour} == 'erreur'">Le mot de passe et sa confirmation doivent être identiques !</div>
+	<div class="alert alert-danger" role="alert" th:if="${retour} == 'erreur-compte-existant'">Vous ne pouvez pas créer un 2e compte avec cette adresse email !</div>
+
+	<form class="form-horizontal" th:action="@{/inscription}" method="post" th:object="${userFormInscription}">
   		<div class="form-group">
   			<label for="inputEmail" class="col-xs-12 col-sm-4 col-md-4 col-lg-4 control-label">Adresse email</label>
   			<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6 ">
@@ -22,7 +26,7 @@
   		<div class="form-group">
    			<label for="inputConfirmPwd" class="col-xs-12 col-sm-4 col-md-4 col-lg-4 control-label">Confirmation du mot de passe</label>
   			<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
-  				<input type="password" class="form-control" id="inputConfirmPwd" placeholder="Confirmation du mot de passe" th:field="*{confirmpassword}" />
+  				<input type="password" class="form-control" id="inputConfirmPwd" placeholder="Confirmation du mot de passe" th:field="*{confirmPassword}" />
   			</div>
   		</div>
  		<div class="form-group">

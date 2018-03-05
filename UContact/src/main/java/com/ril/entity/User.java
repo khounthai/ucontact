@@ -1,6 +1,7 @@
 package com.ril.entity;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
+import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.Base64;
@@ -14,31 +15,27 @@ public class User {
 	private byte[] encryptedkey;
 	private String validationkey; //clé de validation de compte	
 	private Boolean validaccount = false;	
-	private boolean remember;
 	private byte[] hashedPassword;
-	private String confirmpassword;
+	private Date dtcreation;
 	private String role;
-	private static final byte[] salt = Base64.getDecoder().decode("wA1AIEqxQeWY+FgwfUTtBqHmVdrC69Op");
 	private boolean actif;
 	private Timestamp timestampModifPwd;
 	private byte[] encryptedkeypwd;
-	private String password;
 	
 	public User() {
 	}
 	
 	public User(long iduser, String login, byte[] encryptedkey, String validationkey, Boolean validaccount,
-			boolean remember, byte[] hashedPassword, String confirmpassword, String role, boolean actif,
-			Timestamp timestampModifPwd, byte[] encryptedkeypwd) {
+			byte[] hashedPassword, String role, boolean actif, Timestamp timestampModifPwd,
+			byte[] encryptedkeypwd, Date dtcreation) {
 		
 		this.iduser = iduser;
 		this.login = login;
 		this.encryptedkey = encryptedkey;
 		this.validationkey = validationkey;
 		this.validaccount = validaccount;
-		this.remember = remember;
 		this.hashedPassword = hashedPassword;
-		this.confirmpassword = confirmpassword;
+		this.dtcreation = dtcreation;
 		this.role = role;
 		this.actif = actif;
 		this.timestampModifPwd = timestampModifPwd;
@@ -57,20 +54,13 @@ public class User {
 		return hashedPassword;
 	}
 
-	public boolean comparePassword(String password) throws NoSuchAlgorithmException, InvalidKeySpecException
-	{
-		return Arrays.equals(hashedPassword, hashPassword(password));
+	public Date getDtcreation() {
+		return dtcreation;
 	}
-	
-	private byte [] hashPassword(String pwd) throws NoSuchAlgorithmException, InvalidKeySpecException
-	{
-		if (pwd==null)
-			return null;
-		PBEKeySpec spec = new PBEKeySpec(pwd.toCharArray(), salt, 10000, 32 * 8);
-    	SecretKeyFactory skf = SecretKeyFactory.getInstance("PBKDF2WithHMacSHA256");
-    	return skf.generateSecret(spec).getEncoded();
-	}
-	
+
+	public void setDtcreation(Date dtcreation) {
+		this.dtcreation = dtcreation;
+	}	
 
 	public String getRole() {
 		return role;
@@ -78,15 +68,6 @@ public class User {
 
 	public void setRole(String role) {
 		this.role = role;
-	}
-
-
-	public String getConfirmpassword() {
-		return confirmpassword;
-	}
-
-	public void setConfirmpassword(String confirmpassword) {
-		this.confirmpassword = confirmpassword;
 	}
 
 	public String getValidationkey() {
@@ -104,10 +85,6 @@ public class User {
 	public void setValidaccount(Boolean validaccount) {
 		this.validaccount = validaccount;
 
-	}
-
-	public void setRemember(boolean remember) {
-		this.remember = remember;
 	}
 
 	public byte[] getEncryptedkey() {
@@ -155,29 +132,12 @@ public class User {
 		this.encryptedkeypwd = encryptedkeypwd;
 	}
 
-	public boolean isRemember() {
-		return remember;
-	}
-	
-	
-	public String getPassword() {
-		return password;
-	}
-
-	public void setPassword(String password) throws NoSuchAlgorithmException, InvalidKeySpecException {
-
-		this.hashedPassword = hashPassword(password);
-
-		this.password = password;
-
-	}
-
 	@Override
 	public String toString() {
 		return "User [iduser=" + iduser + ", login=" + login + ", encryptedkey=" + Arrays.toString(encryptedkey)
-				+ ", validationkey=" + validationkey + ", validaccount=" + validaccount + ", remember=" + remember
-				+ ", hashedPassword=" + Arrays.toString(hashedPassword) + ", confirmpassword=" + confirmpassword
-				+ ", role=" + role + ", actif=" + actif + ", timestampModifPwd=" + timestampModifPwd
+				+ ", validationkey=" + validationkey + ", validaccount=" + validaccount
+				+ ", hashedPassword=" + Arrays.toString(hashedPassword) + ", role=" + role
+				+", dtcreation=" + dtcreation + ", actif=" + actif + ", timestampModifPwd=" + timestampModifPwd
 				+ ", encryptedkeypwd=" + Arrays.toString(encryptedkeypwd) + "]";
 	}
 
