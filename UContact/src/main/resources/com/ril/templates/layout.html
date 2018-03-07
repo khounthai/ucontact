@@ -38,9 +38,10 @@
               
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             	<ul class="nav navbar-nav navbar-right">
-                	<!-- <li class="active"><a class="nav-button" href="#contact">Contact</a></li>-->
-                   	<li class="active"><a th:href="@{/connexion}" title="Se connecter">Se connecter</a></li>
-                  	<li class="active"><a th:href="@{/inscription}" title="S'enregistrer">S'enregistrer</a></li>
+                	<li th:if="${user != null}" class="active"><a th:href="@{/contacts}" title="Mes contacts">Mes contacts</a></li>
+                   	<li th:if="${user != null}" class="active"><a th:href="@{/deconnexion}" title="Déconnexion">Déconnexion</a></li>
+                   	<li th:if="${user == null}" class="active"><a th:href="@{/connexion}" title="Se connecter">Se connecter</a></li>
+                  	<li th:if="${user == null}" class="active"><a th:href="@{/inscription}" title="S'enregistrer">S'enregistrer</a></li>
               	</ul>
 			</div>
 		</div>    

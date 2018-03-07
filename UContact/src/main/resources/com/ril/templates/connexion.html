@@ -1,7 +1,6 @@
 <div class="container main_content" th:fragment="content">
 
 	<div class="alert alert-success" role="alert" th:if="${retour} == 'compte-valide'">Félicitation, votre compte a bien été activé !</div>
-	<div class="alert alert-warning" role="alert" th:if="${retour} == 'erreur-non-valide'">Vous n'avez pas validé votre adresse email. Pour recevoir un nouvel email de validation, cliquez ici.</div>
 	<div class="alert alert-danger" role="alert" th:if="${retour} == 'erreur-connexion'">Erreur de login et/ou de mot de passe !</div>
 	<div class="alert alert-danger" role="alert" th:if="${retour} == 'erreur-validation-compte'">Compte introuvable, veuillez contactez le support technique !</div>
 
