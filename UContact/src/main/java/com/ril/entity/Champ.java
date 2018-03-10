@@ -14,11 +14,12 @@ public class Champ {
 	private DataType datatype;
 	private List<String> preselection;
 	private int preselectionsize;
+	private boolean accueil;
 	
 	public Champ() {}
 	
 	public Champ(long idchamp, String libelle, boolean multivaleur, long iddatatype, Donnee donnee, DataType datatype,
-			List<String> preselection) {
+			List<String> preselection,boolean accueil) {
 		
 		this.idchamp = idchamp;
 		this.libelle = libelle;
@@ -27,6 +28,7 @@ public class Champ {
 		this.donnee = donnee;
 		this.datatype = datatype;
 		this.preselection = preselection;
+		this.accueil=accueil;
 	}
 
 	public long getIdchamp() {
@@ -95,10 +97,20 @@ public class Champ {
 		return preselection.size();
 	}
 
+	public boolean isAccueil() {
+		return accueil;
+	}
+
+	public void setAccueil(boolean accueil) {
+		this.accueil = accueil;
+	}
+
 	@Override
 	public String toString() {
 		return "Champ [idchamp=" + idchamp + ", libelle=" + libelle + ", multivaleur=" + multivaleur + ", iddatatype="
-				+ iddatatype + ", donnee=" + donnee + ", datatype=" + datatype + ", preselection=" + preselection+ "]";
+				+ iddatatype + ", donnee=" + donnee + ", datatype=" + datatype + ", preselection=" + preselection
+				+ ", preselectionsize=" + preselectionsize + ", accueil=" + accueil + "]";
 	}
 
+	
 }

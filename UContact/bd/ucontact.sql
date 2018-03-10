@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : 127.0.0.1
--- Généré le :  mer. 28 fév. 2018 à 19:04
+-- Généré le :  sam. 10 mars 2018 à 17:24
 -- Version du serveur :  10.1.28-MariaDB
 -- Version de PHP :  7.1.11
 
@@ -53,7 +53,8 @@ INSERT INTO `champ` (`idchamp`, `libelle`, `multivaleur`, `iddatatype`) VALUES
 (11, 'Date de naissance', 0, 4),
 (12, 'CP', 0, 1),
 (13, 'Téléphone fixe', 0, 2),
-(14, 'Adresse', 0, 1);
+(14, 'Adresse', 0, 1),
+(15, 'Civilite', 0, 1);
 
 -- --------------------------------------------------------
 
@@ -78,7 +79,8 @@ INSERT INTO `contact` (`idcontact`, `dtcreation`, `favoris`, `iduser`, `actif`) 
 (7, '2018-02-06', 0, 1, 1),
 (9, '2018-02-07', 0, 1, 1),
 (12, '2018-02-08', 0, 1, 1),
-(15, '2018-02-08', 0, 1, 1);
+(15, '2018-02-08', 0, 1, 1),
+(16, '2018-03-10', 0, 1, 1);
 
 -- --------------------------------------------------------
 
@@ -88,19 +90,20 @@ INSERT INTO `contact` (`idcontact`, `dtcreation`, `favoris`, `iduser`, `actif`) 
 
 CREATE TABLE `datatype` (
   `iddatatype` int(11) NOT NULL,
-  `libelle` varchar(255) DEFAULT NULL
+  `libelle` varchar(255) DEFAULT NULL,
+  `regex` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Déchargement des données de la table `datatype`
 --
 
-INSERT INTO `datatype` (`iddatatype`, `libelle`) VALUES
-(1, 'TEXTE'),
-(2, 'ENTIER'),
-(3, 'DECIMAL'),
-(4, 'DATE'),
-(5, 'EMAIL');
+INSERT INTO `datatype` (`iddatatype`, `libelle`, `regex`) VALUES
+(1, 'TEXTE', NULL),
+(2, 'ENTIER', '[0-9]*'),
+(3, 'DECIMAL', NULL),
+(4, 'DATE', NULL),
+(5, 'EMAIL', NULL);
 
 -- --------------------------------------------------------
 
@@ -172,7 +175,7 @@ INSERT INTO `donnees` (`iddonnee`, `dtenregistrement`, `valeur`, `idcontact`, `i
 (113, '2018-02-08 14:39:25', 'Doe', 12, 2),
 (114, '2018-02-08 14:39:25', '35 rue la gare', 12, 14),
 (115, '2018-02-08 14:39:25', '51100', 12, 12),
-(116, '2018-02-08 14:39:25', 'Reims', 12, 5),
+(116, '2018-02-08 14:39:25', 'REIMS', 12, 5),
 (117, '2018-02-08 14:39:25', 'France', 12, 6),
 (118, '2018-02-08 14:39:26', '032601020304', 12, 13),
 (119, '2018-02-08 14:39:26', '060102030405', 12, 3),
@@ -218,7 +221,7 @@ INSERT INTO `donnees` (`iddonnee`, `dtenregistrement`, `valeur`, `idcontact`, `i
 (159, '2018-02-09 11:04:39', '15 rue de AAAAA', 15, 14),
 (160, '2018-02-09 11:04:39', '51100', 15, 12),
 (161, '2018-02-09 11:04:39', 'PARIS', 15, 5),
-(162, '2018-02-09 11:04:39', 'Reims', 15, 6),
+(162, '2018-02-09 11:04:39', 'REIMS', 15, 6),
 (163, '2018-02-09 11:04:39', '0102030405', 15, 13),
 (164, '2018-02-09 11:04:39', '0607080902', 15, 3),
 (165, '2018-02-09 11:04:39', 'nom15@yahoo.fr', 15, 4),
@@ -307,7 +310,7 @@ INSERT INTO `donnees` (`iddonnee`, `dtenregistrement`, `valeur`, `idcontact`, `i
 (248, '2018-02-09 12:04:19', 'prénom 7', 7, 2),
 (249, '2018-02-09 12:04:19', '1 rue de la paix', 7, 14),
 (250, '2018-02-09 12:04:19', '51100', 7, 12),
-(251, '2018-02-09 12:04:19', 'Reims', 7, 5),
+(251, '2018-02-09 12:04:19', 'REIMS', 7, 5),
 (252, '2018-02-09 12:04:19', 'FRANCE', 7, 6),
 (253, '2018-02-09 12:04:19', '01-02-03-04-05-06', 7, 13),
 (254, '2018-02-09 12:04:19', '06-11-22-33-44-55', 7, 3),
@@ -320,7 +323,106 @@ INSERT INTO `donnees` (`iddonnee`, `dtenregistrement`, `valeur`, `idcontact`, `i
 (261, '2018-02-09 12:05:36', 'Espagne', 15, 6),
 (262, '2018-02-09 12:05:36', '0505050', 15, 13),
 (263, '2018-02-09 12:05:36', '0606006', 15, 3),
-(264, '2018-02-09 12:05:36', 'nom15@yahoo.net', 15, 4);
+(264, '2018-02-09 12:05:36', 'nom15@yahoo.net', 15, 4),
+(265, '2018-03-10 15:16:54', NULL, 7, 15),
+(266, '2018-03-10 15:16:54', 'nom 7', 7, 1),
+(267, '2018-03-10 15:16:54', 'prénom 7', 7, 2),
+(268, '2018-03-10 15:16:54', '1991-01-09', 7, 11),
+(269, '2018-03-10 15:16:54', '1 rue de la paix', 7, 14),
+(270, '2018-03-10 15:16:54', '51100', 7, 12),
+(271, '2018-03-10 15:16:54', 'REIMS', 7, 5),
+(272, '2018-03-10 15:16:54', 'FRANCE', 7, 6),
+(273, '2018-03-10 15:16:54', '010203040506', 7, 13),
+(274, '2018-03-10 15:16:54', '06-11-22-33-44-55', 7, 3),
+(275, '2018-03-10 15:16:54', 'nom7@yahoo.net', 7, 4),
+(276, '2018-03-10 15:27:15', NULL, 7, 15),
+(277, '2018-03-10 15:27:15', 'nom 7', 7, 1),
+(278, '2018-03-10 15:27:15', 'prénom 7', 7, 2),
+(279, '2018-03-10 15:27:15', '1991-01-09', 7, 11),
+(280, '2018-03-10 15:27:15', '1 rue de la paix', 7, 14),
+(281, '2018-03-10 15:27:15', '51100', 7, 12),
+(282, '2018-03-10 15:27:16', 'REIMS', 7, 5),
+(283, '2018-03-10 15:27:16', 'FRANCE', 7, 6),
+(284, '2018-03-10 15:27:16', '010203040506', 7, 13),
+(285, '2018-03-10 15:27:16', '06-11-22-33-44-55', 7, 3),
+(286, '2018-03-10 15:27:16', 'nom7@yahoo.net', 7, 4),
+(287, '2018-03-10 15:38:47', 'Mlle.', 7, 15),
+(288, '2018-03-10 15:38:48', 'nom 7', 7, 1),
+(289, '2018-03-10 15:38:48', 'prénom 7', 7, 2),
+(290, '2018-03-10 15:38:48', '1991-01-09', 7, 11),
+(291, '2018-03-10 15:38:48', '1 rue de la paix', 7, 14),
+(292, '2018-03-10 15:38:48', '51100', 7, 12),
+(293, '2018-03-10 15:38:48', 'REIMS', 7, 5),
+(294, '2018-03-10 15:38:48', 'FRANCE', 7, 6),
+(295, '2018-03-10 15:38:48', '010203040506', 7, 13),
+(296, '2018-03-10 15:38:48', '06-11-22-33-44-55', 7, 3),
+(297, '2018-03-10 15:38:48', 'nom7@yahoo.net', 7, 4),
+(298, '2018-03-10 15:40:32', 'Mme.', 7, 15),
+(299, '2018-03-10 15:40:32', 'nom 7', 7, 1),
+(300, '2018-03-10 15:40:32', 'prénom 7', 7, 2),
+(301, '2018-03-10 15:40:33', '1991-01-09', 7, 11),
+(302, '2018-03-10 15:40:33', '1 rue de la paix', 7, 14),
+(303, '2018-03-10 15:40:33', '51100', 7, 12),
+(304, '2018-03-10 15:40:33', 'REIMS', 7, 5),
+(305, '2018-03-10 15:40:33', 'FRANCE', 7, 6),
+(306, '2018-03-10 15:40:33', '010203040506', 7, 13),
+(307, '2018-03-10 15:40:33', '06-11-22-33-44-55', 7, 3),
+(308, '2018-03-10 15:40:33', 'nom7@yahoo.net', 7, 4),
+(375, '2018-03-10 17:02:30', 'Mme.', 7, 15),
+(376, '2018-03-10 17:02:30', 'nom 7', 7, 1),
+(377, '2018-03-10 17:02:30', 'prénom 7', 7, 2),
+(378, '2018-03-10 17:02:30', '1991-01-09', 7, 11),
+(379, '2018-03-10 17:02:30', '1 rue de la paix', 7, 14),
+(380, '2018-03-10 17:02:30', '51100', 7, 12),
+(381, '2018-03-10 17:02:30', 'REIMS', 7, 5),
+(382, '2018-03-10 17:02:30', 'FRANCE', 7, 6),
+(383, '2018-03-10 17:02:30', '010203040506', 7, 13),
+(384, '2018-03-10 17:02:31', '06-11-22-33-44-55', 7, 3),
+(385, '2018-03-10 17:02:31', 'nom7@yahoo.net', 7, 4),
+(386, '2018-03-10 17:02:37', 'M.', 12, 15),
+(387, '2018-03-10 17:02:37', 'John', 12, 1),
+(388, '2018-03-10 17:02:37', 'Doe', 12, 2),
+(389, '2018-03-10 17:02:37', '', 12, 11),
+(390, '2018-03-10 17:02:37', '15 rue de la glace', 12, 14),
+(391, '2018-03-10 17:02:37', '7000', 12, 12),
+(392, '2018-03-10 17:02:37', 'LONDRE', 12, 5),
+(393, '2018-03-10 17:02:37', 'ANGLETERRE', 12, 6),
+(394, '2018-03-10 17:02:37', '112233445566', 12, 13),
+(395, '2018-03-10 17:02:37', '060709080909', 12, 3),
+(396, '2018-03-10 17:02:37', 'john-chine@yahoo.com', 12, 4),
+(397, '2018-03-10 17:03:34', 'Mlle.', 9, 15),
+(398, '2018-03-10 17:03:34', 'eaz', 9, 1),
+(399, '2018-03-10 17:03:34', 'aza', 9, 2),
+(400, '2018-03-10 17:03:34', '', 9, 11),
+(401, '2018-03-10 17:03:34', '', 9, 14),
+(402, '2018-03-10 17:03:34', 'eaeza', 9, 12),
+(403, '2018-03-10 17:03:34', '', 9, 5),
+(404, '2018-03-10 17:03:34', '', 9, 6),
+(405, '2018-03-10 17:03:34', '', 9, 13),
+(406, '2018-03-10 17:03:34', 'daz', 9, 3),
+(407, '2018-03-10 17:03:34', '', 9, 4),
+(408, '2018-03-10 17:03:41', 'Mme.', 15, 15),
+(409, '2018-03-10 17:03:41', 'Nom15_C', 15, 1),
+(410, '2018-03-10 17:03:41', 'Prenom15_B', 15, 2),
+(411, '2018-03-10 17:03:42', '', 15, 11),
+(412, '2018-03-10 17:03:42', '30 allée des puits', 15, 14),
+(413, '2018-03-10 17:03:42', '777777', 15, 12),
+(414, '2018-03-10 17:03:42', 'Madrid', 15, 5),
+(415, '2018-03-10 17:03:42', 'Espagne', 15, 6),
+(416, '2018-03-10 17:03:42', '0505050', 15, 13),
+(417, '2018-03-10 17:03:42', '0606006', 15, 3),
+(418, '2018-03-10 17:03:42', 'nom15@yahoo.net', 15, 4),
+(419, '2018-03-10 17:19:49', 'M.', 16, 15),
+(420, '2018-03-10 17:19:49', 'Dupont', 16, 1),
+(421, '2018-03-10 17:19:49', 'Pierrot', 16, 2),
+(422, '2018-03-10 17:19:49', '1993-02-17', 16, 11),
+(423, '2018-03-10 17:19:49', '34 rue des Tombeaux', 16, 14),
+(424, '2018-03-10 17:19:49', '75001', 16, 12),
+(425, '2018-03-10 17:19:49', 'Paris', 16, 5),
+(426, '2018-03-10 17:19:49', 'France', 16, 6),
+(427, '2018-03-10 17:19:49', '010203040506', 16, 13),
+(428, '2018-03-10 17:19:49', '066677889900', 16, 3),
+(429, '2018-03-10 17:19:49', 'dupont.pierrot@free.com', 16, 4);
 
 -- --------------------------------------------------------
 
@@ -363,34 +465,37 @@ CREATE TABLE `lientemplatechamp` (
   `idtemplate` int(11) NOT NULL,
   `idchamp` int(11) NOT NULL,
   `ordre` int(11) NOT NULL,
-  `champactif` tinyint(4) NOT NULL DEFAULT '1'
+  `champactif` tinyint(4) NOT NULL DEFAULT '1',
+  `accueil` tinyint(1) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Déchargement des données de la table `lientemplatechamp`
 --
 
-INSERT INTO `lientemplatechamp` (`idtemplate`, `idchamp`, `ordre`, `champactif`) VALUES
-(1, 1, 1, 1),
-(1, 2, 2, 1),
-(1, 3, 8, 1),
-(1, 4, 9, 1),
-(1, 5, 5, 1),
-(1, 6, 6, 1),
-(1, 12, 4, 1),
-(1, 13, 7, 1),
-(1, 14, 3, 1),
-(2, 1, 0, 1),
-(2, 2, 0, 1),
-(2, 3, 0, 1),
-(2, 4, 0, 1),
-(2, 5, 0, 1),
-(2, 6, 0, 1),
-(2, 7, 0, 1),
-(2, 8, 0, 1),
-(2, 9, 0, 1),
-(2, 10, 0, 1),
-(2, 11, 0, 1);
+INSERT INTO `lientemplatechamp` (`idtemplate`, `idchamp`, `ordre`, `champactif`, `accueil`) VALUES
+(1, 1, 1, 1, 1),
+(1, 2, 2, 1, 1),
+(1, 3, 8, 1, 1),
+(1, 4, 9, 1, 0),
+(1, 5, 5, 1, 0),
+(1, 6, 6, 1, 0),
+(1, 11, 3, 1, 0),
+(1, 12, 4, 1, 0),
+(1, 13, 7, 1, 1),
+(1, 14, 3, 1, 0),
+(1, 15, 0, 1, 1),
+(2, 1, 0, 1, 0),
+(2, 2, 0, 1, 0),
+(2, 3, 0, 1, 0),
+(2, 4, 0, 1, 0),
+(2, 5, 0, 1, 0),
+(2, 6, 0, 1, 0),
+(2, 7, 0, 1, 0),
+(2, 8, 0, 1, 0),
+(2, 9, 0, 1, 0),
+(2, 10, 0, 1, 0),
+(2, 11, 0, 1, 0);
 
 -- --------------------------------------------------------
 
@@ -409,15 +514,16 @@ CREATE TABLE `preselection` (
 --
 
 INSERT INTO `preselection` (`idpreselect`, `Valeur`, `idchamp`) VALUES
-(1, 'Paris', 5),
-(2, 'Reims', 5),
 (3, 'Anglais', 7),
 (4, 'Allemand', 7),
 (5, 'Espagnol', 7),
 (6, 'Développeur', 8),
 (7, 'Technicien de maintenance', 8),
 (8, 'Microsoft Office', 9),
-(9, 'Plomberie', 9);
+(9, 'Plomberie', 9),
+(10, 'M.', 15),
+(11, 'Mme.', 15),
+(12, 'Mlle.', 15);
 
 -- --------------------------------------------------------
 
@@ -464,9 +570,10 @@ CREATE TABLE `user` (
 --
 
 INSERT INTO `user` (`iduser`, `login`, `encryptedkeypwd`, `dtcreation`, `role`, `encryptedkey`, `validationkey`, `validaccount`, `actif`, `hashed_password`, `timestamp_modif_pwd`) VALUES
-(1, 'user1@hotmail.fr', 0x7573657231000000000000000000000000000000000000000000000000000000, '2017-11-20', NULL, 0x6e64d78613c9d79d1441eb7491ec1074ca238e8241b2069ab81ef46d52a38a69, NULL, 0, 1, 0x289cfe05c74e2c262238f6057e2130ec6e7c1234c4229bff8aefd80438169cee, NULL),
+(1, 'user1@hotmail.fr', 0x7573657231000000000000000000000000000000000000000000000000000000, '2017-11-20', NULL, 0xb9379b65fbbb92b11ff8ac35b626c5b95f8e8a9fb64f9948939fb51869431f02, 'lkxyjjzemqvhiqesyhfx', 1, 1, 0x289cfe05c74e2c262238f6057e2130ec6e7c1234c4229bff8aefd80438169cee, NULL),
 (2, 'user2@yahoo.fr', 0x7573657232000000000000000000000000000000000000000000000000000000, '2017-11-20', NULL, 0x0000000000000000000000000000000000000000000000000000000000000000, NULL, NULL, 1, NULL, NULL),
-(10, 'quentin.petit@yahoo.fr', NULL, NULL, NULL, NULL, NULL, 1, 1, 0x944bb3c8d217077fd474a8639f5312bddef75651f2eb6694e6285d9a0d6eb728, NULL);
+(10, 'quentin.petit@yahoo.fr', NULL, NULL, NULL, NULL, NULL, 1, 1, 0x944bb3c8d217077fd474a8639f5312bddef75651f2eb6694e6285d9a0d6eb728, NULL),
+(11, 'fdzef@yahoo.fr', NULL, '2018-03-09', NULL, NULL, 'rvkqicriaceiaomgjpym', 0, 1, 0x38f8188689cf6c7397e492abf269f3e40f6204bb77d0a7cb3fd6599c6234d9a5, NULL);
 
 --
 -- Index pour les tables déchargées
@@ -549,13 +656,13 @@ ALTER TABLE `user`
 -- AUTO_INCREMENT pour la table `champ`
 --
 ALTER TABLE `champ`
-  MODIFY `idchamp` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `idchamp` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT pour la table `contact`
 --
 ALTER TABLE `contact`
-  MODIFY `idcontact` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `idcontact` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT pour la table `datatype`
@@ -567,7 +674,7 @@ ALTER TABLE `datatype`
 -- AUTO_INCREMENT pour la table `donnees`
 --
 ALTER TABLE `donnees`
-  MODIFY `iddonnee` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=265;
+  MODIFY `iddonnee` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=430;
 
 --
 -- AUTO_INCREMENT pour la table `groupe`
@@ -579,7 +686,7 @@ ALTER TABLE `groupe`
 -- AUTO_INCREMENT pour la table `preselection`
 --
 ALTER TABLE `preselection`
-  MODIFY `idpreselect` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `idpreselect` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT pour la table `template`
@@ -591,7 +698,7 @@ ALTER TABLE `template`
 -- AUTO_INCREMENT pour la table `user`
 --
 ALTER TABLE `user`
-  MODIFY `iduser` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `iduser` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- Contraintes pour les tables déchargées

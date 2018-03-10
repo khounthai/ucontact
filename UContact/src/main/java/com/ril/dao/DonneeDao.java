@@ -30,6 +30,8 @@ public class DonneeDao {
 
 			System.out.println(sql);
 			
+			System.out.println(d);
+			
 			PreparedStatement ps = conn.prepareStatement(sql, com.mysql.jdbc.Statement.RETURN_GENERATED_KEYS);
 
 			ps.setTimestamp(1,d.getDtenregistrement());
@@ -60,7 +62,7 @@ public class DonneeDao {
 		try {
 			Connection conn = (Connection) database.getSqlConnection();
 			
-			String sql ="select d1.iddonnee,d1.idchamp,d1.idcontact,d1.valeur,d1.dtenregistrement,l.ordre from donnees d1 "+
+			String sql ="select d1.iddonnee,d1.idchamp,d1.idcontact,d1.valeur,d1.dtenregistrement,l.ordre,l.accueil from donnees d1 "+
 						"join ( " +
 						"select idchamp,idcontact,max(dtenregistrement) as dtenregistrement "+
 						"   from donnees "+
@@ -85,7 +87,8 @@ public class DonneeDao {
 			ResultSet rs = ps.executeQuery();
 			
 			while (rs.next()) {
-				Donnee d = new Donnee(rs.getLong(1), rs.getLong(2), rs.getLong(3), rs.getString(4),rs.getTimestamp(5), rs.getLong(6));
+				Donnee d = new Donnee(rs.getLong(1), rs.getLong(2), rs.getLong(3), rs.getString(4),rs.getTimestamp(5),
+						rs.getLong(6), rs.getBoolean(7));
 				liste.add(d);
 			}
 

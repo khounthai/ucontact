@@ -20,25 +20,29 @@
 		<table border='1'>
 			<tr>
 				<td>Id contact</td>
-				<td>Date creation</td>
-				<td>Favoris</td>
+				<!--<td>Date creation</td>
+				<td>Favoris</td>-->
 				<td>Id user</td>
+				
 				<div th:if="${templates.size()==1}">
-							<th:block th:each="c: ${templates[0].champs}">					
-						<td th:text="${c.libelle}"></td>						
-				</th:block> 
+					<th:block th:each="c: ${templates[0].champs}">					
+						<td th:if="${c.accueil}" th:text="${c.libelle}"></td>						
+					</th:block> 
 				</div>
 			</tr>
 			
 			<th:block th:each="c,stat :${contacts}">
 				<tr>				
 					<td><a th:href="@{'/fiche-contact-form/'+${c.idcontact}}" th:text="${c.idcontact}" /></td>
-					<td th:text="${c.dtcreation}"></td>
-					<td th:text="${c.favoris}"></td>
+					
+					<!-- <td th:text="${c.dtcreation}"></td>
+					<td th:text="${c.favoris}"></td>	 -->
 					<td th:text="${c.iduser}"></td>
+					
 					<th:block th:each="d :${contacts[__${stat.index}__].donnees}">					
-						<td th:text="${d.valeur}"></td>						
+						<td th:if="${d.accueil}" th:text="${d.valeur}"></td>						
 					</th:block>
+					
 					<td><a th:href="@{'/supprimer-contact/'+${c.idcontact}}" th:text="Supprimer"/></td>
 				</tr>	
 				

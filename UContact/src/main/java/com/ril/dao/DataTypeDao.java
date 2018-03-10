@@ -20,13 +20,20 @@ public class DataTypeDao {
 		try {
 			Connection conn = database.getSqlConnection();
 
-			String sql = "SELECT iddatatype,libelle FROM datatype WHERE iddatatype=?";
+			String sql = "SELECT iddatatype,libelle,regex FROM datatype WHERE iddatatype=?";
 
 			PreparedStatement ps = conn.prepareStatement(sql);
 			ps.setLong(1, iddatatype);
 			ResultSet rs = ps.executeQuery();
+			String regex;
+			
 			while (rs.next()) {
-				d = new DataType(rs.getLong(1), rs.getString(2));
+				if (rs.getString(3)==null)
+					regex="";
+				else
+					regex=rs.getString(3);
+					
+				d = new DataType(rs.getLong(1), rs.getString(2),regex);
 			}
 			rs.close();
 			ps.close();

@@ -31,7 +31,7 @@ public class ChampDao {
 		try {
 			Connection conn = database.getSqlConnection();
 
-			String sql = "SELECT a.idchamp,a.libelle,a.multivaleur,a.iddatatype FROM champ a "
+			String sql = "SELECT a.idchamp,a.libelle,a.multivaleur,a.iddatatype,b.accueil FROM champ a "
 					+ "join lientemplatechamp b using(idchamp) " + "where b.idtemplate=? and b.champactif=? "
 					+ "order by b.ordre";
 
@@ -46,7 +46,9 @@ public class ChampDao {
 			
 
 			while (rs.next()) {
-				Champ c = new Champ(rs.getLong(1), rs.getString(2), rs.getBoolean(3), rs.getLong(4),new Donnee(),new DataType(),new ArrayList<String>());
+				Champ c = new Champ(rs.getLong(1), rs.getString(2), rs.getBoolean(3), rs.getLong(4),new Donnee(),new DataType(),
+						new ArrayList<String>(),rs.getBoolean(5));
+				
 				DataType d=datatypedao.getDataType(c.getIddatatype());
 				c.setDatatype(d);				
 				List<Preselection> p=preselectiondao.getPreselectionsByIdChamp(c.getIdchamp());
@@ -81,7 +83,7 @@ public class ChampDao {
 			ps.setLong(1, idchamp);
 			ResultSet rs = ps.executeQuery();
 			while (rs.next()) {
-				c = new Champ(rs.getLong(1), rs.getString(2), rs.getBoolean(3), rs.getLong(4),new Donnee(),new DataType(),new ArrayList<String>());
+				c = new Champ(rs.getLong(1), rs.getString(2), rs.getBoolean(3), rs.getLong(4),new Donnee(),new DataType(),new ArrayList<String>(),false);
 			}
 			rs.close();
 			ps.close();
