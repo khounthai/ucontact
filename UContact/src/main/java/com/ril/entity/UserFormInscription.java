@@ -2,7 +2,7 @@ package com.ril.entity;
 
 import org.hibernate.validator.constraints.NotEmpty;
 
-public class UserFormInscription extends UserForm {
+public class UserFormInscription extends UserFormConnexion {
 	@NotEmpty
 	private String confirmPassword;
 	

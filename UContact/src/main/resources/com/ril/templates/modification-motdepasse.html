@@ -1,12 +1,50 @@
-<div class="container" th:fragment="content">
-	<br /><br />
-	<form action="#" method="post" th:object="${user}" th:action="@{/modification-mot-de-passe-form}">
-		Nouveau mot de passe : <input type="password" th:field="*{password}" /><br />
-		Confirmation nouveau mot de passe : <input type="password" th:field="*{confirmpassword}" /><br /><br />
-		<input type="hidden" th:value="*{iduser}" />
-		
-		<input type="submit" value="Confirmer" />
-		
-		
+<div class="container main_content" th:fragment="content">
+
+	<div class="alert alert-danger" role="alert" th:if="${retour} == 'erreur'">Le mot de passe et sa confirmation doivent être identiques !</div>
+	<div class="alert alert-danger" role="alert" th:if="${retour} == 'erreur-compte-existant'">Vous ne pouvez pas créer un 2e compte avec cette adresse email !</div>
+
+	<h1>Inscription</h1>
+	<p class="instructions">Pour vous inscrire et profiter des services U-Contact, remplissez le formulaire suivant :</p>
+
+	<form class="form-horizontal" th:action="@{/inscription}" method="post" th:object="${userFormInscription}">
+  		<div class="form-group">
+  			<label for="inputEmail" class="col-xs-12 col-sm-4 col-md-4 col-lg-4 control-label">Adresse email</label>
+  			<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6 ">
+  				<input type="email" class="form-control" id="inputEmail" placeholder="Adresse email" th:field="*{login}" />
+  			</div>
+  		</div>
+  		<div class="form-group">
+   			<label for="inputPwd" class="col-xs-12 col-sm-4 col-md-4 col-lg-4 control-label">Mot de passe</label>
+  			<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6 ">
+  				<input type="password" class="form-control" id="inputPwd" placeholder="Mot de passe" th:field="*{password}" />
+  			</div>
+  		</div>
+  		<div class="form-group">
+			<div class="col-xs-6 col-sm-offset-4 col-sm-3 col-md-offset-4 col-md-3 col-lg-offset-4 col-lg-3">
+  				<div class="progress progress-striped active">
+					<div id="jak_pstrength" class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>
+				</div>
+			</div>
+		</div>
+  		<div class="form-group">
+   			<label for="inputConfirmPwd" class="col-xs-12 col-sm-4 col-md-4 col-lg-4 control-label">Confirmation du mot de passe</label>
+  			<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+  				<input type="password" class="form-control" id="inputConfirmPwd" placeholder="Confirmation du mot de passe" th:field="*{confirmPassword}" />
+  			</div>
+  		</div>
+ 		<div class="form-group">
+			<div class="col-xs-offset-4 col-xs-6 col-sm-offset-4 col-sm-6 col-md-offset-4 col-md-6 col-lg-offset-4 col-lg-6">
+      			<button type="submit" class="btn btn-default">S'enregistrer</button>
+    		</div>
+  		</div>	
 	</form>
 </div>
+
+<script type="text/javascript" th:src="@{/js/passwordStrength.js}" th:fragment="javascript"></script>
+<script th:fragment="javascript">
+	jQuery(document).ready(function() {
+		jQuery("#inputPwd").keyup(function() {
+			passwordStrength(jQuery(this).val());
+		});
+	});
+</script>

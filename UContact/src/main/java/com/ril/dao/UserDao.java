@@ -98,7 +98,7 @@ public class UserDao {
 		return result;
 	}
 	
-	public User findByLogin(String login,boolean actif) {
+	public User findByLogin(String login) {
 		User u=null;
 
 		try {
@@ -109,7 +109,7 @@ public class UserDao {
 			System.out.println(sql);
 			PreparedStatement ps = conn.prepareStatement(sql);
 			ps.setString(1, login);
-			ps.setBoolean(2, actif);
+			ps.setBoolean(2, true);
 			ResultSet rs = ps.executeQuery();
 			
 			while (rs.next()) {
@@ -256,20 +256,21 @@ public class UserDao {
 	}
 
 	
-	public User findByIduserAndEncryptedkeypwd(Long iduser, byte[] key,boolean actif)
+	public User findByIduserAndEncryptedkeypwd(Long iduser, byte[] key)
 	{
 		User u=null;
 				
 		try {
 			Connection conn = database.getSqlConnection();		
 			
-			String sql=selectSql+"where iduser=? and encryptedkey=? and actif=?";
+			String sql=selectSql+"where iduser=? and encryptedkeypwd=? and actif=? and validaccount=?";
 			
 			System.out.println(sql);
 			PreparedStatement ps = conn.prepareStatement(sql);
 			ps.setLong(1, iduser);
 			ps.setBytes(2, key);
-			ps.setBoolean(3, actif);
+			ps.setBoolean(3, true);
+			ps.setBoolean(4, true);
 			ResultSet rs = ps.executeQuery();
 			
 			while (rs.next()) {			
@@ -286,34 +287,6 @@ public class UserDao {
 		}
 
 		return u;
-	}
-	
-	public int updateValidationKey(long iduser, String validationkey) throws Exception {
-		int result = 0;
-
-		try {
-			Connection conn = database.getSqlConnection();
-
-			String sql = "update user set validationkey=? where iduser=?";
-
-			PreparedStatement ps = conn.prepareStatement(sql);
-			ps.setString(1, validationkey);
-			ps.setLong(2, iduser);
-			
-			result = ps.executeUpdate();
-
-			ps.close();
-
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		if (result == 0)
-			throw new Exception(
-					String.format("Erreur dans user.updateValidationKey: iduser=%d, validationkey=%s",iduser, validationkey));
-
-		return result;
 	}
 
 }

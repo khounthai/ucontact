@@ -2,22 +2,25 @@
 
 	<div class="alert alert-success" role="alert" th:if="${retour} == 'compte-valide'">Félicitation, votre compte a bien été activé !</div>
 	<div class="alert alert-danger" role="alert" th:if="${retour} == 'erreur-connexion'">Erreur de login et/ou de mot de passe !</div>
-	<div class="alert alert-danger" role="alert" th:if="${retour} == 'erreur-validation-compte'">Compte introuvable, veuillez contactez le support technique !</div>
+	<div class="alert alert-danger" role="alert" th:if="${retour} == 'erreur-validation-compte'">Ce compte n'existe pas !</div>
 
-	<form class="form-horizontal" th:action="@{/connexion}" method="post" th:object="${userForm}">
+	<h1>Connexion</h1>
+	<p class="instructions">Pour vous connecter et profiter des services U-Contact, remplissez le formulaire suivant :</p>
+
+	<form class="form-horizontal" th:action="@{/connexion}" method="post" th:object="${userFormConnexion}">
   		<div class="form-group">
   			<label for="inputEmail" class="col-xs-12 col-sm-4 col-md-4 col-lg-4 control-label">Adresse email</label>
   			<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6 ">
   				<div class="input-group">
   					<span class="input-group-addon">@</span>
-  					<input type="email" class="form-control" id="inputEmail" placeholder="Adresse email" th:field="*{login}" />
+  					<input type="email" class="form-control" id="inputEmail" placeholder="Adresse email" th:field="*{login}" th:required="required" />
   				</div>
   			</div>
   		</div>
   		<div class="form-group">
    			<label for="inputPwd" class="col-xs-12 col-sm-4 col-md-4 col-lg-4 control-label">Mot de passe</label>
   			<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6 ">
-  				<input type="password" class="form-control" id="inputPwd" placeholder="Mot de passe" th:field="*{password}" />
+  				<input type="password" class="form-control" id="inputPwd" placeholder="Mot de passe" th:field="*{password}" th:required="required" />
   			</div>
   		</div>
   		<div class="container">

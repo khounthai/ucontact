@@ -47,6 +47,7 @@ import com.ril.entity.Mail;
 import com.ril.entity.Template;
 import com.ril.entity.User;
 import com.ril.entity.UserForm;
+import com.ril.entity.UserFormConnexion;
 import com.ril.entity.UserFormInscription;
 import com.ril.dao.ChampDao;
 import com.ril.dao.ContactDao;
@@ -133,8 +134,23 @@ public class ContactController {
 		return null;
 	}
 	
+	// Envoyer mail
+	public void envoyerMail(Mail mail, String adresseMail, String sujet, String contenu) {
+		//Envoi de mail de validation de compte 
+		SendEmail envoimail = new SendEmail(mail);
+    	mail.setHost("smtp.gmail.com");
+    	mail.setUser("quentinpetit52@gmail.com");
+    	mail.setPass("qlmp1602");
+    	mail.setTo(adresseMail);
+    	mail.setFrom("Support");
+    	mail.setSubject(sujet);
+    	mail.setMessageText(contenu);
+    	System.out.println(contenu);
+    	envoimail.send();
+	}
+	
 	// Envoyer mail de validation de compte
-	public boolean mailValidationAccount(User user, Mail mail) throws Exception {
+	public void mailValidationAccount(User user, Mail mail) throws Exception {
 		
 		// Génération de la validationkey
 		Random rand = new Random();
@@ -148,41 +164,26 @@ public class ContactController {
 		// Ajout de la validationkey à l'objet de type user 
 		user.setValidationkey(validationkey);
 		
-		userDao.updateValidationKey(user.getIduser(), validationkey);
+		userDao.Save(user);
 		
-		//Envoi de mail de validation de compte 
-		SendEmail envoimailvalidation = new SendEmail(mail);
-    	mail.setHost("smtp.gmail.com");
-    	mail.setUser("quentinpetit52@gmail.com");
-    	mail.setPass("qlmp1602");
-    	mail.setTo(user.getLogin());
-    	mail.setFrom("Support");
-    	mail.setSubject("Activation de votre compte U-Contact");
-    	mail.setMessageText("Bonjour, \n\nVotre compte n'est pas encore activé. Afin d'activer votre compte, veuillez cliquer sur le lien suivant http://localhost:8080/validation/"+user.getIduser()+"/"+user.getValidationkey());
-    	envoimailvalidation.send();
-    	
-    	return true;
+		String sujet = "Activation de votre compte U-Contact";
+		String contenu = "Bonjour, \n\nFélicitation, vous êtes inscrit sur le site U-Contact. \n\nPour activer votre compte, veuillez cliquer sur le lien suivant http://localhost:8080/validation/" + user.getIduser() + "/" + user.getValidationkey() + "\n\nCordialement, \n\nL'équipe U-Contact";
+		
+		envoyerMail(mail, user.getLogin(), sujet, contenu);
 	}
-
-	// Fonction de réinitialisation du mot de passe
-	public void ReinitialisationPwd(Mail mail, User user) throws Exception {
+	
+	public void reinitialiserMotdepasse(User u, Mail mail) throws Exception {
 		
-		byte[] key = null;
-    	
-    	// Récupération des informations de l'utilisateur
-    	User urecupere = userDao.findByLogin(user.getLogin(),true);
-    	
-    	//Génération d'une clé de validation de modif de mot de passe non chiffrée
+		//Génération d'une clé de validation de modification de mot de passe non chiffrée
     	Random rand = new Random();
-		String encryptedkeypwd1="";
+		String encryptedkeypwd="";
 		for(int i = 0 ; i < 20 ; i++){
 		  char c = (char)(rand.nextInt(26) + 97);
-		  encryptedkeypwd1 += c;
-		  System.out.print(c+" ");
+		  encryptedkeypwd += c;
 		}
-		
+				
 		//Hashage de la clé 
-		key = Base64.getDecoder().decode(encryptedkeypwd1);
+		byte[] key = Base64.getDecoder().decode(encryptedkeypwd);
 		try {			    			
 			MessageDigest digest = MessageDigest.getInstance("SHA-256");
 			key = digest.digest(key);
@@ -191,28 +192,19 @@ public class ContactController {
 			e.printStackTrace();
 		}
 		
-    	//Envoi de mail de validation de compte 
-		SendEmail envoimailvalidation = new SendEmail(mail);
-    	mail.setHost("smtp.gmail.com");
-    	mail.setUser("quentinpetit52@gmail.com");
-    	mail.setPass("qlmp1602");
-    	mail.setTo(urecupere.getLogin());
-    	mail.setFrom("Support");
-    	mail.setSubject("Modification mot de passe - U-Contact");
-    	mail.setMessageText("Bonjour, afin de modifier votre mot de passe, veuillez cliquer sur le lien suivant http://localhost:8080/modification-mot-de-passe/"+urecupere.getIduser()+"/"+encryptedkeypwd1);
-    	envoimailvalidation.send();   
+		String sujet = "Modification mot de passe - U-Contact";
+		String contenu = "Bonjour, \n\nAfin de modifier votre mot de passe pour vous connecter au site U-Contact, veuillez cliquer sur le lien suivant : http://localhost:8080/modification-mot-de-passe/" + u.getIduser() + "/" + encryptedkeypwd + "\n\nCordialement, \n\nL'équipe U-Contact";
+		
+		envoyerMail(mail, u.getLogin(), sujet, contenu);
     	
     	Timestamp ts = new Timestamp(System.currentTimeMillis()); 
     	
-    	//Ajout de la clé de validation chiffrée
-    	urecupere.setEncryptedkeypwd(key);
-    	
     	//Ajout du timestamp au moment de l'envoi du mail
-    	urecupere.setTimestampModifPwd(ts);
+    	u.setEncryptedkeypwd(key);
+    	u.setTimestampModifPwd(ts);
     			
     	//Enregistrement en base de la clé de validation chiffrée
-    	userDao.Save(urecupere);
-		
+    	userDao.Save(u);
 	}
 	//_____ <-- BLOC FONCTIONS _____\\
 	
@@ -250,7 +242,7 @@ public class ContactController {
 	    	// Si le formulaire a été rempli
 	    	if (!result.hasErrors()) {
 	    		
-	    		User user = userDao.findByLogin(userForm.getLogin(), true);
+	    		User user = userDao.findByLogin(userForm.getLogin());
 	    		
 	    		// Si l'email renseigné dans le formulaire est déjà présent en base
 	        	if(user != null) {  
@@ -313,6 +305,23 @@ public class ContactController {
 		}
     }
     
+    // Affichage de la page attente-motdepasse-oublie
+    @RequestMapping("/attente-motdepasse-oublie")
+    public String attenteMotdepasseOublie(HttpSession session, HttpServletRequest request, HttpServletResponse response) throws Exception {   
+		User u = getUserConnected(session, request);
+		
+		// Si l'utilisateur n'est pas encore logué
+		if (u == null) {
+			return "attente-motdepasse-oublie";
+			
+		// Si l'utilisateur est déjà logué, on le redirige vers sa page de contacts
+		} else {
+		
+    		response.sendRedirect("/contacts");
+    		return null;	
+		}
+    }
+    
     // Traitement de la validation du compte de l'utilisateur
     @RequestMapping(value={"/validation/{iduser}/{validationkey}"}, method=RequestMethod.GET)
     public void validationCompte(Model model, @PathVariable("iduser") Long iduser, @PathVariable("validationkey") String validationkey, HttpServletResponse response) throws Exception {
@@ -332,66 +341,174 @@ public class ContactController {
     	}   
     }
     
-    // Affichage de la page changement-motdepasse
-    @RequestMapping("/mot-de-passe-oublie")
-    public String forgetPassword(Model Model) {
+    // Affichage de la page motdepasse-oublie
+    @RequestMapping(value={"/mot-de-passe-oublie","/mot-de-passe-oublie/{retour}"})
+    public String motdepasseOublie(@Valid @ModelAttribute UserForm userForm, BindingResult result, Mail mail, Model model, @PathVariable("retour") Optional<String> retour, 
+    		HttpSession session, HttpServletResponse response, HttpServletRequest request) throws Exception {
     	
-    	User u = new User();
-    	Model.addAttribute("user", u);
-        return "motdepasse-oublie";
-    }
-    
-    // Traitement d'un mot de passe oublié
-    @RequestMapping("/mot-de-passe-oublie-form")
-    public void forgetPasswordForm(@ModelAttribute("user") User user, Mail mail, HttpServletResponse response) throws Exception {
-    	
-    	// Envoi d'un e-mail à l'adresse mail renseigné dans le formulaire
-    	ReinitialisationPwd(mail, user);
-    	
-    	//Redirection vers la page Connexion
-        response.sendRedirect("/connexion");
+    	User u = getUserConnected(session, request);
+		
+		// Si l'utilisateur n'est pas encore logué
+		if (u == null) {
+			
+	    	// S'il y a un paramètre GET
+	    	if (retour.isPresent()) {
+	    		model.addAttribute("retour", retour.get());
+	    	} else {
+	    		model.addAttribute("retour", null);
+	    	}
+			
+			// Si le formulaire a été rempli
+	    	if (!result.hasErrors()) {
+	    		
+	    		u = userDao.findByLogin(userForm.getLogin());
+	    		
+	    		if (u != null) {
+	    		
+		    		// Si l'utilisateur a validé son compte
+		    		if (u.getValidaccount()) {
+		    	    	
+		    			reinitialiserMotdepasse(u, mail);
+		    			
+	    		        //Redirection vers la page attente-motdepasse-oublie
+	    	        	response.sendRedirect("/attente-motdepasse-oublie");
+	    	        	return null;	
+		    		
+		    		} else {
+		    			
+	    				mailValidationAccount(u, mail);
+			        	
+	    		        //Redirection vers la page attente-validation
+	    	        	response.sendRedirect("/attente-validation");
+	    	        	return null;
+		    		}	    			
+	    		} else {
+	    			
+		    		response.sendRedirect("/mot-de-passe-oublie/erreur");
+		    		return null;	
+	    		}
+	    		
+	    	} else {
+
+	    		return "motdepasse-oublie";
+	    	}			
+			
+	    // Si l'utilisateur est déjà logué, on le redirige vers sa page de contacts
+		} else {
+			response.sendRedirect("/contacts");
+			return null;	
+		}
     }
     
     // Traitement après le clic sur le lien de l'email mot de passe oublié 
     @RequestMapping(value={"/modification-mot-de-passe/{iduser}/{encryptedkeypwd}"}, method=RequestMethod.GET)
-    public ModelAndView modificationMotDePasse(Model Model, @PathVariable("iduser") Long iduser, @PathVariable("encryptedkeypwd") String encryptedkeypwd, Mail mail, User user, HttpSession session) throws Exception {
+    public String modificationMotDePasse(@PathVariable("iduser") Long iduser, @PathVariable("encryptedkeypwd") String encryptedkeypwd, Mail mail, HttpSession session, 
+    		HttpServletRequest request, HttpServletResponse response) throws Exception {
     	
-    	byte[] key = null;
+    	User u = getUserConnected(session, request);
+		
+		// Si l'utilisateur n'est pas encore logué
+		if (u == null) {
     	
-    	//Hashage de la clé 
-    			key = Base64.getDecoder().decode(encryptedkeypwd);
-    			try {			    			
-    				MessageDigest digest = MessageDigest.getInstance("SHA-256");
-    				key = digest.digest(key);
-    				
-    			} catch (NoSuchAlgorithmException e) {
-    				e.printStackTrace();
-    			}
+	    	byte[] key = null;
+	    	
+	    	//Hashage de la clé
+			key = Base64.getDecoder().decode(encryptedkeypwd);
+			try {			    			
+				MessageDigest digest = MessageDigest.getInstance("SHA-256");
+				key = digest.digest(key);
+				
+			} catch (NoSuchAlgorithmException e) {
+				e.printStackTrace();
+			}
+	    	
+	    	// On vérifie les informations présentes dans l'URL en recherchant un utilisateur par rapport à l'id et encryptedkeypwd
+	    	u = userDao.findByIduserAndEncryptedkeypwd(iduser, key);
+	    	
+	    	if (u != null) {
+	    	
+		    	Timestamp tsmdp = u.getTimestampModifPwd();
+		    	Timestamp tsnow = new Timestamp(System.currentTimeMillis());
+		    	
+		    	// Si la différence est de plus de 24h alors 
+		    	if((tsnow.getTime() - tsmdp.getTime()) > 86400000) {
+		    	
+		    		// On renvoie le mail de réinitialisation du mot de passe
+		    		reinitialiserMotdepasse(u, mail);
+		    		return "attente-delai-depasse";
+		    		
+		    	} else {
+
+		    		// On enregistre son id en session
+		    		session.setAttribute("iduser", u.getIduser());
+		    		
+		    		// On redirige vers le formulaire de modification du mot de passe
+		    		response.sendRedirect("/modifier-motdepasse");
+					return null;		
+		    	}
+		    	
+			} else {
+				
+		        //Redirection vers la page attente-validation
+	        	response.sendRedirect("/connexion/erreur-validation-compte");
+	        	return null;
+			}
+	    	
+	    // Si l'utilisateur est déjà logué, on le redirige vers sa page de contacts
+		} else {
+			response.sendRedirect("/contacts");
+			return null;	
+		}
+    }
+    
+    @RequestMapping(value={"/modifier-motdepasse","/modifier-motdepasse/{retour}"})
+    public String modifierMotdepasse(@Valid @ModelAttribute UserFormInscription userForm, BindingResult result, Model model, @PathVariable("retour") Optional<String> retour, HttpSession session, 
+    		HttpServletResponse response, HttpServletRequest request) throws Exception {
     	
-    	// On vérifie les informations présentes dans l'URL en recherchant un utilisateur par rapport à l'id et encryptedkeypwd
-    	User u = userDao.findByIduserAndEncryptedkeypwd(iduser, key,true);
+		User u = getUserConnected(session, request);
+		
+		// Si l'utilisateur est logué comme il doit l'être sur cette page
+		if (u != null) {
     	
-    	Timestamp tsmdp = u.getTimestampModifPwd();
-    	Timestamp tsnow = new Timestamp(System.currentTimeMillis());
-    	
-    	// Si la différence est de plus de 24h alors 
-    	if((tsnow.getTime() - tsmdp.getTime()) > 86400000){
-    		
-    		ModelAndView modelview = new ModelAndView("renvoi-mail-delai-depasse");
-    		// On renvoie le mail de réinitialisation du mot de passe
-    		ReinitialisationPwd(mail, u);
-    		return modelview;
-    		
-    	} else {
-    		
-    		session.setAttribute("idtemp", u.getIduser());
-    		
-    		ModelAndView modelview2 = new ModelAndView("modification-motdepasse");
-    		modelview2.addObject("usertemp", u); 
-    		// On affiche le formulaire de modification du mot de passe
-    		return modelview2;    		
-    	}
-    	
+	    	// S'il y a un paramètre GET
+	    	if (retour.isPresent()) {
+	    		model.addAttribute("retour", retour.get());
+	    	} else {
+	    		model.addAttribute("retour", null);
+	    	}
+	    	
+	    	// Si le formulaire a été rempli
+	    	if (!result.hasErrors()) {
+	    		
+        		// On vérifie si les 2 mots de passe entrés sont bien identiques
+    	    	if (userForm.getPassword().equals(userForm.getConfirmPassword())) {
+    	    		
+    	    		userForm.setHashedPassword(userForm.getPassword());
+    	    		u.setHashedPassword(userForm.getHashedPassword());
+            		
+    	    		// Ajout en base de l'utilisateur (enregistrement des modifications)
+    				userDao.Save(u);
+    		        	
+    		        //Redirection vers la page attente-validation
+    	        	response.sendRedirect("/contacts/motdepasse-modifie");
+    	        		
+    				return null;
+    	    		
+    	    	} else {    		
+	    			// Si les mots de passe sont différents on est redirigé vers la page inscription
+    	    		response.sendRedirect("modifier-motdepasse/erreur");
+    	    		return null;
+    	    	}
+	    		
+	    	} else {
+	    		return "modification-motdepasse";
+	    	}
+	    	
+	    // Si l'utilisateur arrive sur cette page sans avoir été identifié
+		} else {
+    		response.sendRedirect("/connexion");
+    		return null;	
+		}
     }
         
     @RequestMapping("/modification-mot-de-passe-form")
@@ -418,7 +535,7 @@ public class ContactController {
     }
     
     @RequestMapping(value={"/connexion","/connexion/{retour}"})
-    public String connexion(@Valid @ModelAttribute UserForm userForm, BindingResult result, Model model, @PathVariable("retour") Optional<String> retour, HttpSession session, 
+    public String connexion(@Valid @ModelAttribute UserFormConnexion userForm, BindingResult result, Model model, @PathVariable("retour") Optional<String> retour, HttpSession session, 
     		HttpServletResponse response, HttpServletRequest request, Mail mail) throws Exception {
     	
 		User u = getUserConnected(session, request);
@@ -435,7 +552,7 @@ public class ContactController {
 	    	
 	    	// Si le formulaire a été rempli
 	    	if (!result.hasErrors()) {
-	    		User user = new User();
+	    		User user;
 	    		
 		    	// On récupère l'utilisateur grâce à son login et à son mot de passe    	
 	    		userForm.setHashedPassword(userForm.getPassword());

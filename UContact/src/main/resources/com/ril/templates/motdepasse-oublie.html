@@ -1,7 +1,24 @@
-<div class="container" th:fragment="content">
-	<br /><br />
-	<form action="#" method="post" th:object="${user}" th:action="@{/mot-de-passe-oublie-form}">
-		Adresse email : <input type="email" th:field="*{login}" /><br /><br />
-		<input type="submit" value="Submit" />
+<div class="container main_content" th:fragment="content">
+
+	<h1>Mot de passe oublié</h1>
+	<p class="instructions">Pour pouvoir réinitialiser votre mot de passe, remplissez le formulaire suivant :</p>
+	
+	<div class="alert alert-danger" role="alert" th:if="${retour} == 'erreur'">Ce compte n'existe pas !</div>
+
+	<form class="form-horizontal" th:action="@{/mot-de-passe-oublie}" method="post" th:object="${userForm}">
+		<div class="form-group">
+  			<label for="inputEmail" class="col-xs-12 col-sm-4 col-md-4 col-lg-4 control-label">Adresse email</label>
+  			<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6 ">
+  				<div class="input-group">
+  					<span class="input-group-addon">@</span>
+  					<input type="email" class="form-control" id="inputEmail" placeholder="Adresse email" th:field="*{login}" th:required="required" />
+  				</div>
+  			</div>
+  		</div>
+  		<div class="form-group">
+			<div class="col-xs-offset-4 col-xs-6 col-sm-offset-4 col-sm-6 col-md-offset-4 col-md-6 col-lg-offset-4 col-lg-6">
+      			<button type="submit" class="btn btn-default">Envoyer</button>
+    		</div>
+  		</div>	
 	</form>
 </div>
