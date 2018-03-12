@@ -80,7 +80,7 @@ public class ContactController {
 		if (session.getAttribute("iduser") != null) {
 
 			// On récupère l'utilisateur grâce à son id
-			User u = userDao.findByIduser((Long) session.getAttribute("iduser"), true);
+			User u = userDao.findByIduser((Long) session.getAttribute("iduser"));
 
 			if (u == null) {
 				session.removeAttribute("iduser");
@@ -501,6 +501,7 @@ public class ContactController {
     	    	}
 	    		
 	    	} else {
+	    		model.addAttribute("user", u);
 	    		return "modification-motdepasse";
 	    	}
 	    	
@@ -592,7 +593,6 @@ public class ContactController {
 				    			} catch (NoSuchAlgorithmException e) {
 								e.printStackTrace();
 							}    			    			
-		
 			    		}
 			    		// Une fois l'utilisateur logué, on le redirige vers sa page de contacts
 			    		response.sendRedirect("/contacts");
@@ -618,18 +618,21 @@ public class ContactController {
 		}
     }
 
-	@RequestMapping("/contacts")
-	public String affichageContacts(@ModelAttribute("templates") ArrayList<Template> templates, HttpSession session,
+	@RequestMapping(value={"/contacts","/contacts/{retour}"})
+	public String affichageContacts(@ModelAttribute("templates") ArrayList<Template> templates, HttpSession session, @PathVariable("retour") Optional<String> retour,
 			Model model, HttpServletRequest request, HttpServletResponse response) throws Exception {
 		
 		User u = getUserConnected(session, request);
 
 		// Si l'utilisateur est logué
 		if (u != null) {
-			/*java.util.Date d = new java.util.Date();
-			SimpleDateFormat parser = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-			java.util.Date date = parser.parse("08/02/2018 09:40:00");
-			Timestamp t = new Timestamp(date.getTime());*/
+			
+	    	// S'il y a un paramètre GET
+	    	if (retour.isPresent()) {
+	    		model.addAttribute("retour", retour.get());
+	    	} else {
+	    		model.addAttribute("retour", null);
+	    	}
 			
 			java.util.Date date = new java.util.Date();
 			
@@ -745,7 +748,7 @@ public class ContactController {
 		}
 
 		
-		User u = userDao.findByIduser((long) session.getAttribute("iduser"), true);
+		User u = userDao.findByIduser((long) session.getAttribute("iduser"));
 
 		if (u == null)
 			response.sendRedirect("/fiche-contact-form");

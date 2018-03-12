@@ -20,7 +20,7 @@ public class UserDao {
 
 	private final String selectSql="select iduser, login, encryptedkey, validationkey, validaccount, hashed_password, role, timestamp_modif_pwd, encryptedkeypwd, dtcreation from user ";
 	
-	public User findByIduser(long iduser,boolean actif) {
+	public User findByIduser(long iduser) {
 		User u=null;
 		
 		try {
@@ -32,7 +32,7 @@ public class UserDao {
 			PreparedStatement ps = conn.prepareStatement(sql);
 			
 			ps.setLong(1, iduser);
-			ps.setBoolean(2, actif);
+			ps.setBoolean(2, true);
 			
 			ResultSet rs = ps.executeQuery();			
 			while (rs.next()) {			
@@ -64,6 +64,7 @@ public class UserDao {
 						 "timestamp_modif_pwd=VALUES(timestamp_modif_pwd), "+"dtcreation=VALUES(dtcreation)"; 
 							
 			System.out.println(sql);
+			System.out.println(u);
 			PreparedStatement ps = conn.prepareStatement(sql,Statement.RETURN_GENERATED_KEYS);
 			
 			ps.setLong(1,u.getIduser());
