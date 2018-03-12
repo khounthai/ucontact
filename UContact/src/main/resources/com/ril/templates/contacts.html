@@ -2,56 +2,26 @@
 	
 	<div class="alert alert-succes" role="alert" th:if="${retour} == 'motdepasse-modifie'">Votre mot de passe a bien été modifié !</div>
 
-	<br /> <br /> <br /> <br /> <br />
-
-	<h2>Liste des contacts :</h2>
-
-	<br /> <br />
-
-	<p>Modèle de fiche</p>
-
-
-	<form action="#" th:action="@{/fiche-contact-form/0}" th:object="${templates}">
-
-		<ul>
-			<li th:each="t: ${templates}"><input type="radio"
-				checked="${t.isCheck}" /> <label th:text="${t.libelle}"
-				th:field="*{t.idtemplate}"></label></li>
-		</ul>
-
-		<table border='1'>
-			<tr>
-				<td>Id contact</td>
-				<!--<td>Date creation</td>
-				<td>Favoris</td>-->
-				<td>Id user</td>
-				
-				<div th:if="${templates.size()==1}">
-					<th:block th:each="c: ${templates[0].champs}">					
-						<td th:if="${c.accueil}" th:text="${c.libelle}"></td>						
-					</th:block> 
-				</div>
+	<h2>Liste de vos contacts :</h2>
+	<p class="instructions">Consultez et gérez tous vos contacts.</p>
+	
+	<table class="table table-striped">
+		<tbody>
+			<tr th:each="c,stat :${contacts}">
+				<td th:each="d :${contacts[__${stat.index}__].donnees}">
+					<span th:if="${d.accueil}" th:text="${d.valeur}"></span>
+				</td>
+				<td>
+					<a th:href="@{'/modifier-contact/'+${c.idcontact}}" title="Modifier le contact">
+						<span class="glyphicon glyphicon-edit"></span>
+					</a>
+				</td>
+				<td>
+					<a th:href="@{'/supprimer-contact/'+${c.idcontact}}" title="Supprimer le contact">
+						<span class="glyphicon glyphicon-trash"></span>
+					</a>
+				</td>
 			</tr>
-			
-			<th:block th:each="c,stat :${contacts}">
-				<tr>				
-					<td><a th:href="@{'/fiche-contact-form/'+${c.idcontact}}" th:text="${c.idcontact}" /></td>
-					
-					<!-- <td th:text="${c.dtcreation}"></td>
-					<td th:text="${c.favoris}"></td>	 -->
-					<td th:text="${c.iduser}"></td>
-					
-					<th:block th:each="d :${contacts[__${stat.index}__].donnees}">					
-						<td th:if="${d.accueil}" th:text="${d.valeur}"></td>						
-					</th:block>
-					
-					<td><a th:href="@{'/supprimer-contact/'+${c.idcontact}}" th:text="Supprimer"/></td>
-				</tr>	
-				
-			</th:block>			
-		</table>
-
-		<br />
-		<br /> <input type="submit" value="Nouveau contact" />
-	</form>
+		</tbody>
+	</table>
 </div>

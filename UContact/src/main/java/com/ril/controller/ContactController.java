@@ -672,6 +672,7 @@ public class ContactController {
 			model.addAttribute("contacts", contacts);
 
 			return "contacts";
+			
 		} else {		
 			response.sendRedirect("/connexion");
 			return null;
@@ -680,57 +681,67 @@ public class ContactController {
 
 	
 	
-	@GetMapping("/fiche-contact-form/{idcontact}")
-	public String ficheContactForm(@PathVariable("idcontact") String stringIdContact, HttpSession session, Model model)
-			throws Exception {
+	@GetMapping("/modifier-contact/{idcontact}")
+	public String modifierContact(@PathVariable("idcontact") String stringIdContact, HttpSession session, Model model,
+		HttpServletRequest request, HttpServletResponse response) throws Exception {
 		
-		long idcontact = 0;
+		User u = getUserConnected(session, request);
 
-		try {
-			idcontact = Long.parseLong(stringIdContact);
-		} catch (Exception e) {
-		}
-
-		System.out.println("fiche-contact-form: idcontact=" + idcontact);
-
-		long idtemplate = (long) session.getAttribute("idtemplate");
-		long iduser = (long) session.getAttribute("iduser");
-
-		List<Template> templates = templateDao.getTemplates(iduser, idtemplate, true);
-		Template t = null;
-
-		System.out.println(templates.size());
-
-		//récupère qu'un template : le template standard, pas encore de gestion de template personnalisé 
-		if (templates.size() == 1) {
-			t = templates.get(0);
-		}
-
-		if (templates.size() == 0) {
-			System.out.println("template empty");
-			return "contacts";
-		}
-
-		t.getChamps().forEach(x -> {
-			System.out.println(x);
-		});
-
-		// renseigne les données du contact
-		Contact c = contactDao.findByIdcontactAndIdTemplate(idcontact,idtemplate, true, new Timestamp(new java.util.Date().getTime()));
-		if (c != null) {
-			for (Champ item1 : t.getChamps()) {
-
-				for (Donnee item2 : c.getDonnees()) {
-					if (item1.getIdchamp() == item2.getIdchamp()) {
-						item1.setDonnee(item2);
+		// Si l'utilisateur est logué
+		if (u != null) {
+			
+			long idcontact = 0;
+	
+			try {
+				idcontact = Long.parseLong(stringIdContact);
+			} catch (Exception e) {
+			}
+	
+			long idtemplate = (long) session.getAttribute("idtemplate");
+			long iduser = (long) session.getAttribute("iduser");
+	
+			List<Template> templates = templateDao.getTemplates(iduser, idtemplate, true);
+			Template t = null;
+	
+			System.out.println(templates.size());
+	
+			//récupère qu'un template : le template standard, pas encore de gestion de template personnalisé 
+			if (templates.size() == 1) {
+				t = templates.get(0);
+			}
+	
+			if (templates.size() == 0) {
+				System.out.println("template empty");
+				return "contacts";
+			}
+	
+			t.getChamps().forEach(x -> {
+				System.out.println(x);
+			});
+	
+			// renseigne les données du contact
+			Contact c = contactDao.findByIdcontactAndIdTemplate(idcontact,idtemplate, true, new Timestamp(new java.util.Date().getTime()));
+			if (c != null) {
+				for (Champ item1 : t.getChamps()) {
+	
+					for (Donnee item2 : c.getDonnees()) {
+						if (item1.getIdchamp() == item2.getIdchamp()) {
+							item1.setDonnee(item2);
+						}
 					}
 				}
 			}
+	
+			model.addAttribute(u);
+			model.addAttribute("template", t);
+			model.addAttribute("idcontact", idcontact);
+			
+			return "modifier-contact";
+			
+		} else {		
+			response.sendRedirect("/connexion");
+			return null;
 		}
-
-		model.addAttribute("template", t);
-		model.addAttribute("idcontact", idcontact);
-		return "fiche-contact-form";
 	}
 
 	@PostMapping("/enregistrer-contact")
@@ -751,7 +762,7 @@ public class ContactController {
 		User u = userDao.findByIduser((long) session.getAttribute("iduser"));
 
 		if (u == null)
-			response.sendRedirect("/fiche-contact-form");
+			response.sendRedirect("/modifier-contact");
 		else {
 
 			Contact c = contactDao.findByIdcontactAndIdTemplate(idcontact,idtemplate, true, new Timestamp(new java.util.Date().getTime()));
