@@ -4,8 +4,14 @@
 	<p class="instructions">Pour modifier les informations du contact, remplissez le formulaire ci-dessous :</p>
 
 	<form class="form-horizontal" th:action="@{/enregistrer-contact}" method="post" th:object="${template}">
+	
+		<input type="hidden" th:value="${idcontact}" name="idcontact" />
 		
 		<div th:each="c, stat :*{champs}">
+			
+			<input type="hidden" th:field="*{champs[__${stat.index}__].idchamp}"/>
+			<input type="hidden" th:field="*{champs[__${stat.index}__].libelle}" />
+			<input type="hidden" th:field="*{champs[__${stat.index}__].multivaleur}" />
 		
 			<!-- Champ email -->
 			<div class="form-group" th:if="*{champs[__${stat.index}__].datatype.libelle} == 'EMAIL'">
@@ -38,27 +44,11 @@
 	  		
 	  		<div th:if="*{champs[__${stat.index}__].preselectionsize} == 0">
 	  		
-		  		<!-- Texte -->
-		  		<div class="form-group" th:if="*{champs[__${stat.index}__].datatype.libelle} == 'TEXTE'">
+		  		<div class="form-group" th:if="*{champs[__${stat.index}__].datatype.libelle} == 'TEXTE' or *{champs[__${stat.index}__].datatype.libelle} == 'ENTIER' or *{champs[__${stat.index}__].datatype.libelle} == 'DECIMAL'">
 		   			<label th:for="${'input'+c.idchamp}" class="col-xs-12 col-sm-4 col-md-4 col-lg-4 control-label" th:text="${c.libelle}"></label>
 		  			<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
-		  				<input type="texte" class="form-control" th:id="${'input'+c.idchamp}" th:pattern="*{champs[__${stat.index}__].datatype.regex} != '' ? *{champs[__${stat.index}__].datatype.regex}" th:field="*{champs[__${stat.index}__].donnee.valeur}" />
-		  			</div>
-		  		</div>
-		  		
-		  		<!-- Entier -->
-		  		<div class="form-group" th:if="*{champs[__${stat.index}__].datatype.libelle} == 'ENTIER'">
-		   			<label th:for="${'input'+c.idchamp}" class="col-xs-12 col-sm-4 col-md-4 col-lg-4 control-label" th:text="${c.libelle}"></label>
-		  			<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
-		  				<input type="texte" class="form-control" th:id="${'input'+c.idchamp}" th:pattern="*{champs[__${stat.index}__].datatype.regex} != '' ? *{champs[__${stat.index}__].datatype.regex}" th:field="*{champs[__${stat.index}__].donnee.valeur}" />
-		  			</div>
-		  		</div>
-		  		
-		  		<!-- Décimal -->
-		  		<div class="form-group" th:if="*{champs[__${stat.index}__].datatype.libelle} == 'DECIMAL'">
-		   			<label th:for="${'input'+c.idchamp}" class="col-xs-12 col-sm-4 col-md-4 col-lg-4 control-label" th:text="${c.libelle}"></label>
-		  			<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
-		  				<input type="texte" class="form-control" th:id="${'input'+c.idchamp}" th:pattern="*{champs[__${stat.index}__].datatype.regex} != '' ? *{champs[__${stat.index}__].datatype.regex}" th:field="*{champs[__${stat.index}__].donnee.valeur}" />
+		  				<input th:if="*{champs[__${stat.index}__].datatype.regex} != ''" type="text" class="form-control" th:id="${'input'+c.idchamp}" th:pattern="*{champs[__${stat.index}__].datatype.regex}" th:field="*{champs[__${stat.index}__].donnee.valeur}" />
+		  				<input th:if="*{champs[__${stat.index}__].datatype.regex} == ''" type="text" class="form-control" th:id="${'input'+c.idchamp}" th:field="*{champs[__${stat.index}__].donnee.valeur}" />
 		  			</div>
 		  		</div>
 	  		</div>
