@@ -35,11 +35,40 @@
 		  			</select>
 	  			</div>
 	  		</div>
+	  		
+	  		<div th:if="*{champs[__${stat.index}__].preselectionsize} == 0">
+	  		
+		  		<!-- Texte -->
+		  		<div class="form-group" th:if="*{champs[__${stat.index}__].datatype.libelle} == 'TEXTE'">
+		   			<label th:for="${'input'+c.idchamp}" class="col-xs-12 col-sm-4 col-md-4 col-lg-4 control-label" th:text="${c.libelle}"></label>
+		  			<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+		  				<input type="texte" class="form-control" th:id="${'input'+c.idchamp}" th:pattern="*{champs[__${stat.index}__].datatype.regex} != '' ? *{champs[__${stat.index}__].datatype.regex}" th:field="*{champs[__${stat.index}__].donnee.valeur}" />
+		  			</div>
+		  		</div>
+		  		
+		  		<!-- Entier -->
+		  		<div class="form-group" th:if="*{champs[__${stat.index}__].datatype.libelle} == 'ENTIER'">
+		   			<label th:for="${'input'+c.idchamp}" class="col-xs-12 col-sm-4 col-md-4 col-lg-4 control-label" th:text="${c.libelle}"></label>
+		  			<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+		  				<input type="texte" class="form-control" th:id="${'input'+c.idchamp}" th:pattern="*{champs[__${stat.index}__].datatype.regex} != '' ? *{champs[__${stat.index}__].datatype.regex}" th:field="*{champs[__${stat.index}__].donnee.valeur}" />
+		  			</div>
+		  		</div>
+		  		
+		  		<!-- Décimal -->
+		  		<div class="form-group" th:if="*{champs[__${stat.index}__].datatype.libelle} == 'DECIMAL'">
+		   			<label th:for="${'input'+c.idchamp}" class="col-xs-12 col-sm-4 col-md-4 col-lg-4 control-label" th:text="${c.libelle}"></label>
+		  			<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+		  				<input type="texte" class="form-control" th:id="${'input'+c.idchamp}" th:pattern="*{champs[__${stat.index}__].datatype.regex} != '' ? *{champs[__${stat.index}__].datatype.regex}" th:field="*{champs[__${stat.index}__].donnee.valeur}" />
+		  			</div>
+		  		</div>
+	  		</div>
   		</div>
 		<div class="form-group">
 			<div class="col-xs-offset-12 col-xs-12 col-sm-offset-4 col-sm-6 col-md-offset-4 col-md-6 col-lg-offset-4 col-lg-6">
       			<button type="submit" class="btn btn-default">Modifier</button>
     		</div>
   		</div>
+  		
+  		<input type="hidden" th:value="${idcontact}" name="idcontact" />
 	</form>
 </div>
