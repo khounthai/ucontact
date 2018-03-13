@@ -55,7 +55,7 @@ th a:hover {
 .dynatable-disabled-page:hover {
   text-decoration: none;
 }
-
+/*
 .dynatable-active-page {
   background: #71AF5A;
   border-radius: 5px;
@@ -64,6 +64,7 @@ th a:hover {
 .dynatable-active-page:hover {
   color: #fff;
 }
+*/
 .dynatable-disabled-page,
 .dynatable-disabled-page:hover {
   background: none;

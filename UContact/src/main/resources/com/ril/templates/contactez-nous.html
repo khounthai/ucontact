@@ -1,29 +1,49 @@
-<div class="container main_content" th:fragment="content">
+<div id="pageContactezNous" class="container main_content" th:fragment="content">
 
-		<a th:href="@{/connexion}">Connectez-vous</a>
+	<h1>Contactez-nous</h1>
+	<p class="instructions">Pour nous contactez, remplissez le formulaire suivant :</p>
+	
+	<div class="alert alert-success" role="alert" th:if="${retour} == 'succes'">Votre message a bien été envoyé. Nous vous répondrons dès que possible.</div>
 
-		<br /><br />
-		
-		<p th:text="${retour}">Test</p>
-		
-		<h2>Formulaire de contact support</h2><br /><br /><br />
+	<form class="form-horizontal" th:action="@{/contactez-nous}" method="post" th:object="${contactezNousForm}">
 
-		<form method="post" action="#" th:action="@{/contactez-nous-form}" th:object="${mail}">
-          
-          <Select th:field="*{categorie}" placeholder="Catégorie">
-          	<option th:each="cat : ${categories}"
-          			th:value="${cat.toString()}"
-          			th:text="${cat.toString()}" />
-          </Select><br /><br />
-          
-          <input type="text" th:field="*{subject}" placeholder="Sujet" /><br /><br />
-         
-          <textarea type="textarea" th:field="*{messageText}" placeholder="Veuillez préciser votre demande" ></textarea><br /><br />
-          
-          <input type="submit" value="Envoyer" />
-          
-        </form>
-        
-        
-        
+  		<div class="form-group">
+  			<label for="inputEmail" class="col-xs-12 col-sm-4 col-md-4 col-lg-4 control-label">Adresse email</label>
+  			<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+  				<div class="input-group">
+  					<span class="input-group-addon">@</span>
+  					<input type="email" class="form-control" id="inputEmail" placeholder="Adresse email" th:value="${user.login}" th:name="email" th:required="required" />
+  				</div>
+  			</div>
+  		</div>
+  		
+	  	<div class="form-group">
+  			<label class="col-xs-12 col-sm-4 col-md-4 col-lg-4 control-label">Catégorie</label>
+  			<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+		  		<select class="form-control" th:field="*{categorie}">
+		  			<option th:each="cat : ${categories}" th:value="${cat.toString()}" th:text="${cat.toString()}" />
+	  			</select>
+  			</div>
+  		</div> 
+  		
+  		<div class="form-group">
+   			<label for="inputSujet" class="col-xs-12 col-sm-4 col-md-4 col-lg-4 control-label">Sujet</label>
+  			<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+  				<input type="text" class="form-control" id="inputSujet" placeholder="Sujet" th:field="*{sujet}" th:required="required" />
+  			</div>
+  		</div>
+  		
+  		<div class="form-group">
+  			<label for="textareaMessage" class="col-xs-12 col-sm-4 col-md-4 col-lg-4 control-label">Message</label>
+  			<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+  				<textarea class="form-control" id="textareaMessage" th:field="*{message}" th:required="required" />
+  			</div>
+  		</div>	
+  		
+		<div class="form-group">
+			<div class="col-xs-offset-12 col-xs-12 col-sm-offset-4 col-sm-6 col-md-offset-4 col-md-6 col-lg-offset-4 col-lg-6">
+      			<button type="submit" class="btn btn-default">Envoyer</button>
+    		</div>
+  		</div>
+	</form>	
 </div>

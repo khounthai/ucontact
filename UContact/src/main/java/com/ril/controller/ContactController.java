@@ -2,14 +2,10 @@ package com.ril.controller;
 
 import java.io.IOException;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
-import java.security.spec.InvalidKeySpecException;
 import java.sql.Date;
-import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Base64;
@@ -32,9 +28,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.support.SessionStatus;
-import org.springframework.web.servlet.ModelAndView;
 
 import com.ril.SendEmail;
 import com.ril.dao.DonneeDao;
@@ -42,6 +35,7 @@ import com.ril.dao.TemplateDao;
 import com.ril.entity.Categories;
 import com.ril.entity.Champ;
 import com.ril.entity.Contact;
+import com.ril.entity.ContactezNousForm;
 import com.ril.entity.Donnee;
 import com.ril.entity.Mail;
 import com.ril.entity.Template;
@@ -520,10 +514,14 @@ public class ContactController {
     }
     
     // Affichage de la page Contactez-nous
-    @RequestMapping(value={"/contactez-nous","/contactez-nous/{retour}"}, method=RequestMethod.GET)
-    public String contactezNous(Model model, @PathVariable("retour") Optional<String> retour, @ModelAttribute("mail") Mail mail, HttpServletResponse response, HttpSession session) {
+    @RequestMapping(value={"/contactez-nous","/contactez-nous/{retour}"})
+    public String contactezNous(@Valid @ModelAttribute ContactezNousForm contactezNousForm, BindingResult result, Model model, Mail mail, 
+    		@PathVariable("retour") Optional<String> retour, HttpServletRequest request, HttpServletResponse response, HttpSession session) throws IOException {
     	
-    	model.addAttribute("mail", new Mail());
+		User u = getUserConnected(session, request);
+
+		// Si l'utilisateur est logué
+		if (u != null) model.addAttribute("user", u);
     	model.addAttribute("categories", EnumSet.allOf(Categories.class));
     	
     	if (retour.isPresent()) {
@@ -531,8 +529,18 @@ public class ContactController {
     	} else {
     		model.addAttribute("retour", null);
     	}
-    	   return "contactez-nous";
-
+    	
+    	// Si le formulaire a été rempli
+    	if (!result.hasErrors()) {
+    		
+    		String contenu = "Bonjour, \n\nUn nouveau message a été envoyé sur le site U-Contact. \nEmail de l'utilisateur : " + contactezNousForm.getEmail() + "\nCatégorie : " + contactezNousForm.getCategorie() + "\nSujet : " + contactezNousForm.getSujet() +  "\nMessage : " + contactezNousForm.getMessage();
+    		envoyerMail(mail, "quentinpetit52@gmail.com", "Un nouveau message a été envoyé sur le site U-Contact", contenu);
+    		response.sendRedirect("contactez-nous/succes");
+    		return null;
+    	
+    	} else {
+    		return "contactez-nous";
+    	}
     }
     
     @RequestMapping(value={"/connexion","/connexion/{retour}"})
@@ -819,24 +827,6 @@ public class ContactController {
 		contactDao.ActiverDesactiverByIdContact(idcontact,false);		
 		response.sendRedirect("/contacts");
 	}
-
-    // Traitement de l'envoi d'un mail de contact support
-    @PostMapping("/contactez-nous-form")
-    public String contactezNousForm(@ModelAttribute("mail") Mail mail) {
-    	
-    	SendEmail envoimail = new SendEmail(mail);
-    	mail.setHost("smtp.gmail.com");
-    	mail.setUser("quentinpetit52@gmail.com");
-    	mail.setPass("qlmp1602");
-    	mail.setTo("quentin.petit@yahoo.fr");
-    	mail.setFrom("Support");
-    	mail.setSubject(mail.getCategorie()+" - "+mail.getSubject());
-    	
-    	// Envoi de l'email
-    	boolean bok = envoimail.send();
-    	if(bok) return "contactez-nous/succes";
-    	return "contactez-nous/erreur";
-   }
     
     // Déconnexion de l'utilisateur
     @RequestMapping("/deconnexion")
