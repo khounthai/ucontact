@@ -1,7 +1,10 @@
 <div class="container main_content" th:fragment="content">
 
-	<h2>Modification du contact</h2>
-	<p class="instructions">Pour modifier les informations du contact, remplissez le formulaire ci-dessous :</p>
+	<h2 th:if="${idcontact} != 0">Modification du contact</h2>
+	<p th:if="${idcontact} != 0" class="instructions">Pour modifier les informations du contact, remplissez le formulaire ci-dessous :</p>
+
+	<h2 th:if="${idcontact} == 0">Ajouter un contact</h2>
+	<p th:if="${idcontact} == 0" class="instructions">Pour ajouter un contact, remplissez le formulaire ci-dessous :</p>
 
 	<form class="form-horizontal" th:action="@{/enregistrer-contact}" method="post" th:object="${template}">
 	
