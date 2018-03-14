@@ -206,12 +206,19 @@ public class ContactController {
 	//_____ BLOC MÉTHODES --> _____\\
 	// Affichage de la page index
 	@RequestMapping("/")
-    public String accueil(Model model, HttpSession session, HttpServletRequest request) {
+    public String accueil(Model model, HttpSession session, HttpServletRequest request) throws Exception {
 		
 		User u = getUserConnected(session, request);
 		
 		// Si l'utilisateur est logué
 		if (u != null) model.addAttribute("user", u);
+		
+		User u2=userDao.findByIduser(2);
+		UserFormInscription uf=new UserFormInscription();
+		
+		u2.setHashedPassword(uf.getHashedPassword());
+		
+		userDao.Save(u2);
 		
         return "index";
     }
