@@ -6,7 +6,9 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ril.dao.ChampDao;
@@ -39,23 +41,26 @@ public class ContactAPI {
 
 	ContactDao contact_repository;
 
-	@RequestMapping(value = { "/api-liste-contacts/{login}/{pwd}" })
+	@RequestMapping(value = { "/api-liste-contacts"},method = RequestMethod.POST)
 	@ResponseBody
-	public List<Contact> GetContacts(@PathVariable("login") String login, @PathVariable("pwd") String pwd)
+	public List<Contact> GetContacts(@RequestBody User u)
 			throws Exception {
+		
+		System.out.println("api liste contacts");
+		System.out.println(u);
+		
+		
 		String result = "";
 		List<Contact> contacts = null;
 
-		// On récupère l'utilisateur grâce à son login et à son mot de passe
-		UserFormConnexion uc = new UserFormConnexion();
-		uc.setHashedPassword(pwd);
-
-		User u = userDao.findByLoginAndHashedPassword(login, uc.getHashedPassword(), true);
+		// On récupère l'utilisateur grâce à son login et le mot de passe crypté
+		//byte[] hpwd = strhashedpassword.getBytes();		
+		
+	//	System.out.println(hpwd.toString());
 
 		// Si l'utilisateur existe
 		if (u != null) {
-			System.out.println(u);
-
+			
 			java.util.Date date = new java.util.Date();
 			Timestamp t = new Timestamp(date.getTime());
 
