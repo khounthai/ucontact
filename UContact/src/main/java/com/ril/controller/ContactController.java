@@ -213,12 +213,27 @@ public class ContactController {
 		// Si l'utilisateur est logué
 		if (u != null) model.addAttribute("user", u);
 		
-		User u2=userDao.findByIduser(2);
-		UserFormInscription uf=new UserFormInscription();
+	/*	User u2=userDao.findByIduser(2);
+		if (u2==null)
+			System.out.println("u2 null");
+		else
+			System.out.println("u2: "+u2);
 		
-		u2.setHashedPassword(uf.getHashedPassword());
 		
-		userDao.Save(u2);
+		UserFormConnexion uc=new UserFormConnexion();
+
+		if (uc==null)
+			System.out.println("uc null");
+		else
+			System.out.println("uc: "+uc);
+		
+		uc.setHashedPassword("user2");
+		
+		System.out.println(uc.getHashedPassword().toString());
+		
+		u2.setHashedPassword(uc.getHashedPassword());
+		
+		userDao.Save(u2);*/
 		
         return "index";
     }
@@ -641,7 +656,7 @@ public class ContactController {
 
 		// Si l'utilisateur est logué
 		if (u != null) {
-			
+			System.out.println(u);
 	    	// S'il y a un paramètre GET
 	    	if (retour.isPresent()) {
 	    		model.addAttribute("retour", retour.get());
@@ -737,6 +752,12 @@ public class ContactController {
 			// renseigne les données du contact
 			Contact c = contactDao.findByIdcontactAndIdTemplate(idcontact,idtemplate, true, new Timestamp(new java.util.Date().getTime()));
 			if (c != null) {
+				
+				//vérifie si c'est le contact de l'utilisateur: si non renvoie sur la page liste des contacts
+				if (c.getIduser()!= u.getIduser())
+					response.sendRedirect("/contacts");
+				//-----------------------------------------------------------------------------------------------/
+					
 				for (Champ item1 : t.getChamps()) {
 	
 					for (Donnee item2 : c.getDonnees()) {

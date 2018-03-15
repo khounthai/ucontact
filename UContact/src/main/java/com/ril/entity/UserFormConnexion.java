@@ -15,9 +15,11 @@ public class UserFormConnexion extends UserForm {
 	@NotNull
 	protected String password;
 	
+
+	protected static final byte[] salt = Base64.getDecoder().decode("wA1AIEqxQeWY+FgwfUTtBqHmVdrC69Op");
+	
 	protected byte[] hashedPassword;
 	protected boolean remember;
-	protected static final byte[] salt = Base64.getDecoder().decode("wA1AIEqxQeWY+FgwfUTtBqHmVdrC69Op");
 	
 	public UserFormConnexion() {
 	}

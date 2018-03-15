@@ -140,6 +140,4 @@ public class User {
 				+", dtcreation=" + dtcreation + ", actif=" + actif + ", timestampModifPwd=" + timestampModifPwd
 				+ ", encryptedkeypwd=" + Arrays.toString(encryptedkeypwd) + "]";
 	}
-
-
 }

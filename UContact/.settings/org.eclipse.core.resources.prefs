@@ -3,6 +3,7 @@
 >>>>>>>=branch 'Quentin' of https\://github.com/khounthai/ucontact.git
 eclipse.preferences.version=1
 encoding//src/main/resources/com/ril/templates/attente-validation.html=UTF-8
+encoding//src/main/resources/com/ril/templates/connexion.html=UTF-8
 encoding//src/main/resources/com/ril/templates/contactez-nous.html=UTF-8
 encoding//src/main/resources/com/ril/templates/contacts.html=UTF-8
 encoding/<project>=UTF-8
