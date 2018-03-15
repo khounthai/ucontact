@@ -46,18 +46,8 @@ public class ContactAPI {
 	public List<Contact> GetContacts(@RequestBody User u)
 			throws Exception {
 		
-		System.out.println("api liste contacts");
-		System.out.println(u);
-		
-		
 		String result = "";
 		List<Contact> contacts = null;
-
-		// On récupère l'utilisateur grâce à son login et le mot de passe crypté
-		//byte[] hpwd = strhashedpassword.getBytes();		
-		
-	//	System.out.println(hpwd.toString());
-
 		// Si l'utilisateur existe
 		if (u != null) {
 			
@@ -86,16 +76,16 @@ public class ContactAPI {
 		return contacts;
 	}
 
-	@RequestMapping(value = { "/api-template/{iduser}" })
+	@RequestMapping(value = { "/api-template"} ,method = RequestMethod.POST)
 	@ResponseBody
-	public Template GetTemplate(@PathVariable("iduser") long iduser) throws Exception {
+	public Template GetTemplate(@RequestBody User u) throws Exception {
 
 		Template template = null;
 		
-		System.out.println(iduser);
+		System.out.println(u);
 		
 		// recherche le template
-		List<Template> templates = (ArrayList<Template>) templateDao.getTemplates(iduser, 0, true);
+		List<Template> templates = (ArrayList<Template>) templateDao.getTemplates(u.getIduser(), 0, true);
 		long idtemplate = 0;
 
 		/*** s'il y a q'un template, il est sélectionné ***/
@@ -112,10 +102,7 @@ public class ContactAPI {
 	@RequestMapping(value = {"/api-get-user/{login}/{pwd}"})
 	@ResponseBody
 	public User GetUser(@PathVariable("login") String login,@PathVariable("pwd") String pwd) throws Exception {
-
-		System.out.println(login+" "+pwd);
-		
-		
+	
 		UserFormConnexion uc = new UserFormConnexion();
 		uc.setHashedPassword(pwd);
 
