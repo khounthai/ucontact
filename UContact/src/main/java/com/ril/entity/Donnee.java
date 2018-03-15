@@ -10,40 +10,22 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 
-/*@JsonPropertyOrder({"idcontact", "dtcreation", "favoris","iduser","actif",""})
-public class Person {
-@JsonProperty("_id")
-private String id;
-
-private String name;
-
-private int age;
-
-@JsonIgnore
-private String note;
-}*/
-
 @Component
-@JsonPropertyOrder({"iddonnee", "idchamp", "idcontact","valeur","ordre","dtenregistrement","accueil"})
+
 public class Donnee {	
-	@JsonProperty("iddonnee")
+
 	private long iddonnee;
-	@JsonProperty("idchamp")
 	private long idchamp;
-	@JsonProperty("idcontact")
 	private long idcontact;
-	@JsonProperty("valeur")
 	private String valeur;
-	@JsonProperty("ordre")
 	private long ordre;	
-	@JsonProperty("dtenregistrement")
 	private Timestamp dtenregistrement;
-	@JsonProperty("accueil")
 	private boolean accueil;
+	private String libellechamp;
 	
 	public Donnee() {}
 
-	public Donnee(long iddonnee, long idchamp, long idcontact, String valeur, Timestamp dtenregistrement,long ordre,boolean accueil) {		
+	public Donnee(long iddonnee, long idchamp, long idcontact, String valeur, Timestamp dtenregistrement,long ordre,boolean accueil,String libellechamp) {		
 		this.iddonnee = iddonnee;
 		this.idchamp = idchamp;
 		this.idcontact = idcontact;
@@ -51,6 +33,7 @@ public class Donnee {
 		this.dtenregistrement = dtenregistrement;
 		this.ordre=ordre;
 		this.accueil=accueil;
+		this.libellechamp=libellechamp;
 	}
 
 	public long getIddonnee() {
@@ -109,13 +92,20 @@ public class Donnee {
 	public void setAccueil(boolean accueil) {
 		this.accueil = accueil;
 	}
+	
+	public String getLibellechamp() {
+		return libellechamp;
+	}
+
+	public void setLibellechamp(String libellechamp) {
+		this.libellechamp = libellechamp;
+	}
 
 	@Override
 	public String toString() {
 		return "Donnee [iddonnee=" + iddonnee + ", idchamp=" + idchamp + ", idcontact=" + idcontact + ", valeur="
-				+ valeur + ", ordre=" + ordre + ", dtenregistrement=" + dtenregistrement + ", accueil=" + accueil + "]";
+				+ valeur + ", ordre=" + ordre + ", dtenregistrement=" + dtenregistrement + ", accueil=" + accueil
+				+ ", libellechamp=" + libellechamp + "]";
 	}
 
-	
-	
 }

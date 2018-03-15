@@ -13,12 +13,16 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import com.ril.entity.Champ;
 import com.ril.entity.Donnee;
 
 @Repository
 public class DonneeDao {
 	@Autowired
 	private Database database;
+	
+	@Autowired
+	private ChampDao champDao;
 
 	public long Save(Donnee d) throws Exception {
 		long result = 0;
@@ -85,10 +89,18 @@ public class DonneeDao {
 			//System.out.println("timestamp:"+date.toString());
 			
 			ResultSet rs = ps.executeQuery();
-			
+						
 			while (rs.next()) {
+				//récupère le libellé du champ pour l'api
+				Champ c=champDao.getChamp(rs.getLong(2));
+				
+				String libelleChamp="";
+				if (c!=null)
+					libelleChamp=c.getLibelle();
+				////////////////////////////////////
+				
 				Donnee d = new Donnee(rs.getLong(1), rs.getLong(2), rs.getLong(3), rs.getString(4),rs.getTimestamp(5),
-						rs.getLong(6), rs.getBoolean(7));
+						rs.getLong(6), rs.getBoolean(7),libelleChamp);
 				liste.add(d);
 			}
 
