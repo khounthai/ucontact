@@ -69,7 +69,7 @@ public class ContactDao {
 		try {
 			Connection conn = (Connection) database.getSqlConnection();
 
-			String sql= "select idcontact,dtcreation,favoris,actif from contact where idcontact=? and actif=?";
+			String sql= "select idcontact,dtcreation,favoris,iduser,actif from contact where idcontact=? and actif=?";
 			PreparedStatement ps = (PreparedStatement) conn.prepareStatement(sql);			
 			ps.setLong(1, idcontact);
 			ps.setBoolean(2, actif);
@@ -78,7 +78,7 @@ public class ContactDao {
 			ResultSet rs = ps.executeQuery();
 
 			while (rs.next()) {
-				 c = new Contact(rs.getLong(1), rs.getDate(2), rs.getBoolean(3), 0, rs.getBoolean(4), new ArrayList<Donnee>() );				
+				 c = new Contact(rs.getLong(1), rs.getDate(2), rs.getBoolean(3), rs.getLong(4), rs.getBoolean(5), new ArrayList<Donnee>() );				
 			}
 
 			rs.close();

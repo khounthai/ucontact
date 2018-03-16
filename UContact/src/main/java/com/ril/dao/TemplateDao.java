@@ -26,6 +26,8 @@ public class TemplateDao {
 	public List<Template> getTemplates(long iduser, long idtemplate,boolean champactif) {
 		List<Template> liste = new ArrayList<Template>();
 		
+		System.out.println("idtemplate="+idtemplate+" iduser="+ iduser);
+		
 		try {
 			Connection conn = database.getSqlConnection();		
 			
@@ -50,7 +52,8 @@ public class TemplateDao {
 			ResultSet rs = ps.executeQuery();
 			
 			while (rs.next()) {				
-				Template t = new Template(rs.getLong(1),rs.getString(2),rs.getLong(3),null);
+				System.out.println("idtemplate="+rs.getLong(1)+" libelle="+rs.getString(2)+" iduser="+ rs.getLong(3));
+				Template t = new Template(rs.getLong(1), rs.getString(2), rs.getLong(3),null);
 				liste.add(t);
 			}
 			

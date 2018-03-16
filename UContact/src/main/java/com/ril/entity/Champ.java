@@ -1,9 +1,6 @@
 package com.ril.entity;
 
-import java.io.Serializable;
 import java.util.List;
-
-import org.springframework.stereotype.Component;
 
 public class Champ {
 	private long idchamp;

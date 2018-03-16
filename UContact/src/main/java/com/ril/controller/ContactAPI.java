@@ -1,6 +1,8 @@
 package com.ril.controller;
 
+import java.sql.Date;
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +19,7 @@ import com.ril.dao.DonneeDao;
 import com.ril.dao.TemplateDao;
 import com.ril.dao.UserDao;
 import com.ril.entity.Contact;
+import com.ril.entity.ContactWrapper;
 import com.ril.entity.Template;
 import com.ril.entity.User;
 import com.ril.entity.UserFormConnexion;
@@ -93,6 +96,7 @@ public class ContactAPI {
 			templates.get(0).setCheck(true);
 			idtemplate = templates.get(0).getIdtemplate();
 			template=templates.get(0);
+			template.setIduser(u.getIduser());
 		}
 		
 		System.out.println(template);
@@ -111,7 +115,63 @@ public class ContactAPI {
 		System.out.println(u);
 		
 		return u;
+	}	
+	
+	@RequestMapping(value = { "/api-set-contact"} ,method = RequestMethod.POST)
+	@ResponseBody
+	public Contact SetContact(@RequestBody ContactWrapper cw) throws Exception {
+		System.out.println(cw.getContact());
+		long idcontact=0;
+	
+		Contact  c=cw.getContact();
+		
+		System.out.println("id user="+c.getIduser());
+		
+		List<Template> templates= templateDao.getTemplates(c.getIduser(),cw.getIdtemplate(),true);
+		
+		Template template=null;
+		
+		if (templates.size()>0)
+		{
+			template=templates.get(0);
+		}
+		
+		System.out.println("le template: "+template);
+		
+		if (c != null) {
+			// Enregistrer un contact
+			
+			idcontact = contactDao.Save(c);
+			System.out.println("id contact créé: " + idcontact);
+		}else
+			System.out.println("c null ");
+
+		final long idcontact_donnee = idcontact;
+
+		if (idcontact > 0) { // Enregistrer les données du contact
+			c.getDonnees().forEach(x -> {
+				java.util.Date date = new java.util.Date();
+				Timestamp now = new Timestamp(date.getTime());
+
+				x.setDtenregistrement(now);
+				x.setIdcontact(idcontact_donnee);				
+
+				// enregistre les données en base
+				try {
+					donneeDao.Save(x);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			});
+		}else
+			System.out.println("aucune donnée sauvegardé");
+		
+
+		System.out.println("/api-set-contact");
+	
+		
+		return c;
 	}
-	
-	
+		
 }

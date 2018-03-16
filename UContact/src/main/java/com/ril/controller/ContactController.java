@@ -716,7 +716,9 @@ public class ContactController {
 		HttpServletRequest request, HttpServletResponse response) throws Exception {
 		
 		User u = getUserConnected(session, request);
-
+		System.out.println("modifier contact "+ u);
+		System.out.println("id contact "+ stringIdContact);
+		
 		// Si l'utilisateur est logué
 		if (u != null) {
 			
@@ -751,6 +753,7 @@ public class ContactController {
 	
 			// renseigne les données du contact
 			Contact c = contactDao.findByIdcontactAndIdTemplate(idcontact,idtemplate, true, new Timestamp(new java.util.Date().getTime()));
+			System.out.println("le contact "+c);
 			if (c != null) {
 				
 				//vérifie si c'est le contact de l'utilisateur: si non renvoie sur la page liste des contacts
@@ -775,6 +778,7 @@ public class ContactController {
 			return "modifier-contact";
 			
 		} else {		
+			System.out.println("user null");
 			response.sendRedirect("/connexion");
 			return null;
 		}
@@ -793,7 +797,6 @@ public class ContactController {
 			idcontact = Long.parseLong(strIdContact);
 		} catch (Exception e) {
 		}
-
 		
 		User u = userDao.findByIduser((long) session.getAttribute("iduser"));
 
