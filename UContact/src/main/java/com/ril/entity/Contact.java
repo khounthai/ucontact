@@ -77,7 +77,7 @@ public class Contact {
 	@Override
 	public String toString() {
 		return "Contact [idcontact=" + idcontact + ", dtcreation=" + dtcreation + ", favoris=" + favoris + ", iduser="
-				+ iduser + ", donnees=" + donnees + "]";
+				+ iduser + ", actif=" + actif + ", donnees=" + donnees + "]";
 	}
 
 }

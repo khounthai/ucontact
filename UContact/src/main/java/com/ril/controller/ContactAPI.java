@@ -174,4 +174,25 @@ public class ContactAPI {
 		return c;
 	}
 		
+	@RequestMapping(value = { "/api-delete-contact"} ,method = RequestMethod.POST)
+	@ResponseBody
+	public boolean SetContact(@RequestBody Contact c) throws Exception {
+		System.out.println(c);
+		boolean result;
+		long idcontact;
+		if (c != null) {
+			// supprime contact
+			c.setActif(false);
+			idcontact = contactDao.Save(c);
+			System.out.println("id contact supprimée: " + idcontact);
+			result=true;
+		}else
+		{
+			result=false;
+		}
+		
+		System.out.println("/api-delete-contact");
+		
+		return result;
+	}
 }

@@ -213,7 +213,7 @@ public class ContactController {
 		// Si l'utilisateur est logué
 		if (u != null) model.addAttribute("user", u);
 		
-	/*	User u2=userDao.findByIduser(2);
+	/*User u2=userDao.findByIduser(2);
 		if (u2==null)
 			System.out.println("u2 null");
 		else
@@ -233,6 +233,7 @@ public class ContactController {
 		
 		u2.setHashedPassword(uc.getHashedPassword());
 		
+		u2.setValidaccount(true);
 		userDao.Save(u2);*/
 		
         return "index";
