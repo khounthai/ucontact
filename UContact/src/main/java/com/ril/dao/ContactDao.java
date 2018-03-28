@@ -38,7 +38,7 @@ public class ContactDao {
 			ps.setLong(1, iduser);
 			ps.setBoolean(2, actif);
 
-			System.out.println(sql);
+		//	System.out.println(sql);
 			ResultSet rs = ps.executeQuery();
 
 			while (rs.next()) {
@@ -75,7 +75,7 @@ public class ContactDao {
 			ps.setLong(1, idcontact);
 			ps.setBoolean(2, actif);
 
-			System.out.println(sql);
+			//System.out.println(sql);
 			ResultSet rs = ps.executeQuery();
 
 			while (rs.next()) {
@@ -107,7 +107,7 @@ public class ContactDao {
 			String sql = "INSERT INTO CONTACT (idcontact,dtcreation,favoris,iduser,actif) VALUES (?,?,?,?,?) "
 					+ "ON DUPLICATE KEY UPDATE dtcreation=VALUES(dtcreation), favoris=VALUES(favoris), iduser=VALUES(iduser), actif=VALUES(actif)";
 
-			System.out.println(sql);
+			//System.out.println(sql);
 			PreparedStatement ps = (PreparedStatement) conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 
 			ps.setLong(1, c.getIdcontact());
@@ -147,7 +147,7 @@ public class ContactDao {
 
 			String sql = "UPDATE CONTACT SET actif=? WHERE idcontact=?";
 
-			System.out.println(sql);
+			//System.out.println(sql);
 			PreparedStatement ps = (PreparedStatement) conn.prepareStatement(sql);
 
 			ps.setBoolean(1, actif);

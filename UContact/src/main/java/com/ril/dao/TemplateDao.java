@@ -48,7 +48,7 @@ public class TemplateDao {
 				ps.setLong(2, iduser);
 			}
 			
-			System.out.println(sql);
+			//System.out.println(sql);
 			ResultSet rs = ps.executeQuery();
 			
 			while (rs.next()) {				

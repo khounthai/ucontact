@@ -28,7 +28,7 @@ public class UserDao {
 			
 			String sql= selectSql+"where iduser=? and actif=?";
 			
-			System.out.println(sql);
+		//	System.out.println(sql);
 			PreparedStatement ps = conn.prepareStatement(sql);
 			
 			ps.setLong(1, iduser);

@@ -112,9 +112,8 @@ public class Champ {
 	@Override
 	public String toString() {
 		return "Champ [idchamp=" + idchamp + ", libelle=" + libelle + ", multivaleur=" + multivaleur + ", iddatatype="
-				+ iddatatype + ", datatype=" + datatype + ", preselection=" + preselection
+				+ iddatatype + ", donnee=" + donnee + ", datatype=" + datatype + ", preselection=" + preselection
 				+ ", preselectionsize=" + preselectionsize + ", accueil=" + accueil + "]";
 	}
-
 	
 }

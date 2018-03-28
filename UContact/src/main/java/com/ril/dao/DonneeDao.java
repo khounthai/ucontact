@@ -32,9 +32,9 @@ public class DonneeDao {
 			String sql = "INSERT INTO donnees (dtenregistrement, valeur, idcontact, idchamp) VALUES (?,?,?,?) "
 					+ "ON DUPLICATE KEY UPDATE valeur=VALUES(valeur)";
 
-			System.out.println(sql);
+			//System.out.println(sql);
 			
-			System.out.println(d);
+			//System.out.println(d);
 			
 			PreparedStatement ps = conn.prepareStatement(sql, com.mysql.jdbc.Statement.RETURN_GENERATED_KEYS);
 
@@ -82,9 +82,9 @@ public class DonneeDao {
 			ps.setLong(3, idcontact);
 			ps.setLong(4, idtemplate);
 
-			System.out.println(sql);
+			//System.out.println(sql);
 			
-			System.out.println(date);
+			//System.out.println(date);
 			
 			//System.out.println("timestamp:"+date.toString());
 			

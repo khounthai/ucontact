@@ -37,7 +37,7 @@ public class ChampDao {
 
 			sql = String.format(sql, idtemplate);
 
-			System.out.println(sql);
+			//System.out.println(sql);
 
 			PreparedStatement ps = conn.prepareStatement(sql);
 			ps.setLong(1, idtemplate);
