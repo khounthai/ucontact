@@ -24,7 +24,8 @@
 	  			<label th:for="${'input'+c.idchamp}" class="col-xs-12 col-sm-4 col-md-4 col-lg-4 control-label" th:text="${c.libelle}"></label>
 	  			<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
 	  				<div class="input-group">
-	  					 <img id="myImage" alt="" th:src="@{'/imgs/avatar/'+${idcontactEncrypt}+'/'+*{champs[__${stat.index}__].donnee.valeur}}"  height="200" width="200"/>
+	  					 <img id="myImage" alt="" th:src="@{'/imgs/avatar/'+${idcontactEncrypt}+'/'+*{champs[__${stat.index}__].donnee.valeur}}"  
+	  					 style="height: auto;width: 100px;"/>
 	  					 <input th:id="${'input'+c.idchamp}" type="file" name="file" style="float: left;" class="inputFile" accept="image/*" onchange="onFileSelected(event)"/>
 	  					 <input th:id="${'input'+c.idchamp}" type="text" th:field="*{champs[__${stat.index}__].donnee.valeur}"/> 					 
 	  				</div>

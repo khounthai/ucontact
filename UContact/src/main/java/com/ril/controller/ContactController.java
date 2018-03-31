@@ -54,6 +54,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.ril.SendEmail;
 import com.ril.classes.CDCChaine;
+import com.ril.classes.Traitement;
 import com.ril.dao.DonneeDao;
 import com.ril.dao.TemplateDao;
 import com.ril.entity.Categories;
@@ -783,6 +784,14 @@ public class ContactController {
 				return null;
 			}
 			
+			//si les variables de session ne sont pas trouvé, retourne à la page connexion
+			if (session.getAttribute("idtemplate") == null || session.getAttribute("idtemplate").equals("") ||
+					session.getAttribute("iduser") == null || session.getAttribute("iduser").equals(""))
+			{
+				response.sendRedirect("/connexion");
+				return null;
+			}
+				
 			System.out.println(idcontact + " modifié");
 
 			long idtemplate = (long) session.getAttribute("idtemplate");
@@ -847,8 +856,6 @@ public class ContactController {
 			@ModelAttribute("idcontactEncrypt") String idcontactEncrypt, Model model, HttpSession session,
 			HttpServletResponse response, @RequestParam("file") MultipartFile myFile)
 			throws IOException, URISyntaxException {
-		
-	
 
 		long idtemplate = (long) session.getAttribute("idtemplate");
 
@@ -888,14 +895,6 @@ public class ContactController {
 			final Timestamp now = new Timestamp(date.getTime());
 
 			// System.out.println("Template: " + template);
-
-			URL url = GetClassLoader.class.getResource("/com/ril/imgs/avatar");
-			System.out.println("aaa" + url);
-			File furl = new File(url.toURI());
-			System.out.println("bbb" + furl);
-			final String UPLOAD_PATH = furl.getAbsolutePath() + "/" + idcontactEncrypt + "/";
-
-			System.out.println(UPLOAD_PATH);
 			
 			if (idcontact > 0) { // Enregistrer les données du contact
 				template.getChamps().forEach(x -> {
@@ -909,26 +908,11 @@ public class ContactController {
 					// enregistre les données en base
 					try {
 						// sauvegarde la photo
-						if (myFile != null && x.getDatatype().getLibelle().compareTo("PHOTO") == 0) {
-
-							// Crée le répertoire de destintation
-							File pathDes = new File(UPLOAD_PATH);
-							if (!pathDes.exists())
-								pathDes.mkdirs();
-
-							byte[] bytes = myFile.getBytes();
-								
-							  Image image = ImageIO.read(myFile.getInputStream());
-							  
-							 Image image2= image.getScaledInstance(200, 200,Image.SCALE_SMOOTH);
-							BufferedImage bimg=new BufferedImage(
-							System.out.println(UPLOAD_PATH + myFile.getOriginalFilename());
-
-							Path destination = Paths.get(UPLOAD_PATH + myFile.getOriginalFilename());
-							Files.write(destination, bytes);
-
+						if (myFile != null && myFile.getOriginalFilename().compareTo("")!=0 &&  x.getDatatype().getLibelle().compareTo("PHOTO") == 0) {
+					
+							Traitement.Photo(myFile, idcontactEncrypt);
+							
 							x.getDonnee().setValeur(myFile.getOriginalFilename());
-							System.out.println("write file: " + destination.toFile().toPath());
 						}
 
 						donneeDao.Save(x.getDonnee());
