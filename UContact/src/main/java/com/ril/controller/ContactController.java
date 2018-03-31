@@ -884,9 +884,13 @@ public class ContactController {
 			// System.out.println("Template: " + template);
 
 			URL url = GetClassLoader.class.getResource("/com/ril/imgs/avatar");
+			System.out.println("aaa" + url);
 			File furl = new File(url.toURI());
-			final String UPLOAD_PATH = furl.getAbsolutePath() + "/" + idcontact_donnee + "/";
+			System.out.println("bbb" + furl);
+			final String UPLOAD_PATH = furl.getAbsolutePath() + "/" + idcontactEncrypt + "/";
 
+			System.out.println(UPLOAD_PATH);
+			
 			if (idcontact > 0) { // Enregistrer les données du contact
 				template.getChamps().forEach(x -> {
 
