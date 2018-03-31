@@ -749,7 +749,7 @@ public class ContactController {
 	@GetMapping("/modifier-contact/{idcontactEncrypt}")
 	public String modifierContact(@PathVariable("idcontactEncrypt") String idcontactEncrypt, HttpSession session,
 			Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
-
+ 
 		System.out.println(idcontactEncrypt+" modifié");
 		User u = getUserConnected(session, request);
 		// System.out.println("modifier contact "+ u);
