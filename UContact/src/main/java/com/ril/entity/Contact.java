@@ -1,7 +1,11 @@
 package com.ril.entity;
 
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import java.sql.Date;
 import java.util.List;
+
+import com.ril.classes.CDCChaine;
 
 
 public class Contact {
@@ -12,7 +16,8 @@ public class Contact {
 	private long iduser;	
 	private boolean actif;	
 	private List<Donnee> donnees;
-
+	private String idcontactEncrypt;
+	
 	public Contact() {
 	}
 
@@ -23,6 +28,10 @@ public class Contact {
 		this.iduser = iduser;
 		this.donnees = donnees;
 		this.actif = actif;
+		if (idcontact==0)
+			this.idcontactEncrypt="";
+		else			
+			this.idcontactEncrypt = CDCChaine.crypter(Long.toString(idcontact));
 	}
 
 	public long getIdcontact() {
@@ -30,6 +39,7 @@ public class Contact {
 	}
 
 	public void setIdcontact(long idcontact) {
+
 		this.idcontact = idcontact;
 	}
 
@@ -72,12 +82,20 @@ public class Contact {
 
 	public void setDtcreation(Date dtcreation) {
 		this.dtcreation = dtcreation;
+	}	
+	
+	public String getIdcontactEncrypt() {		
+		return this.idcontactEncrypt;
+	}
+	
+	public void setIdcontactEncrypt(String idcontactEncrypt) {
+		this.idcontactEncrypt =  idcontactEncrypt;
 	}
 
 	@Override
 	public String toString() {
 		return "Contact [idcontact=" + idcontact + ", dtcreation=" + dtcreation + ", favoris=" + favoris + ", iduser="
-				+ iduser + ", actif=" + actif + ", donnees=" + donnees + "]";
+				+ iduser + ", actif=" + actif + ", donnees=" + donnees + ", idcontactEncrypt=" + idcontactEncrypt + "]";
 	}
 
 }

@@ -12,6 +12,7 @@ import java.time.LocalDate;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.security.spec.InvalidKeySpecException;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -48,6 +49,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.ril.SendEmail;
+import com.ril.classes.CDCChaine;
 import com.ril.dao.DonneeDao;
 import com.ril.dao.TemplateDao;
 import com.ril.entity.Categories;
@@ -744,10 +746,11 @@ public class ContactController {
 		}
 	}
 
-	@GetMapping("/modifier-contact/{idcontact}")
-	public String modifierContact(@PathVariable("idcontact") String stringIdContact, HttpSession session, Model model,
-			HttpServletRequest request, HttpServletResponse response) throws Exception {	
-		
+	@GetMapping("/modifier-contact/{idcontactEncrypt}")
+	public String modifierContact(@PathVariable("idcontactEncrypt") String idcontactEncrypt, HttpSession session,
+			Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
+
+		System.out.println(idcontactEncrypt+" modifié");
 		User u = getUserConnected(session, request);
 		// System.out.println("modifier contact "+ u);
 		// System.out.println("id contact "+ stringIdContact);
@@ -757,10 +760,26 @@ public class ContactController {
 
 			long idcontact = 0;
 
-			try {
-				idcontact = Long.parseLong(stringIdContact);
-			} catch (Exception e) {
+			//si idcontactEncrypt = 0 ==> Création d'un nouveau contact
+			
+			if (idcontactEncrypt.compareTo("0") != 0) {
+				try {
+					idcontact = Long.parseLong(CDCChaine.Decrypter(idcontactEncrypt));
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					idcontact = -1;
+				}
 			}
+
+			// retourne à la page Contacts s'il il y a erreur sur le décryptage de
+			// idcontactEncrypt
+			if (idcontact == -1) {
+				response.sendRedirect("/connexion");
+				return null;
+			}
+			
+			System.out.println(idcontact + " modifié");
 
 			long idtemplate = (long) session.getAttribute("idtemplate");
 			long iduser = (long) session.getAttribute("iduser");
@@ -821,17 +840,20 @@ public class ContactController {
 
 	@PostMapping("/enregistrer-contact")
 	public void enregistrerContact(@ModelAttribute("template") Template template,
-			@ModelAttribute("idcontact") String strIdContact, Model model, HttpSession session,
-			HttpServletResponse response, @RequestParam("file") MultipartFile myFile) throws IOException, URISyntaxException {
+			@ModelAttribute("idcontactEncrypt") String idcontactEncrypt, Model model, HttpSession session,
+			HttpServletResponse response, @RequestParam("file") MultipartFile myFile)
+			throws IOException, URISyntaxException {
 
 		long idtemplate = (long) session.getAttribute("idtemplate");
 
 		// récuère le contact passé en paramètre
 		long idcontact = 0;
 		try {
-			idcontact = Long.parseLong(strIdContact);
+			idcontact = Long.parseLong(CDCChaine.Decrypter(idcontactEncrypt));
 		} catch (Exception e) {
 		}
+
+		System.out.println(idcontact + " enregistré");
 
 		User u = userDao.findByIduser((long) session.getAttribute("iduser"));
 
@@ -861,10 +883,9 @@ public class ContactController {
 
 			// System.out.println("Template: " + template);
 
-
 			URL url = GetClassLoader.class.getResource("/com/ril/imgs/avatar");
-			File furl=new File(url.toURI());
-			final String UPLOAD_PATH = furl.getAbsolutePath()+ "/"+idcontact_donnee +"/";
+			File furl = new File(url.toURI());
+			final String UPLOAD_PATH = furl.getAbsolutePath() + "/" + idcontact_donnee + "/";
 
 			if (idcontact > 0) { // Enregistrer les données du contact
 				template.getChamps().forEach(x -> {
@@ -880,15 +901,20 @@ public class ContactController {
 						// sauvegarde la photo
 						if (myFile != null && x.getDatatype().getLibelle().compareTo("PHOTO") == 0) {
 
+							// Crée le répertoire de destintation
+							File pathDes = new File(UPLOAD_PATH);
+							if (!pathDes.exists())
+								pathDes.mkdirs();
+
 							byte[] bytes = myFile.getBytes();
-			
+
 							System.out.println(UPLOAD_PATH + myFile.getOriginalFilename());
 
-							Path destination = Paths.get(UPLOAD_PATH +myFile.getOriginalFilename());
+							Path destination = Paths.get(UPLOAD_PATH + myFile.getOriginalFilename());
 							Files.write(destination, bytes);
 
 							x.getDonnee().setValeur(myFile.getOriginalFilename());
-							System.out.println("write file: "+destination.toFile().toPath());
+							System.out.println("write file: " + destination.toFile().toPath());
 						}
 
 						donneeDao.Save(x.getDonnee());
@@ -904,16 +930,22 @@ public class ContactController {
 		}
 	}
 
-	@GetMapping("/supprimer-contact/{idcontact}")
-	public void supprimerUnContact(@PathVariable("idcontact") String stringIdContact, HttpServletResponse response)
-			throws Exception {
+	@GetMapping("/supprimer-contact/{idcontactEncrypt}")
+	public void supprimerUnContact(@PathVariable("idcontactEncrypt") String idcontactEncrypt,
+			HttpServletResponse response) throws Exception {
+
+		System.out.println(idcontactEncrypt);
 
 		long idcontact = 0;
 
 		try {
-			idcontact = Long.parseLong(stringIdContact);
+			idcontact = Long.parseLong(CDCChaine.Decrypter(idcontactEncrypt));
 		} catch (Exception e) {
 		}
+
+		System.out.println(idcontact + " supprimé");
+
+		System.out.println(idcontact);
 
 		System.out.println("supprimer-contact: idcontact=" + idcontact);
 		contactDao.ActiverDesactiverByIdContact(idcontact, false);

@@ -41,4 +41,8 @@ dependencies {
 	
 	//compile("org.springframework.boot:spring-boot-starter-security")
 	//compile "com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.9.0"
+	
+	// https://mvnrepository.com/artifact/org.jasypt/jasypt
+	compile group: 'org.jasypt', name: 'jasypt', version: '1.9.2'
+	
 }

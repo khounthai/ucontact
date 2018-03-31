@@ -24,10 +24,10 @@
 					<td th:if="${d.accueil}" th:text="${d.valeur}" th:each="d :${contacts[__${stat.index}__].donnees}">
 					</td>
 					<td>
-						<a th:href="@{'/modifier-contact/'+${c.idcontact}}" title="Modifier le contact">
+						<a th:href="@{'/modifier-contact/'+${c.idcontactEncrypt}}" title="Modifier le contact">
 							<span class="glyphicon glyphicon-edit"></span>
 						</a>
-						<a th:href="@{'/supprimer-contact/'+${c.idcontact}}" title="Supprimer le contact">
+						<a th:href="@{'/supprimer-contact/'+${c.idcontactEncrypt}}" title="Supprimer le contact">
 							<span class="glyphicon glyphicon-trash"></span>
 						</a>
 					</td>

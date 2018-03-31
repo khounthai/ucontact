@@ -9,9 +9,7 @@ import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-
 @Component
-
 public class Donnee {	
 
 	private long iddonnee;
