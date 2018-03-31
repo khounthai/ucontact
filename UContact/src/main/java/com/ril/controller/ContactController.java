@@ -1,5 +1,8 @@
 package com.ril.controller;
 
+import java.awt.Image;
+import java.awt.Toolkit;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -22,6 +25,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 
+import javax.imageio.ImageIO;
 import javax.servlet.ServletContext;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -843,6 +847,8 @@ public class ContactController {
 			@ModelAttribute("idcontactEncrypt") String idcontactEncrypt, Model model, HttpSession session,
 			HttpServletResponse response, @RequestParam("file") MultipartFile myFile)
 			throws IOException, URISyntaxException {
+		
+	
 
 		long idtemplate = (long) session.getAttribute("idtemplate");
 
@@ -911,7 +917,11 @@ public class ContactController {
 								pathDes.mkdirs();
 
 							byte[] bytes = myFile.getBytes();
-
+								
+							  Image image = ImageIO.read(myFile.getInputStream());
+							  
+							 Image image2= image.getScaledInstance(200, 200,Image.SCALE_SMOOTH);
+							BufferedImage bimg=new BufferedImage(
 							System.out.println(UPLOAD_PATH + myFile.getOriginalFilename());
 
 							Path destination = Paths.get(UPLOAD_PATH + myFile.getOriginalFilename());
