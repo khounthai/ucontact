@@ -20,8 +20,23 @@ import org.springframework.web.multipart.MultipartFile;
 public class Traitement {
 
 	public static void Photo(MultipartFile myFile, String idcontactEncrypt) throws URISyntaxException, IOException {
-		URL url = GetClassLoader.class.getResource("/com/ril/imgs/avatar");
-		File furl = new File(url.toURI());
+		URL url = GetClassLoader.class.getResource("/com/ril/imgs/avatar");		
+		File furl = null;
+		
+		// crée le répertoire avatar s'il n'existe pas
+		if (url==null)
+		{
+			System.out.println("url null");
+			url = GetClassLoader.class.getResource("/com/ril/imgs");
+			System.out.println(url.toURI().getPath());
+			furl = new File(url.toURI().getPath()+"/avatar");			
+			furl.mkdirs();			
+		}
+			
+		url = GetClassLoader.class.getResource("/com/ril/imgs/avatar");
+		
+		furl = new File(url.toURI());		
+		
 		final String UPLOAD_PATH = furl.getAbsolutePath() + "/" + idcontactEncrypt + "/";
 
 		System.out.println("traitement: "+myFile.getOriginalFilename());
