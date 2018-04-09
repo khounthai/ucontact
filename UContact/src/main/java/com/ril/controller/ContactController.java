@@ -893,12 +893,13 @@ public class ContactController {
 
 			java.util.Date date = new java.util.Date();
 			final Timestamp now = new Timestamp(date.getTime());
+			
 
 			// System.out.println("Template: " + template);
 			
 			if (idcontact > 0) { // Enregistrer les données du contact
 				template.getChamps().forEach(x -> {
-
+					boolean photoSauvegarde;
 					System.out.println("champ: " + x);
 
 					x.getDonnee().setDtenregistrement(now);
@@ -910,9 +911,10 @@ public class ContactController {
 						// sauvegarde la photo
 						if (myFile != null && myFile.getOriginalFilename().compareTo("")!=0 &&  x.getDatatype().getLibelle().compareTo("PHOTO") == 0) {
 					
-							Traitement.Photo(myFile, idcontactEncrypt);
+							photoSauvegarde=Traitement.Photo(myFile, idcontactEncrypt);
 							
-							x.getDonnee().setValeur(myFile.getOriginalFilename());
+							if (photoSauvegarde)
+								x.getDonnee().setValeur(myFile.getOriginalFilename());
 						}
 
 						donneeDao.Save(x.getDonnee());

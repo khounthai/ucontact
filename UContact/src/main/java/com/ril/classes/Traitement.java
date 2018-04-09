@@ -19,7 +19,12 @@ import org.springframework.web.multipart.MultipartFile;
 
 public class Traitement {
 
-	public static void Photo(MultipartFile myFile, String idcontactEncrypt) throws URISyntaxException, IOException {
+	public static boolean Photo(MultipartFile myFile, String idcontactEncrypt) throws URISyntaxException, IOException {
+		//limite du fichier à 100kb
+		
+		if (myFile.getSize()>102400)			
+			return false;
+		
 		URL url = GetClassLoader.class.getResource("/com/ril/imgs/avatar");		
 		File furl = null;
 		
@@ -35,7 +40,9 @@ public class Traitement {
 			
 		url = GetClassLoader.class.getResource("/com/ril/imgs/avatar");
 		
-		furl = new File(url.toURI());		
+		furl = new File(url.toURI());
+		
+		
 		
 		final String UPLOAD_PATH = furl.getAbsolutePath() + "/" + idcontactEncrypt + "/";
 
@@ -89,8 +96,9 @@ public class Traitement {
 		Path destination = Paths.get(UPLOAD_PATH + myFile.getOriginalFilename());
 		Files.write(destination, imageInByte);
 
-		System.out.println("write file: " + destination.toFile().toPath());
+		System.out.println("write file: " + destination.toFile().toPath());	
 		
+		return true;
 	}
 
 }

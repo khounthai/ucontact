@@ -23,12 +23,14 @@
 			<div class="form-group" th:if="*{champs[__${stat.index}__].datatype.libelle} == 'PHOTO'">
 	  			<label th:for="${'input'+c.idchamp}" class="col-xs-12 col-sm-4 col-md-4 col-lg-4 control-label" th:text="${c.libelle}"></label>
 	  			<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
-	  				<div class="input-group">
-	  					 <img id="myImage" alt="" th:src="@{'/imgs/avatar/'+${idcontactEncrypt}+'/'+*{champs[__${stat.index}__].donnee.valeur}}"  
-	  					 style="height: auto;width: 100px;"/>
-	  					 <input th:id="${'input'+c.idchamp}" type="file" name="file" style="float: left;" class="inputFile" accept="image/*" onchange="onFileSelected(event)"/>
-	  					 <input th:id="${'input'+c.idchamp}" type="text" th:field="*{champs[__${stat.index}__].donnee.valeur}"/> 					 
-	  				</div>
+		  		
+	  				 <div class="input-group" id="divPhoto">
+	  				 	<input th:id="${'input'+c.idchamp}" type="file" name="file" style="float: left;" class="custom-file-input" id="customFile" accept="image/png, image/jpeg"/>
+						<label class="custom-file-label" for="customFile">Taille du fichier 100kb max</label>					
+	  					<img id="myImage" alt="Avatar profil"  th:src="@{'/imgs/avatar/'+${idcontactEncrypt}+'/'+*{champs[__${stat.index}__].donnee.valeur}}"   style="height: auto;width: 100px;"/>  					 
+	  					
+	  				</div> 
+	  				
 	  			</div>
 	  		</div>
 		
@@ -74,31 +76,48 @@
   		</div>
 		<div class="form-group">
 			<div class="col-xs-offset-12 col-xs-12 col-sm-offset-4 col-sm-6 col-md-offset-4 col-md-6 col-lg-offset-4 col-lg-6">
-      			<button th:if="${idcontact} != 0" type="submit" class="btn btn-default">Modifier</button>
-      			<button th:if="${idcontact} == 0" type="submit" class="btn btn-default">Ajouter</button>
+      			<button th:if="${idcontact} != 0" type="submit" class="btn btn-default buttons">Modifier</button>
+      			<button th:if="${idcontact} == 0" type="submit" class="btn btn-default buttons">Ajouter</button>
     		</div>
   		</div>
   		
   		<input type="hidden" th:value="${idcontactEncrypt}" name="idcontactEncrypt" />
 	</form>
-	
-	<script type="text/javascript">
-	function onFileSelected(event) {
-		  var selectedFile = event.target.files[0];
-		  var reader = new FileReader();
-		 // var inputFile = document.getElementsByClassName("inputFile");
-		  var imgtag = document.getElementById("myImage");
-		  
-		  imgtag.title = selectedFile;
-		  
-		  //var inputText = document.getElementsByClassName("textInputFile")[0];
-		 // inputText.value =inputFile[0].value;
-
-		  reader.onload = function(event) {
-		    imgtag.src = event.target.result;
-		  };
-
-		  reader.readAsDataURL(selectedFile);
-		}
-	</script>
 </div>
+
+<script th:fragment="javascript">
+
+	jQuery(document).ready(function() {		
+		
+		$('input[type="file"]').change(function (event) {
+			
+			var selectedFile = event.target.files[0];
+			var reader = new FileReader();
+			var imgtag = document.getElementById("myImage");
+			  
+			if (selectedFile.size>102400){
+				alert("Votre fichier est trop lourd (100kb max).");			  	
+				return;
+				}
+			
+			imgtag.title = selectedFile;	  
+		  	
+			reader.onload = function(event) {
+			    imgtag.src = event.target.result;
+			  };
+	
+			reader.readAsDataURL(selectedFile);
+		});
+		
+		
+		$("#divPhoto").each(fonction() {
+			if ()
+			<img id="myImage" alt="Avatar profil" th:if="*{champs[__${stat.index}__].donnee.valeur} == null" th:src="@{/imgs/default-avatar.jpg}" style="height: auto;width: 100px;"/>
+		});
+
+		<img id="myImage" alt="Avatar profil" th:if="*{champs[__${stat.index}__].donnee.valeur} == null" th:src="@{/imgs/default-avatar.jpg}" style="height: auto;width: 100px;"/>
+		
+	});
+	
+	
+</script>
