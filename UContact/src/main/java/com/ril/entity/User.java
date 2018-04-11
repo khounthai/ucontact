@@ -3,6 +3,8 @@ import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.Arrays;
 
+import com.ril.classes.CDCChaine;
+
 public class User {
 	private long iduser;
 	private String login;	
@@ -15,6 +17,7 @@ public class User {
 	private boolean actif;
 	private Timestamp timestampModifPwd;
 	private byte[] encryptedkeypwd;
+	private String idEncrypt;
 	
 	public User() {
 	}
@@ -34,6 +37,10 @@ public class User {
 		this.actif = actif;
 		this.timestampModifPwd = timestampModifPwd;
 		this.encryptedkeypwd = encryptedkeypwd;
+		if (iduser==0)
+			this.idEncrypt="";
+		else			
+			this.idEncrypt = CDCChaine.crypter(Long.toString(iduser));
 	}
 
 	public void setLogin(String login) {
@@ -124,6 +131,14 @@ public class User {
 
 	public void setEncryptedkeypwd(byte[] encryptedkeypwd) {
 		this.encryptedkeypwd = encryptedkeypwd;
+	}
+
+	public String getIdEncrypt() {
+		return idEncrypt;
+	}
+
+	public void setIdEncrypt(String idEncrypt) {
+		this.idEncrypt = idEncrypt;
 	}
 
 	@Override

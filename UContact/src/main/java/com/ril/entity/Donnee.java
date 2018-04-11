@@ -20,10 +20,11 @@ public class Donnee {
 	private Timestamp dtenregistrement;
 	private boolean accueil;
 	private String libellechamp;
+	private String datatype;
 	
 	public Donnee() {}
 
-	public Donnee(long iddonnee, long idchamp, long idcontact, String valeur, Timestamp dtenregistrement,long ordre,boolean accueil,String libellechamp) {		
+	public Donnee(long iddonnee, long idchamp, long idcontact, String valeur, Timestamp dtenregistrement,long ordre,boolean accueil,String libellechamp,String datatype) {		
 		this.iddonnee = iddonnee;
 		this.idchamp = idchamp;
 		this.idcontact = idcontact;
@@ -32,6 +33,7 @@ public class Donnee {
 		this.ordre=ordre;
 		this.accueil=accueil;
 		this.libellechamp=libellechamp;
+		this.datatype=datatype;
 	}
 
 	public long getIddonnee() {
@@ -97,6 +99,14 @@ public class Donnee {
 
 	public void setLibellechamp(String libellechamp) {
 		this.libellechamp = libellechamp;
+	}
+
+	public String getDatatype() {
+		return datatype;
+	}
+
+	public void setDatatype(String datatype) {
+		this.datatype = datatype;
 	}
 
 	@Override

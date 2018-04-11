@@ -218,7 +218,7 @@ public class ContactController {
 
 		String sujet = "Modification mot de passe - U-Contact";
 		String contenu = "Bonjour, \n\nAfin de modifier votre mot de passe pour vous connecter au site U-Contact, veuillez cliquer sur le lien suivant : http://localhost:8080/modification-mot-de-passe/"
-				+ u.getIduser() + "/" + encryptedkeypwd + "\n\nCordialement, \n\nL'équipe U-Contact";
+				+ u.getIdEncrypt() + "/" + encryptedkeypwd + "\n\nCordialement, \n\nL'équipe U-Contact";
 
 		envoyerMail(mail, u.getLogin(), sujet, contenu);
 
@@ -450,8 +450,8 @@ public class ContactController {
 	}
 
 	// Traitement après le clic sur le lien de l'email mot de passe oublié
-	@RequestMapping(value = { "/modification-mot-de-passe/{iduser}/{encryptedkeypwd}" }, method = RequestMethod.GET)
-	public String modificationMotDePasse(@PathVariable("iduser") Long iduser,
+	@RequestMapping(value = { "/modification-mot-de-passe/{idEncrypt}/{encryptedkeypwd}" }, method = RequestMethod.GET)
+	public String modificationMotDePasse(@PathVariable("idEncrypt") String idEncrypt,
 			@PathVariable("encryptedkeypwd") String encryptedkeypwd, Mail mail, HttpSession session,
 			HttpServletRequest request, HttpServletResponse response) throws Exception {
 
@@ -474,6 +474,7 @@ public class ContactController {
 
 			// On vérifie les informations présentes dans l'URL en recherchant un
 			// utilisateur par rapport à l'id et encryptedkeypwd
+			Long iduser = Long.parseLong(CDCChaine.Decrypter(idEncrypt));
 			u = userDao.findByIduserAndEncryptedkeypwd(iduser, key);
 
 			if (u != null) {

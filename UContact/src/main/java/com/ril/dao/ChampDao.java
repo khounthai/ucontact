@@ -83,7 +83,8 @@ public class ChampDao {
 			ps.setLong(1, idchamp);
 			ResultSet rs = ps.executeQuery();
 			while (rs.next()) {
-				c = new Champ(rs.getLong(1), rs.getString(2), rs.getBoolean(3), rs.getLong(4),new Donnee(),new DataType(),new ArrayList<String>(),false);
+				DataType dt=datatypedao.getDataType(rs.getLong(4));
+				c = new Champ(rs.getLong(1), rs.getString(2), rs.getBoolean(3), rs.getLong(4),new Donnee(),dt,new ArrayList<String>(),false);
 			}
 			rs.close();
 			ps.close();

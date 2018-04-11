@@ -10,13 +10,19 @@
   		<div class="form-group">
   			<label for="inputEmail" class="col-xs-12 col-sm-4 col-md-4 col-lg-4 control-label">Adresse email</label>
   			<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6 ">
-  				<input type="email" class="form-control" id="inputEmail" placeholder="Adresse email" th:field="*{login}" th:required="required" />
+  				<div class="input-group">
+  					<span class="input-group-addon">@</span>
+  					<input type="email" class="form-control" id="inputEmail" placeholder="Adresse email" th:field="*{login}" th:required="required" />
+  				</div>
   			</div>
   		</div>
   		<div class="form-group">
    			<label for="inputPwd" class="col-xs-12 col-sm-4 col-md-4 col-lg-4 control-label">Mot de passe</label>
   			<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6 ">
-  				<input type="password" class="form-control" id="inputPwd" placeholder="Mot de passe" th:field="*{password}" th:required="required" />
+  			  	<div class="input-group">
+  					<span class="input-group-addon"><span class="glyphicon glyphicon-lock"></span></span>
+  					<input type="password" class="form-control" id="inputPwd" placeholder="Mot de passe" th:field="*{password}" th:required="required" />
+  				</div>
   			</div>
   		</div>
   		<div class="form-group">
@@ -29,7 +35,10 @@
   		<div class="form-group">
    			<label for="inputConfirmPwd" class="col-xs-12 col-sm-4 col-md-4 col-lg-4 control-label">Confirmation du mot de passe</label>
   			<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
-  				<input type="password" class="form-control" id="inputConfirmPwd" placeholder="Confirmation du mot de passe" th:field="*{confirmPassword}" th:required="required" />
+  			  	<div class="input-group">
+  					<span class="input-group-addon"><span class="glyphicon glyphicon-lock"></span></span>
+  					<input type="password" class="form-control" id="inputConfirmPwd" placeholder="Confirmation du mot de passe" th:field="*{confirmPassword}" th:required="required" />
+  				</div>
   			</div>
   		</div>
  		<div class="form-group">

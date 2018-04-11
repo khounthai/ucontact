@@ -95,12 +95,15 @@ public class DonneeDao {
 				Champ c=champDao.getChamp(rs.getLong(2));
 				
 				String libelleChamp="";
-				if (c!=null)
+				String datatype="";
+				if (c!=null) {
 					libelleChamp=c.getLibelle();
+					datatype=c.getDatatype().getLibelle();
+				}
 				////////////////////////////////////
 				
 				Donnee d = new Donnee(rs.getLong(1), rs.getLong(2), rs.getLong(3), rs.getString(4),rs.getTimestamp(5),
-						rs.getLong(6), rs.getBoolean(7),libelleChamp);
+						rs.getLong(6), rs.getBoolean(7),libelleChamp,datatype);
 				liste.add(d);
 			}
 
