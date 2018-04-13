@@ -27,7 +27,7 @@
 	  				 <div class="input-group" id="divPhoto">
 	  				 	<input th:id="${'input'+c.idchamp}" type="file" name="file" style="float: left;" class="custom-file-input" id="customFile" accept="image/png, image/jpeg"/>
 						<label class="custom-file-label" for="customFile">Taille du fichier 100kb max</label>					
-	  					<img id="myImage" alt="Avatar profil"  th:src="@{'/imgs/avatar/'+${idcontactEncrypt}+'/'+*{champs[__${stat.index}__].donnee.valeur}}"   style="height: auto;width: 100px;"/>  					 
+	  					<img id="myImage" alt="Avatar profil"  th:src="@{'/imgs/avatar/'+${idcontactEncrypt}+'/'+*{champs[__${stat.index}__].donnee.valeur}}" style="height: auto;width: 100px;"/>  					 
 	  					
 	  				</div> 
 	  				
@@ -110,14 +110,7 @@
 		});
 		
 		
-		$("#divPhoto").each(fonction() {
-			if ()
-			<img id="myImage" alt="Avatar profil" th:if="*{champs[__${stat.index}__].donnee.valeur} == null" th:src="@{/imgs/default-avatar.jpg}" style="height: auto;width: 100px;"/>
 		});
-
-		<img id="myImage" alt="Avatar profil" th:if="*{champs[__${stat.index}__].donnee.valeur} == null" th:src="@{/imgs/default-avatar.jpg}" style="height: auto;width: 100px;"/>
-		
-	});
 	
 	
 </script>
