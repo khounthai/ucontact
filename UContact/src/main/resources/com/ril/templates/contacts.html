@@ -19,18 +19,26 @@
 			</div>
 			<div class="form-group">
 				<label class="col-xs-12 col-sm-4 col-md-4 col-lg-4 control-label">Tri</label>
-				<div id="boutonsTri" class="col-xs-12 col-sm-6 col-md-6 col-lg-6 "></div>
+				<div id="boutonsTri" class="btn-group col-xs-12 col-sm-6 col-md-6 col-lg-6" role="group" ></div>
 			</div>
 		</form>
-		<ul class="list">
-			<li class="contact" th:each="c,stat :${contacts}">
+		<div class="list">
+			<div class="contact col-xs-12 col-sm-4 col-md-4 col-lg-4" th:each="c,stat :${contacts}">
 				<div class="avatar">
 					<img th:if="${d.datatype} == 'PHOTO'" th:src="@{'/imgs/avatar/'+${c.idcontactEncrypt}+'/'+${d.valeur}}" th:each="d :${contacts[__${stat.index}__].donnees}" />
 				</div>
 				<span class="invisible" th:if="${d.accueil}" th:text="${d.libellechamp}" th:each="d :${contacts[__${stat.index}__].donnees}"></span>
 				<p th:class="'info'+${d.idchamp}" th:if="${d.accueil}" th:text="${d.valeur}" th:each="d :${contacts[__${stat.index}__].donnees}"></p>
-			</li>			
-		</ul>
+				<div class="boutons_mod_sup">
+					<a th:href="@{'/modifier-contact/'+${c.idcontactEncrypt}}" title="Modifier le contact">
+						<span class="glyphicon glyphicon-edit"></span>
+					</a>
+					<a th:href="@{'/supprimer-contact/'+${c.idcontactEncrypt}}" title="Supprimer le contact">
+						<span class="glyphicon glyphicon-trash"></span>
+					</a>
+				</div>
+			</div>			
+		</div>
 	</div>
 </div>
 
