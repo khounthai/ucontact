@@ -44,16 +44,15 @@ public class ContactAPI {
 
 	ContactDao contact_repository;
 
-	@RequestMapping(value = { "/api-liste-contacts"},method = RequestMethod.POST)
+	@RequestMapping(value = { "/api-liste-contacts" }, method = RequestMethod.POST)
 	@ResponseBody
-	public List<Contact> GetContacts(@RequestBody User u)
-			throws Exception {
-		
+	public List<Contact> GetContacts(@RequestBody User u) throws Exception {
+
 		String result = "";
 		List<Contact> contacts = null;
 		// Si l'utilisateur existe
 		if (u != null) {
-			
+
 			java.util.Date date = new java.util.Date();
 			Timestamp t = new Timestamp(date.getTime());
 
@@ -79,14 +78,14 @@ public class ContactAPI {
 		return contacts;
 	}
 
-	@RequestMapping(value = { "/api-template"} ,method = RequestMethod.POST)
+	@RequestMapping(value = { "/api-template" }, method = RequestMethod.POST)
 	@ResponseBody
 	public Template GetTemplate(@RequestBody User u) throws Exception {
 
 		Template template = null;
-		
+
 		System.out.println(u);
-		
+
 		// recherche le template
 		List<Template> templates = (ArrayList<Template>) templateDao.getTemplates(u.getIduser(), 0, true);
 		long idtemplate = 0;
@@ -95,55 +94,54 @@ public class ContactAPI {
 		if (templates.size() == 1) {
 			templates.get(0).setCheck(true);
 			idtemplate = templates.get(0).getIdtemplate();
-			template=templates.get(0);
+			template = templates.get(0);
 			template.setIduser(u.getIduser());
 		}
-		
+
 		System.out.println(template);
 		return template;
 	}
-	
-	@RequestMapping(value = {"/api-get-user/{login}/{pwd}"})
+
+	@RequestMapping(value = { "/api-get-user/{login}/{pwd}" })
 	@ResponseBody
-	public User GetUser(@PathVariable("login") String login,@PathVariable("pwd") String pwd) throws Exception {
-	
+	public User GetUser(@PathVariable("login") String login, @PathVariable("pwd") String pwd) throws Exception {
+
 		UserFormConnexion uc = new UserFormConnexion();
 		uc.setHashedPassword(pwd);
 
 		User u = userDao.findByLoginAndHashedPassword(login, uc.getHashedPassword(), true);
-				
+
 		System.out.println(u);
-		
+
 		return u;
-	}	
-	
-	@RequestMapping(value = { "/api-set-contact"} ,method = RequestMethod.POST)
+	}
+
+	@RequestMapping(value = { "/api-set-contact" }, method = RequestMethod.POST)
 	@ResponseBody
 	public Contact SetContact(@RequestBody ContactWrapper cw) throws Exception {
 		System.out.println(cw.getContact());
-		long idcontact=0;
-	
-		Contact  c=cw.getContact();
-		
-		System.out.println("id user="+c.getIduser());
-		
-		List<Template> templates= templateDao.getTemplates(c.getIduser(),cw.getIdtemplate(),true);
-		
-		Template template=null;
-		
-		if (templates.size()>0)
-		{
-			template=templates.get(0);
+		long idcontact = 0;
+
+		Contact c = cw.getContact();
+
+		System.out.println("id user=" + c.getIduser());
+
+		List<Template> templates = templateDao.getTemplates(c.getIduser(), cw.getIdtemplate(), true);
+
+		Template template = null;
+
+		if (templates.size() > 0) {
+			template = templates.get(0);
 		}
-		
-		System.out.println("le template: "+template);
-		
+
+		System.out.println("le template: " + template);
+
 		if (c != null) {
 			// Enregistrer un contact
-			
+
 			idcontact = contactDao.Save(c);
 			System.out.println("id contact créé: " + idcontact);
-		}else
+		} else
 			System.out.println("c null ");
 
 		final long idcontact_donnee = idcontact;
@@ -154,7 +152,7 @@ public class ContactAPI {
 				Timestamp now = new Timestamp(date.getTime());
 
 				x.setDtenregistrement(now);
-				x.setIdcontact(idcontact_donnee);				
+				x.setIdcontact(idcontact_donnee);
 
 				// enregistre les données en base
 				try {
@@ -164,17 +162,15 @@ public class ContactAPI {
 					e.printStackTrace();
 				}
 			});
-		}else
+		} else
 			System.out.println("aucune donnée sauvegardé");
-		
 
 		System.out.println("/api-set-contact");
-	
-		
+
 		return c;
 	}
-		
-	@RequestMapping(value = { "/api-delete-contact"} ,method = RequestMethod.POST)
+
+	@RequestMapping(value = { "/api-delete-contact" }, method = RequestMethod.POST)
 	@ResponseBody
 	public boolean SetContact(@RequestBody Contact c) throws Exception {
 		System.out.println(c);
@@ -185,14 +181,44 @@ public class ContactAPI {
 			c.setActif(false);
 			idcontact = contactDao.Save(c);
 			System.out.println("id contact supprimée: " + idcontact);
-			result=true;
-		}else
-		{
-			result=false;
+			result = true;
+		} else {
+			result = false;
 		}
-		
+
 		System.out.println("/api-delete-contact");
-		
+
+		return result;
+	}
+
+	@RequestMapping(value = { "/api-delete-contactbyid/{idcontact}" })
+	@ResponseBody
+	public boolean DeletetContactByID(@PathVariable("idcontact") String stridcontact) throws Exception {
+		System.out.println(stridcontact);
+		boolean result = false;
+		long idcontact = 0;
+
+		try {
+			idcontact = Long.parseLong(stridcontact);
+		} catch (Exception e) {
+		}
+		;
+
+		if (idcontact > 0) {
+			// supprime contact
+			java.util.Date date = new java.util.Date();
+			Timestamp now = new Timestamp(date.getTime());
+
+			Contact c = contactDao.findByIdcontactAndIdTemplate(idcontact, 0, true, now);
+
+			if (c != null) {
+				c.setActif(false);
+				idcontact = contactDao.Save(c);
+				System.out.println("id contact modifié: " + idcontact);
+				result = true;
+			}
+		}
+
 		return result;
 	}
 }
