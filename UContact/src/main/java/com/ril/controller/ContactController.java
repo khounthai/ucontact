@@ -48,6 +48,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -928,12 +929,33 @@ public class ContactController {
 			response.sendRedirect("/contacts");
 		}
 	}
+	
+	@ResponseBody
+	@GetMapping("/changer-favori/{idcontactEncrypt}/{favori}")
+	public boolean changerFavori(@PathVariable("idcontactEncrypt") String idcontactEncrypt, @PathVariable("favori") boolean favori) throws Exception {
 
+		long idcontact = 0;
+		
+		if (favori == true) {
+			favori = false;
+		} else {
+			favori = true;
+		}
+		
+
+		try {
+			idcontact = Long.parseLong(CDCChaine.Decrypter(idcontactEncrypt));
+		} catch (Exception e) {
+		}
+
+		contactDao.ChangeFavoriByIdContact(idcontact, favori);
+
+		return true;
+	}
+
+	@ResponseBody
 	@GetMapping("/supprimer-contact/{idcontactEncrypt}")
-	public void supprimerUnContact(@PathVariable("idcontactEncrypt") String idcontactEncrypt,
-			HttpServletResponse response) throws Exception {
-
-		System.out.println(idcontactEncrypt);
+	public boolean supprimerUnContact(@PathVariable("idcontactEncrypt") String idcontactEncrypt) throws Exception {
 
 		long idcontact = 0;
 
@@ -942,13 +964,9 @@ public class ContactController {
 		} catch (Exception e) {
 		}
 
-		System.out.println(idcontact + " supprimé");
-
-		System.out.println(idcontact);
-
-		System.out.println("supprimer-contact: idcontact=" + idcontact);
 		contactDao.ActiverDesactiverByIdContact(idcontact, false);
-		response.sendRedirect("/contacts");
+
+		return true;
 	}
 
 	// Déconnexion de l'utilisateur

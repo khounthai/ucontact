@@ -138,6 +138,35 @@ public class ContactDao {
 
 		return result;
 	}
+	
+	public long ChangeFavoriByIdContact(long idcontact, boolean favoris) throws Exception {
+		long result = 0;
+
+		try {
+			Connection conn = (Connection) database.getSqlConnection();
+
+			String sql = "UPDATE CONTACT SET favoris=? WHERE idcontact=?";
+
+			//System.out.println(sql);
+			PreparedStatement ps = (PreparedStatement) conn.prepareStatement(sql);
+
+			ps.setBoolean(1, favoris);
+			ps.setLong(2, idcontact);
+
+			result = ps.executeUpdate();
+			ps.close();
+
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		if (result == 0)
+			throw new Exception(String.format("Erreur dans ContactDao.Favoris: idcontact=%d, actif=%s",
+					idcontact, favoris));
+
+		return result;
+	}
 
 	public long ActiverDesactiverByIdContact(long idcontact, boolean actif) throws Exception {
 		long result = 0;

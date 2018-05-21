@@ -23,19 +23,28 @@
 			</div>
 		</form>
 		<div class="list">
-			<div class="contact col-xs-12 col-sm-4 col-md-4 col-lg-4" th:each="c,stat :${contacts}">
-				<div class="avatar">
-					<img th:if="${d.datatype} == 'PHOTO'" th:src="@{'/imgs/avatar/'+${c.idcontactEncrypt}+'/'+${d.valeur}}" th:each="d :${contacts[__${stat.index}__].donnees}" />
-				</div>
-				<span class="invisible" th:if="${d.accueil}" th:text="${d.libellechamp}" th:each="d :${contacts[__${stat.index}__].donnees}"></span>
-				<p th:class="'info'+${d.idchamp}" th:if="${d.accueil}" th:text="${d.valeur}" th:each="d :${contacts[__${stat.index}__].donnees}"></p>
-				<div class="boutons_mod_sup">
-					<a th:href="@{'/modifier-contact/'+${c.idcontactEncrypt}}" title="Modifier le contact">
-						<span class="glyphicon glyphicon-edit"></span>
-					</a>
-					<a th:href="@{'/supprimer-contact/'+${c.idcontactEncrypt}}" title="Supprimer le contact">
-						<span class="glyphicon glyphicon-trash"></span>
-					</a>
+			<div th:id="${c.idcontactEncrypt}" class="contact col-xs-12 col-sm-4 col-md-4 col-lg-4" th:each="c,stat :${contacts}">
+				<div class="media">
+					<div class="avatar media-left">
+						<p class="favori">
+							<span th:if="${c.favoris} == true" class="link glyphicon glyphicon-star"></span>
+							<span th:if="${c.favoris} == false" class="link glyphicon glyphicon-star-empty"></span>
+							<span th:text="${c.favoris}" class="hidden"></span>
+						</p>
+						<img th:if="${d.datatype} == 'PHOTO'" th:src="@{'/imgs/avatar/'+${c.idcontactEncrypt}+'/'+${d.valeur}}" th:each="d :${contacts[__${stat.index}__].donnees}" />
+					</div>
+					<div class="media-body">
+						<span class="hidden" th:if="${d.accueil}" th:text="${d.libellechamp}" th:each="d :${contacts[__${stat.index}__].donnees}"></span>
+						<p th:class="'info'+${d.idchamp}" th:if="${d.accueil}" th:text="${d.valeur}" th:each="d :${contacts[__${stat.index}__].donnees}"></p>
+						<div class="boutons_mod_sup">
+							<a th:href="@{'/modifier-contact/'+${c.idcontactEncrypt}}" title="Modifier le contact">
+								<span class="glyphicon glyphicon-edit"></span>
+							</a>
+							<span class="supprimer_contact">
+								<span class="link glyphicon glyphicon-trash"></span>
+							</span>
+						</div>
+					</div>
 				</div>
 			</div>			
 		</div>
@@ -56,12 +65,14 @@
 		
 		// Récupération des classes pour le filtre
 		var classes = new Array();
-		$(".contact").first().children("p").each(function(){
+		classes.push("favori");
+		$(".media-body").first().children("p").each(function(){
 			classes.push($(this).attr("class"));
 		});
 		
 		var libelles = new Array();
-		$(".contact").first().children("span.invisible").each(function(){
+		libelles.push("Favoris");
+		$(".media-body").first().children("span.hidden").each(function(){
 			libelles.push($(this).text());
 		});
 		
@@ -72,5 +83,41 @@
 		
 		options = { valueNames : classes };
 		var contactsList = new List('listeContacts', options);
+		
+		// Supprimer un contact
+		$(".supprimer_contact").click(function() {
+			if (confirm("Voulez-vous supprimer ce contact ?")) {
+				$.ajax({
+					context: this,
+					url: '/supprimer-contact/' + $(this).parents(".contact").attr("id"),
+					type: 'GET',
+					success: function(res) {
+						if (res == true) {
+							$(this).parents(".contact").hide();
+						}
+					}
+				});
+			}
+		});
+		
+		// Changer le statut favori
+		$(".favori").click(function() {
+			$.ajax({
+				context: this,
+				url: '/changer-favori/' + $(this).parents(".contact").attr("id") + "/" + $(this).children(".hidden").text(),
+				type: 'GET',
+				success: function(res) {
+					if (res == true) {
+						if ($(this).children(".hidden").text() == "false") {
+							$(this).children(".hidden").text("true");
+							$(this).children(".link").replaceWith('<span class="link glyphicon glyphicon-star"></span>');
+						} else {
+							$(this).children(".hidden").text("false");
+							$(this).children(".link").replaceWith('<span class="link glyphicon glyphicon-star-empty"></span>');
+						}
+					}
+				}
+			});
+		});
 	});
 </script>
