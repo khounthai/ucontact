@@ -1,8 +1,6 @@
 <link rel="stylesheet/less" type="text/css" media="screen" th:href="@{/css/jquery.dynatable.css}"  th:fragment="css" />
 
 <div id="pageListeContacts" class="container main_content" th:fragment="content">
-	
-	<div class="alert alert-succes" role="alert" th:if="${retour} == 'motdepasse-modifie'">Votre mot de passe a bien été modifié !</div>
 
 	<h2>Liste de vos contacts :</h2>
 	<p class="instructions">Consultez et gérez tous vos contacts.</p>
@@ -10,7 +8,7 @@
 	<p id="lienAjouter"><a th:href="@{'/modifier-contact/0'}" title="Ajouter un contact"><span class="glyphicon glyphicon-plus-sign"></span>Ajouter un contact</a></p>
 	
 	<div id="listeContacts">
-		<form class="form-horizontal">
+		<form id="formRecherche" class="form-horizontal">
 			<div class="form-group">
 				<label for="inputSearch" class="col-xs-12 col-sm-4 col-md-4 col-lg-4 control-label">Recherche</label>
 				<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6 ">	
@@ -36,14 +34,14 @@
 					<div class="media-body">
 						<span class="hidden" th:if="${d.accueil}" th:text="${d.libellechamp}" th:each="d :${contacts[__${stat.index}__].donnees}"></span>
 						<p th:class="'info'+${d.idchamp}" th:if="${d.accueil}" th:text="${d.valeur}" th:each="d :${contacts[__${stat.index}__].donnees}"></p>
-						<div class="boutons_mod_sup">
-							<a th:href="@{'/modifier-contact/'+${c.idcontactEncrypt}}" title="Modifier le contact">
-								<span class="glyphicon glyphicon-edit"></span>
-							</a>
-							<span class="supprimer_contact">
-								<span class="link glyphicon glyphicon-trash"></span>
-							</span>
-						</div>
+					</div>
+					<div class="boutons_mod_sup">
+						<a th:href="@{'/modifier-contact/'+${c.idcontactEncrypt}}" title="Modifier le contact">
+							<span class="glyphicon glyphicon-edit"></span>
+						</a>
+						<span class="supprimer_contact">
+							<span class="link glyphicon glyphicon-trash"></span>
+						</span>
 					</div>
 				</div>
 			</div>			
@@ -55,14 +53,6 @@
 <script th:fragment="javascript">
 
 	jQuery(document).ready(function() {
-		
-		// Ajout de la photo de profil par défaut
-		$('.avatar').each(function() {
-		    if ($(this).find('img').length == 0) {
-		    	$('<img th:src="@{/imgs/default-avatar.png}" title="Photo de profil" />').appendTo(this);
-		    }
-		});
-		
 		// Récupération des classes pour le filtre
 		var classes = new Array();
 		classes.push("favori");
@@ -83,6 +73,9 @@
 		
 		options = { valueNames : classes };
 		var contactsList = new List('listeContacts', options);
+		contactsList.sort('favori', {
+			  order: 'desc'
+		})
 		
 		// Supprimer un contact
 		$(".supprimer_contact").click(function() {
@@ -118,6 +111,22 @@
 					}
 				}
 			});
+		});		
+		
+		// Ajout de la photo de profil par défaut
+		$('.avatar').each(function() {
+		    if ($(this).find('img').length == 0) {
+		    	$('<img th:src="@{/imgs/default-avatar.png}" title="Photo de profil" />').appendTo(this);
+		    }
 		});
+		
+		var nbContacts = 0;
+		$('.contact').each(function() {
+			nbContacts++;			
+		});
+		if (nbContacts == 0) {
+			$('.list').append('<p id="pasContacts">Vous n\'avez pas encore de contacts, n\'hésitez pas à en créer !</p>');
+			$('#formRecherche').hide();
+		}
 	});
 </script>

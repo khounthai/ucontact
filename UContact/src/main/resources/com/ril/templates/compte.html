@@ -1,0 +1,18 @@
+<div class="container main_content" th:fragment="content">
+
+	<div class="alert alert-success" role="alert" th:if="${retour} == 'motdepasse-modifie'">Votre mot de passe a bien été modifié !</div>
+	<div class="alert alert-success" role="alert" th:if="${retour} == 'email-modifie'">
+		<p>Votre email a bien été modifié !</p>
+		<p>Vous allez recevoir un e-mail de confirmation votre adresse.</p>
+		<p>Vous devrez alors cliquer sur le lien figurant dans cet e-mail pour activer votre compte.</p>
+	</div>
+	<div class="alert alert-warning" role="alert" th:if="${retour} == 'email-modifie'">Veuillez vérifier que votre adresse email est bien :  <span th:text="${user.login}"></span></div>
+
+	<h1>Mon compte</h1>
+	<p class="instructions">Gérez votre compte :</p>
+
+	<ul>
+		<li><a th:href="@{'/modifier-motdepasse'}" title="Modifier mon mot-de-passe">Modifier mon mot-de-passe</a></li>
+		<li><a th:href="@{'/modifier-email'}" title="Modifier mon adresse email">Modifier mon adresse email</a></li>
+	</ul>
+</div>

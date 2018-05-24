@@ -19,6 +19,7 @@ import java.security.spec.InvalidKeySpecException;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.EnumSet;
 import java.util.List;
@@ -173,42 +174,47 @@ public class ContactController {
 	}
 
 	// Envoyer mail de validation de compte
-	public void mailValidationAccount(User user, Mail mail) throws Exception {
+	public void mailValidationAccount(User user, Mail mail, String page) throws Exception {
 
 		// Génération de la validationkey
-		Random rand = new Random();
-		String validationkey = "";
-		for (int i = 0; i < 20; i++) {
-			char c = (char) (rand.nextInt(26) + 97);
-			validationkey += c;
-			System.out.print(c + " ");
-		}
+		SecureRandom rand = SecureRandom.getInstanceStrong();
+		
+		byte[] key = new byte[32];
+		rand.nextBytes(key);
 
 		// Ajout de la validationkey à l'objet de type user
-		user.setValidationkey(validationkey);
-
+		user.setValidationkey(key);
 		userDao.Save(user);
+		
+		String validationkey = org.apache.tomcat.util.codec.binary.Base64.encodeBase64URLSafeString(key);
+		String sujet = "";
+		String contenu = "";
 
-		String sujet = "Activation de votre compte U-Contact";
-		String contenu = "Bonjour, \n\nFélicitation, vous êtes inscrit sur le site U-Contact. \n\nPour activer votre compte, veuillez cliquer sur le lien suivant http://localhost:8080/validation/"
-				+ user.getIduser() + "/" + user.getValidationkey() + "\n\nCordialement, \n\nL'équipe U-Contact";
+		if (page == "inscription") {
+			sujet = "Activation de votre compte U-Contact";
+			contenu = "Bonjour, \n\nFélicitation, vous êtes inscrit sur le site U-Contact. \n\nPour activer votre compte, veuillez cliquer sur le lien suivant http://localhost:8080/validation/"
+					+ user.getIdEncrypt() + "/" + validationkey + "\n\nCordialement, \n\nL'équipe U-Contact";
+			
+		} else if (page == "modification-email") {
+			sujet = "Modification de votre email sur U-Contact";
+			contenu = "Bonjour, \n\nVous avez modifié votre adresse email sur le site U-Contact. \n\nPour valider ce changement, veuillez cliquer sur le lien suivant http://localhost:8080/validation/"
+					+ user.getIdEncrypt() + "/" + validationkey + "\n\nCordialement, \n\nL'équipe U-Contact";	
+		}
 
 		envoyerMail(mail, user.getLogin(), sujet, contenu);
 	}
 
 	public void reinitialiserMotdepasse(User u, Mail mail) throws Exception {
 
-		// Génération d'une clé de validation de modification de mot de passe non
-		// chiffrée
-		Random rand = new Random();
-		String encryptedkeypwd = "";
-		for (int i = 0; i < 20; i++) {
-			char c = (char) (rand.nextInt(26) + 97);
-			encryptedkeypwd += c;
-		}
+		// Génération d'une clé de validation de modification de mot de passe non chiffrée
+		SecureRandom rand = SecureRandom.getInstanceStrong();
+		
+		byte[] key = new byte[32];
+		rand.nextBytes(key);
+		
+		String encryptedkeypwd = org.apache.tomcat.util.codec.binary.Base64.encodeBase64URLSafeString(key);
 
 		// Hashage de la clé
-		byte[] key = Base64.getDecoder().decode(encryptedkeypwd);
 		try {
 			MessageDigest digest = MessageDigest.getInstance("SHA-256");
 			key = digest.digest(key);
@@ -310,7 +316,7 @@ public class ContactController {
 						// Ajout en base de l'utilisateur (enregistrement des modifications)
 						user.setIduser(userDao.Save(user));
 
-						mailValidationAccount(user, mail);
+						mailValidationAccount(user, mail, "inscription");
 
 						// Redirection vers la page attente-validation
 						response.sendRedirect("/attente-validation");
@@ -371,11 +377,15 @@ public class ContactController {
 	}
 
 	// Traitement de la validation du compte de l'utilisateur
-	@RequestMapping(value = { "/validation/{iduser}/{validationkey}" }, method = RequestMethod.GET)
-	public void validationCompte(Model model, @PathVariable("iduser") Long iduser,
+	@RequestMapping(value = { "/validation/{idEncrypt}/{validationkey}" }, method = RequestMethod.GET)
+	public void validationCompte(Model model, @PathVariable("idEncrypt") String idEncrypt,
 			@PathVariable("validationkey") String validationkey, HttpServletResponse response) throws Exception {
 
-		User u = userDao.findByIduserAndValidationkey(iduser, validationkey, true);
+		
+		byte[] key = org.apache.tomcat.util.codec.binary.Base64.decodeBase64(validationkey);
+		
+		Long iduser = Long.parseLong(CDCChaine.Decrypter(idEncrypt));
+		User u = userDao.findByIduserAndValidationkey(iduser, key, true);
 
 		if (u != null) {
 
@@ -426,7 +436,7 @@ public class ContactController {
 
 					} else {
 
-						mailValidationAccount(u, mail);
+						mailValidationAccount(u, mail, "inscription");
 
 						// Redirection vers la page attente-validation
 						response.sendRedirect("/attente-validation");
@@ -464,7 +474,7 @@ public class ContactController {
 			byte[] key = null;
 
 			// Hashage de la clé
-			key = Base64.getDecoder().decode(encryptedkeypwd);
+			key = org.apache.tomcat.util.codec.binary.Base64.decodeBase64(encryptedkeypwd);
 			try {
 				MessageDigest digest = MessageDigest.getInstance("SHA-256");
 				key = digest.digest(key);
@@ -543,8 +553,7 @@ public class ContactController {
 					// Ajout en base de l'utilisateur (enregistrement des modifications)
 					userDao.Save(u);
 
-					// Redirection vers la page attente-validation
-					response.sendRedirect("/contacts/motdepasse-modifie");
+					response.sendRedirect("/compte/motdepasse-modifie");
 
 					return null;
 
@@ -564,12 +573,6 @@ public class ContactController {
 			response.sendRedirect("/connexion");
 			return null;
 		}
-	}
-
-	@RequestMapping("/modification-mot-de-passe-form")
-	public void modificationMotDePasseForm(Model Model, HttpSession session,
-			@ModelAttribute("usertemp") User usertemp) {
-		System.out.println(usertemp);
 	}
 
 	// Affichage de la page Contactez-nous
@@ -674,7 +677,7 @@ public class ContactController {
 
 					} else {
 
-						mailValidationAccount(user, mail);
+						mailValidationAccount(user, mail, "inscription");
 
 						// Redirection vers la page attente-validation
 						response.sendRedirect("/attente-validation");
@@ -692,22 +695,14 @@ public class ContactController {
 		}
 	}
 
-	@RequestMapping(value = { "/contacts", "/contacts/{retour}" })
+	@RequestMapping("/contacts")
 	public String affichageContacts(@ModelAttribute("templates") ArrayList<Template> templates, HttpSession session,
-			@PathVariable("retour") Optional<String> retour, Model model, HttpServletRequest request,
-			HttpServletResponse response) throws Exception {
+			Model model, HttpServletRequest request, HttpServletResponse response) throws Exception {
 
 		User u = getUserConnected(session, request);
 
 		// Si l'utilisateur est logué
 		if (u != null) {
-			// System.out.println(u);
-			// S'il y a un paramètre GET
-			if (retour.isPresent()) {
-				model.addAttribute("retour", retour.get());
-			} else {
-				model.addAttribute("retour", null);
-			}
 
 			java.util.Date date = new java.util.Date();
 
@@ -996,5 +991,79 @@ public class ContactController {
 			}
 		}
 		response.sendRedirect("/");
+	}
+	
+	@RequestMapping(value = { "/compte", "/compte/{retour}" })
+	public String compte(HttpSession session, @PathVariable("retour") Optional<String> retour, Model model, HttpServletRequest request,
+			HttpServletResponse response) throws Exception {
+
+		User u = getUserConnected(session, request);
+
+		// Si l'utilisateur est logué
+		if (u != null) {
+
+			// S'il y a un paramètre GET
+			if (retour.isPresent()) {
+				model.addAttribute("retour", retour.get());
+			} else {
+				model.addAttribute("retour", null);
+			}
+			
+			model.addAttribute(u);
+
+			return "compte";
+
+		} else {
+			response.sendRedirect("/connexion");
+			return null;
+		}
+	}
+	
+	@RequestMapping(value = { "/modifier-email", "/modifier-email/{retour}" })
+	public String modifierEmail(@Valid @ModelAttribute UserForm userForm, BindingResult result, Mail mail, Model model, 
+			@PathVariable("retour") Optional<String> retour, HttpSession session, HttpServletResponse response, HttpServletRequest request) throws Exception {
+
+		User u = getUserConnected(session, request);
+
+		// Si l'utilisateur est logué comme il doit l'être sur cette page
+		if (u != null) {
+			
+			// S'il y a un paramètre GET
+			if (retour.isPresent()) {
+				model.addAttribute("retour", retour.get());
+			} else {
+				model.addAttribute("retour", null);
+			}
+
+			// Si le formulaire a été rempli
+			if (!result.hasErrors()) {
+				
+				User user = userDao.findByLogin(userForm.getLogin());
+
+				// Si l'email renseigné dans le formulaire est déjà présent en base
+				if (user != null) {
+					response.sendRedirect("/modifier-email/erreur-compte-existant");
+					return null;
+				}
+
+				u.setLogin(userForm.getLogin());
+				u.setValidaccount(false);
+				userDao.Save(u);
+				mailValidationAccount(u, mail, "modification-email");
+
+				response.sendRedirect("/compte/email-modifie");
+
+				return null;
+
+			} else {
+				model.addAttribute("user", u);
+				return "modification-email";
+			}
+
+			// Si l'utilisateur arrive sur cette page sans avoir été identifié
+		} else {
+			response.sendRedirect("/connexion");
+			return null;
+		}
 	}
 }

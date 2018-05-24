@@ -36,7 +36,7 @@ public class UserDao {
 			
 			ResultSet rs = ps.executeQuery();			
 			while (rs.next()) {			
-				u = new User(rs.getLong(1), rs.getString(2), rs.getBytes(3), rs.getString(4), rs.getBoolean(5),
+				u = new User(rs.getLong(1), rs.getString(2), rs.getBytes(3), rs.getBytes(4), rs.getBoolean(5),
 						rs.getBytes(6), rs.getString(7), true, rs.getTimestamp(8), rs.getBytes(9), rs.getDate(10));	
 			}
 			
@@ -72,7 +72,7 @@ public class UserDao {
 			ps.setBytes(3,u.getEncryptedkeypwd());
 			ps.setString(4,u.getRole());
 			ps.setBytes(5,u.getEncryptedkey());
-			ps.setString(6,u.getValidationkey());
+			ps.setBytes(6,u.getValidationkey());
 			ps.setBoolean(7,u.getValidaccount());
 			ps.setBoolean(8,u.isActif());
 			ps.setBytes(9,u.getHashedPassword());
@@ -114,7 +114,7 @@ public class UserDao {
 			ResultSet rs = ps.executeQuery();
 			
 			while (rs.next()) {
-				u = new User(rs.getLong(1), rs.getString(2), rs.getBytes(3), rs.getString(4), rs.getBoolean(5),
+				u = new User(rs.getLong(1), rs.getString(2), rs.getBytes(3), rs.getBytes(4), rs.getBoolean(5),
 						rs.getBytes(6), rs.getString(7), true, rs.getTimestamp(8), rs.getBytes(9), rs.getDate(10));	
 			}
 			
@@ -129,7 +129,7 @@ public class UserDao {
 		return u;
 	}
 	
-	public User findByIduserAndValidationkey(Long iduser, String validationkey,boolean actif) {
+	public User findByIduserAndValidationkey(Long iduser, byte[] validationkey, boolean actif) {
 		User u=null;
 
 		try {
@@ -140,13 +140,13 @@ public class UserDao {
 			System.out.println(sql);
 			PreparedStatement ps = conn.prepareStatement(sql);
 			ps.setLong(1, iduser);
-			ps.setString(2, validationkey);
+			ps.setBytes(2, validationkey);
 			ps.setBoolean(3,actif);
 			
 			ResultSet rs = ps.executeQuery();
 			
 			while (rs.next()) {
-				u = new User(rs.getLong(1), rs.getString(2), rs.getBytes(3), rs.getString(4), rs.getBoolean(5),
+				u = new User(rs.getLong(1), rs.getString(2), rs.getBytes(3), rs.getBytes(4), rs.getBoolean(5),
 						rs.getBytes(6), rs.getString(7), true, rs.getTimestamp(8), rs.getBytes(9), rs.getDate(10));			
 			}
 			
@@ -177,7 +177,7 @@ public class UserDao {
 			ResultSet rs = ps.executeQuery();
 			
 			while (rs.next()) {			
-				u = new User(rs.getLong(1), rs.getString(2), rs.getBytes(3), rs.getString(4), rs.getBoolean(5),
+				u = new User(rs.getLong(1), rs.getString(2), rs.getBytes(3), rs.getBytes(4), rs.getBoolean(5),
 						rs.getBytes(6), rs.getString(7), true, rs.getTimestamp(8), rs.getBytes(9), rs.getDate(10));			
 			}
 			
@@ -209,7 +209,7 @@ public class UserDao {
 			ResultSet rs = ps.executeQuery();
 			
 			while (rs.next()) {			
-				u = new User(rs.getLong(1), rs.getString(2), rs.getBytes(3), rs.getString(4), rs.getBoolean(5),
+				u = new User(rs.getLong(1), rs.getString(2), rs.getBytes(3), rs.getBytes(4), rs.getBoolean(5),
 						rs.getBytes(6), rs.getString(7), true, rs.getTimestamp(8), rs.getBytes(9), rs.getDate(10));		
 			}
 			
@@ -275,7 +275,7 @@ public class UserDao {
 			ResultSet rs = ps.executeQuery();
 			
 			while (rs.next()) {			
-				u = new User(rs.getLong(1), rs.getString(2), rs.getBytes(3), rs.getString(4), rs.getBoolean(5),
+				u = new User(rs.getLong(1), rs.getString(2), rs.getBytes(3), rs.getBytes(4), rs.getBoolean(5),
 						rs.getBytes(6), rs.getString(7), true, rs.getTimestamp(8), rs.getBytes(9), rs.getDate(10));				
 			}
 			

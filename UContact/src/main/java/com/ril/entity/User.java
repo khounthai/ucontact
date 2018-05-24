@@ -9,7 +9,7 @@ public class User {
 	private long iduser;
 	private String login;	
 	private byte[] encryptedkey;
-	private String validationkey; //clé de validation de compte	
+	private byte[] validationkey; //clé de validation de compte	
 	private Boolean validaccount = false;	
 	private byte[] hashedPassword;
 	private Date dtcreation;
@@ -22,7 +22,7 @@ public class User {
 	public User() {
 	}
 	
-	public User(long iduser, String login, byte[] encryptedkey, String validationkey, Boolean validaccount,
+	public User(long iduser, String login, byte[] encryptedkey, byte[] validationkey, Boolean validaccount,
 			byte[] hashedPassword, String role, boolean actif, Timestamp timestampModifPwd,
 			byte[] encryptedkeypwd, Date dtcreation) {
 		
@@ -40,7 +40,7 @@ public class User {
 		if (iduser==0)
 			this.idEncrypt="";
 		else			
-			this.idEncrypt = CDCChaine.crypter(Long.toString(iduser));
+			this.idEncrypt = encryptId(iduser);
 	}
 
 	public void setLogin(String login) {
@@ -71,11 +71,11 @@ public class User {
 		this.role = role;
 	}
 
-	public String getValidationkey() {
+	public byte[] getValidationkey() {
 		return validationkey;
 	}
 
-	public void setValidationkey(String validationkey) {
+	public void setValidationkey(byte[] validationkey) {
 		this.validationkey = validationkey;
 	}
 
@@ -102,6 +102,7 @@ public class User {
 
 	public void setIduser(long iduser) {
 		this.iduser = iduser;
+		setIdEncrypt(iduser);
 	}
 
 	public String getLogin() {
@@ -137,8 +138,8 @@ public class User {
 		return idEncrypt;
 	}
 
-	public void setIdEncrypt(String idEncrypt) {
-		this.idEncrypt = idEncrypt;
+	public void setIdEncrypt(long id) {
+		this.idEncrypt = encryptId(id);
 	}
 
 	@Override
@@ -148,5 +149,10 @@ public class User {
 				+ ", hashedPassword=" + Arrays.toString(hashedPassword) + ", role=" + role
 				+", dtcreation=" + dtcreation + ", actif=" + actif + ", timestampModifPwd=" + timestampModifPwd
 				+ ", encryptedkeypwd=" + Arrays.toString(encryptedkeypwd) + "]";
+	}
+	
+	public String encryptId(long id) {
+		
+		return CDCChaine.crypter(Long.toString(id));
 	}
 }
