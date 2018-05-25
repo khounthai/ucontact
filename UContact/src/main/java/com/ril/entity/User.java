@@ -18,7 +18,9 @@ public class User {
 	private Timestamp timestampModifPwd;
 	private byte[] encryptedkeypwd;
 	private String idEncrypt;
-	
+	private byte[] token_api;
+	private Timestamp timestampAPI;
+
 	public User() {
 	}
 	
@@ -140,6 +142,22 @@ public class User {
 
 	public void setIdEncrypt(long id) {
 		this.idEncrypt = encryptId(id);
+	}
+	
+	public byte[] getToken_api() {
+		return token_api;
+	}
+
+	public void setToken_api(byte[] token_api) {
+		this.token_api = token_api;
+	}
+
+	public Timestamp getTimestampAPI() {
+		return timestampAPI;
+	}
+
+	public void setTimestampAPI(Timestamp timestampAPI) {
+		this.timestampAPI = timestampAPI;
 	}
 
 	@Override
