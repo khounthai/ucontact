@@ -54,7 +54,7 @@ public class APIContact {
 			rand.nextBytes(key);
 			u.setToken_api(key);
 			Timestamp ts = new Timestamp(System.currentTimeMillis());
-			u.setTimestampAPI(ts);
+			u.setTimestamp_api(ts);
 			userDao.Save(u);
 			
 			String token = Base64.getEncoder().encodeToString(key);
@@ -71,6 +71,7 @@ public class APIContact {
 		return new ResponseEntity(headers, userStatus);
 	}
 	
+	/*
 	@RequestMapping(value = { "/api/contacts"}, method = RequestMethod.GET)
 	@ResponseBody
 	public ResponseEntity<?> ListeContacts(HttpServletResponse response, HttpServletRequest request) throws Exception {
@@ -100,4 +101,5 @@ public class APIContact {
         	}
         }
 	}
+	*/
 }

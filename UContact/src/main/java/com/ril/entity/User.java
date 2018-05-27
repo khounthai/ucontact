@@ -19,7 +19,7 @@ public class User {
 	private byte[] encryptedkeypwd;
 	private String idEncrypt;
 	private byte[] token_api;
-	private Timestamp timestampAPI;
+	private Timestamp timestamp_api;
 
 	public User() {
 	}
@@ -152,12 +152,12 @@ public class User {
 		this.token_api = token_api;
 	}
 
-	public Timestamp getTimestampAPI() {
-		return timestampAPI;
+	public Timestamp getTimestamp_api() {
+		return timestamp_api;
 	}
 
-	public void setTimestampAPI(Timestamp timestampAPI) {
-		this.timestampAPI = timestampAPI;
+	public void setTimestamp_api(Timestamp timestamp_api) {
+		this.timestamp_api = timestamp_api;
 	}
 
 	@Override

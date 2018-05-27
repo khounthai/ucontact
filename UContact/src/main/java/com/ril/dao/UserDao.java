@@ -57,11 +57,11 @@ public class UserDao {
 		try {
 			Connection conn = database.getSqlConnection();		
 			
-			String sql = "INSERT INTO USER (iduser, login, encryptedkeypwd, role, encryptedkey, validationkey, validaccount, actif, hashed_password, timestamp_modif_pwd, dtcreation, token_api, timestamp_token_api) "+
+			String sql = "INSERT INTO USER (iduser, login, encryptedkeypwd, role, encryptedkey, validationkey, validaccount, actif, hashed_password, timestamp_modif_pwd, dtcreation, token_api, timestamp_api) "+
 						 "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) "+
 						 "ON DUPLICATE KEY UPDATE login=VALUES(login), encryptedkeypwd=VALUES(encryptedkeypwd), role=VALUES(role),encryptedkey=VALUES(encryptedkey),  "+
 						 "validationkey=VALUES(validationkey), validaccount=VALUES(validaccount), actif=VALUES(actif),hashed_password=VALUES(hashed_password), "+
-						 "timestamp_modif_pwd=VALUES(timestamp_modif_pwd), dtcreation=VALUES(dtcreation), token_api=VALUES(token_api), timestamp_token_api=VALUES(timestamp_token_api)"; 
+						 "timestamp_modif_pwd=VALUES(timestamp_modif_pwd), dtcreation=VALUES(dtcreation), token_api=VALUES(token_api), timestamp_api=VALUES(timestamp_api)"; 
 							
 			System.out.println(sql);
 			System.out.println(u);
@@ -79,7 +79,7 @@ public class UserDao {
 			ps.setTimestamp(10,u.getTimestampModifPwd());
 			ps.setDate(11,u.getDtcreation());
 			ps.setBytes(12,u.getToken_api());
-			ps.setTimestamp(13,u.getTimestampAPI());
+			ps.setTimestamp(13,u.getTimestamp_api());
 			
 			ps.executeUpdate();
 			
