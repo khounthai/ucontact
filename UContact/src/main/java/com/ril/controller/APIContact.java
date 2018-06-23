@@ -2,7 +2,9 @@ package com.ril.controller;
 
 import java.security.SecureRandom;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Base64;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -11,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -18,7 +21,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ril.dao.ContactDao;
+import com.ril.dao.TemplateDao;
 import com.ril.dao.UserDao;
+import com.ril.entity.Contact;
+import com.ril.entity.ContactsAPI;
+import com.ril.entity.Template;
 import com.ril.entity.User;
 import com.ril.entity.UserAPI;
 import com.ril.entity.UserFormConnexion;
@@ -27,6 +35,13 @@ import com.ril.entity.UserFormConnexion;
 public class APIContact {
 	@Autowired
 	UserDao userDao;
+	
+	@Autowired
+	ContactDao contactDao;
+	
+	@Autowired
+	TemplateDao templateDao;
+
 	
 	@RequestMapping(value = { "/api/authentification"}, method = RequestMethod.POST)
 	@ResponseBody
@@ -71,10 +86,9 @@ public class APIContact {
 		return new ResponseEntity(headers, userStatus);
 	}
 	
-	/*
 	@RequestMapping(value = { "/api/contacts"}, method = RequestMethod.GET)
 	@ResponseBody
-	public ResponseEntity<?> ListeContacts(HttpServletResponse response, HttpServletRequest request) throws Exception {
+	public ResponseEntity<?> ListeContacts(@ModelAttribute("templates") ArrayList<Template> templates, HttpServletResponse response, HttpServletRequest request) throws Exception {
 		
 		// Déclaration du header et du status
 		HttpHeaders headers = new HttpHeaders();
@@ -93,13 +107,39 @@ public class APIContact {
         	
         	// Si on trouve un utilisateur avec ce token
         	User u = userDao.findByTokenAPI(key);
-        	if (u != null) {
+        	
+			Timestamp tsapi = u.getTimestamp_api();
+			Timestamp tsnow = new Timestamp(System.currentTimeMillis());
+        	
+        	if (u != null && (tsnow.getTime() - tsapi.getTime() < 3600000)) {
         		userStatus = HttpStatus.OK;
+
+    			// Recherche du template
+    			java.util.Date date = new java.util.Date();
+    			Timestamp t = new Timestamp(date.getTime());
+    			templates = (ArrayList<Template>) templateDao.getTemplates(0, 0, true);
+    			long idtemplate = 0;
+
+    			/*** s'il y a q'un template, il est sélectionné ***/
+    			if (templates.size() == 1) {
+    				templates.get(0).setCheck(true);
+    				idtemplate = templates.get(0).getIdtemplate();
+
+    				templates.get(0).getChamps().forEach(x -> {
+    					System.out.println(x);
+    				});
+    			}
+    			
+    			List<Contact> contacts = contactDao.findByIduserAndIdTemplate(u.getIduser(), idtemplate, true, t);
+    			
+    			ContactsAPI capi = new ContactsAPI(u.getLogin(), u.getDtcreation(), token, contacts);
+    			
+    			return new ResponseEntity<ContactsAPI>(capi, headers, userStatus);    			
         		
         	} else {
         		userStatus = HttpStatus.NOT_FOUND;
+        		return null;
         	}
         }
 	}
-	*/
 }

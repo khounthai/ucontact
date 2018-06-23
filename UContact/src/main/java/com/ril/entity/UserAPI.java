@@ -10,6 +10,14 @@ public class UserAPI {
 	private Date dtcreation;
 	private String token_api;
 	
+	public UserAPI() {};
+	
+	public UserAPI(String l, Date d, String t) {
+		login = l;
+		dtcreation = d;
+		token_api = t;
+	}	
+	
 	public String getLogin() {
 		return login;
 	}

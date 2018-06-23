@@ -5,7 +5,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.sql.Timestamp;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -213,6 +212,35 @@ public class UserDao {
 			while (rs.next()) {			
 				u = new User(rs.getLong(1), rs.getString(2), rs.getBytes(3), rs.getBytes(4), rs.getBoolean(5),
 						rs.getBytes(6), rs.getString(7), true, rs.getTimestamp(8), rs.getBytes(9), rs.getDate(10));		
+			}
+			
+			rs.close();
+			ps.close();
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return u;
+	}
+	
+	public User findByTokenAPI(byte[] key) {
+		User u=null;
+
+		try {
+			Connection conn = database.getSqlConnection();		
+			
+			String sql= selectSql+"where token_api=? and actif=true";
+			
+			System.out.println(sql);
+			PreparedStatement ps = conn.prepareStatement(sql);
+			ps.setBytes(1, key);
+			ResultSet rs = ps.executeQuery();
+			
+			while (rs.next()) {
+				u = new User(rs.getLong(1), rs.getString(2), rs.getBytes(3), rs.getBytes(4), rs.getBoolean(5),
+						rs.getBytes(6), rs.getString(7), true, rs.getTimestamp(8), rs.getBytes(9), rs.getDate(10));	
 			}
 			
 			rs.close();
