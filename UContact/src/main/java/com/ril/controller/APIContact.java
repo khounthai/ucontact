@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ril.dao.ContactDao;
 import com.ril.dao.TemplateDao;
 import com.ril.dao.UserDao;
@@ -97,12 +98,13 @@ public class APIContact {
 		
 		// Est-ce qu'on a bien un token dans le header
 		String header = request.getHeader("token");
+
 		if (header == null || !header.startsWith("Bearer ")) {
 			return new ResponseEntity(headers, userStatus);
 			
         } else {
         	// On retransforme le token en bytes
-        	String token = request.getHeader("token").substring(8);
+        	String token = request.getHeader("token").substring(7);
         	byte[] key = Base64.getDecoder().decode(token);
         	
         	// Si on trouve un utilisateur avec ce token
@@ -134,7 +136,7 @@ public class APIContact {
     			
     			ContactsAPI capi = new ContactsAPI(u.getLogin(), u.getDtcreation(), token, contacts);
     			
-    			return new ResponseEntity<ContactsAPI>(capi, headers, userStatus);    			
+    			return new ResponseEntity<ContactsAPI>(capi, headers, userStatus); 
         		
         	} else {
         		userStatus = HttpStatus.NOT_FOUND;

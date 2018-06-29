@@ -17,7 +17,7 @@ public class UserDao {
 	@Autowired
 	private Database database;
 
-	private final String selectSql="select iduser, login, encryptedkey, validationkey, validaccount, hashed_password, role, timestamp_modif_pwd, encryptedkeypwd, dtcreation from user ";
+	private final String selectSql="select iduser, login, encryptedkey, validationkey, validaccount, hashed_password, role, timestamp_modif_pwd, encryptedkeypwd, dtcreation, token_api, timestamp_api from user ";
 	
 	public User findByIduser(long iduser) {
 		User u=null;
@@ -36,7 +36,7 @@ public class UserDao {
 			ResultSet rs = ps.executeQuery();			
 			while (rs.next()) {			
 				u = new User(rs.getLong(1), rs.getString(2), rs.getBytes(3), rs.getBytes(4), rs.getBoolean(5),
-						rs.getBytes(6), rs.getString(7), true, rs.getTimestamp(8), rs.getBytes(9), rs.getDate(10));	
+						rs.getBytes(6), rs.getString(7), true, rs.getTimestamp(8), rs.getBytes(9), rs.getDate(10), rs.getBytes(11), rs.getTimestamp(12));	
 			}
 			
 			rs.close();
@@ -116,7 +116,7 @@ public class UserDao {
 			
 			while (rs.next()) {
 				u = new User(rs.getLong(1), rs.getString(2), rs.getBytes(3), rs.getBytes(4), rs.getBoolean(5),
-						rs.getBytes(6), rs.getString(7), true, rs.getTimestamp(8), rs.getBytes(9), rs.getDate(10));	
+						rs.getBytes(6), rs.getString(7), true, rs.getTimestamp(8), rs.getBytes(9), rs.getDate(10), rs.getBytes(11), rs.getTimestamp(12));	
 			}
 			
 			rs.close();
@@ -148,7 +148,7 @@ public class UserDao {
 			
 			while (rs.next()) {
 				u = new User(rs.getLong(1), rs.getString(2), rs.getBytes(3), rs.getBytes(4), rs.getBoolean(5),
-						rs.getBytes(6), rs.getString(7), true, rs.getTimestamp(8), rs.getBytes(9), rs.getDate(10));			
+						rs.getBytes(6), rs.getString(7), true, rs.getTimestamp(8), rs.getBytes(9), rs.getDate(10), rs.getBytes(11), rs.getTimestamp(12));			
 			}
 			
 			rs.close();
@@ -179,7 +179,7 @@ public class UserDao {
 			
 			while (rs.next()) {			
 				u = new User(rs.getLong(1), rs.getString(2), rs.getBytes(3), rs.getBytes(4), rs.getBoolean(5),
-						rs.getBytes(6), rs.getString(7), true, rs.getTimestamp(8), rs.getBytes(9), rs.getDate(10));			
+						rs.getBytes(6), rs.getString(7), true, rs.getTimestamp(8), rs.getBytes(9), rs.getDate(10), rs.getBytes(11), rs.getTimestamp(12));			
 			}
 			
 			rs.close();
@@ -211,7 +211,7 @@ public class UserDao {
 			
 			while (rs.next()) {			
 				u = new User(rs.getLong(1), rs.getString(2), rs.getBytes(3), rs.getBytes(4), rs.getBoolean(5),
-						rs.getBytes(6), rs.getString(7), true, rs.getTimestamp(8), rs.getBytes(9), rs.getDate(10));		
+						rs.getBytes(6), rs.getString(7), true, rs.getTimestamp(8), rs.getBytes(9), rs.getDate(10), rs.getBytes(11), rs.getTimestamp(12));		
 			}
 			
 			rs.close();
@@ -240,7 +240,7 @@ public class UserDao {
 			
 			while (rs.next()) {
 				u = new User(rs.getLong(1), rs.getString(2), rs.getBytes(3), rs.getBytes(4), rs.getBoolean(5),
-						rs.getBytes(6), rs.getString(7), true, rs.getTimestamp(8), rs.getBytes(9), rs.getDate(10));	
+						rs.getBytes(6), rs.getString(7), true, rs.getTimestamp(8), rs.getBytes(9), rs.getDate(10), rs.getBytes(11), rs.getTimestamp(12));	
 			}
 			
 			rs.close();
@@ -306,7 +306,7 @@ public class UserDao {
 			
 			while (rs.next()) {			
 				u = new User(rs.getLong(1), rs.getString(2), rs.getBytes(3), rs.getBytes(4), rs.getBoolean(5),
-						rs.getBytes(6), rs.getString(7), true, rs.getTimestamp(8), rs.getBytes(9), rs.getDate(10));				
+						rs.getBytes(6), rs.getString(7), true, rs.getTimestamp(8), rs.getBytes(9), rs.getDate(10), rs.getBytes(11), rs.getTimestamp(12));				
 			}
 			
 			rs.close();

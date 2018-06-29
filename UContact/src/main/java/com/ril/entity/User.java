@@ -26,7 +26,8 @@ public class User {
 	
 	public User(long iduser, String login, byte[] encryptedkey, byte[] validationkey, Boolean validaccount,
 			byte[] hashedPassword, String role, boolean actif, Timestamp timestampModifPwd,
-			byte[] encryptedkeypwd, Date dtcreation) {
+			byte[] encryptedkeypwd, Date dtcreation,
+			byte[] token_api, Timestamp timestamp_api) {
 		
 		this.iduser = iduser;
 		this.login = login;
@@ -43,6 +44,8 @@ public class User {
 			this.idEncrypt="";
 		else			
 			this.idEncrypt = encryptId(iduser);
+		this.token_api = token_api;
+		this.timestamp_api = timestamp_api;
 	}
 
 	public void setLogin(String login) {
